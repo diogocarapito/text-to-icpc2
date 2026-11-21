@@ -60,4 +60,4 @@ testpaths = ["tests"]
 pythonpath = ["src"]
 
 [tool.ruff.lint]
-ignore = ["SIM115", "BLE001", "C408", "ISC004", "RUF012", "E501"]
+ignore = ["SIM115", "BLE001", "C408", "ISC004", "RUF012", "E501", "B008", "FURB122", "PLW1510", "S110", "S603", "S607", "S108"]

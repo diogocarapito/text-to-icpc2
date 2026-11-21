@@ -7,8 +7,8 @@
 
 Backends
   local : everything in this process (your Mac, MPS) — used for the first trainings
-  modal : `check` runs wherever you call it (or on Modal's cron), training runs on a Modal GPU
-          (see icpc2/remote/modal_app.py)
+  do    : `check` runs wherever you call it (the VPS scheduler, daily); training runs on an
+          ephemeral DigitalOcean GPU Droplet (see icpc2/remote/do_gpu.py)
 """
 
 import json
@@ -141,14 +141,14 @@ def run(backend: str = "local", force: bool = False, pull: bool = True, dry_run:
         return {"event": "skip", **status}
     if backend == "local":
         return train_and_promote(n_feedback_labels=status["n_feedback_labels"], dry_run=dry_run)
-    if backend == "modal":
-        import modal
-
+    if backend == "do":
         from icpc2 import hub
+        from icpc2.remote import do_gpu
 
-        hub.push_data("pre-train sync")  # remote job reads gold/feedback from the private data repo
-        fn = modal.Function.from_name("icpc2-train", "train_remote")
-        rec = fn.remote(n_feedback_labels=status["n_feedback_labels"], dry_run=dry_run)
+        hub.push_data("pre-train sync")  # the droplet pulls private feedback from the HF repo
+        rc = do_gpu.run(["icpc2", "loop", "--backend", "local", "--force", "--no-pull"]
+                        + (["--dry-run"] if dry_run else []), fetch=("reports",),
+                        fetch_best_model=False)
         hub.pull_data()  # bring back the updated history
-        return rec
+        return {"event": "remote_train", "exit_code": rc}
     raise ValueError(f"unknown backend {backend}")

@@ -10,15 +10,21 @@ trigger:
 model_type: classifier        # classifier | retriever  (set to the benchmark winner)
 
 training:
-  # local = this machine (Mac MPS) — first trainings / benchmarks
-  # modal = remote GPU on Modal — switch to this once the demo is deployed
-  #         (`modal deploy src/icpc2/remote/modal_app.py` also schedules the nightly check)
+  # local = this machine (Mac MPS)
+  # do    = ephemeral DigitalOcean GPU Droplet (created per job, always destroyed)
   backend: local
+
+gpu:                          # icpc2 gpu ... / backend: do
+  size: gpu-4000adax1-20gb    # RTX 4000 Ada 20 GB ~$0.76/h; gpu-l40sx1-48gb ~$1.57/h; gpu-h100x1-80gb ~$4.41/h
+  image: gpu-h100x1-base      # DO AI/ML image (drivers + CUDA) — used for every single-GPU size
+  max_hours: 6                # self-destruct safety net
+  repo: https://github.com/diogocarapito/text-to-icpc2-v2
 
 hf:
   model_repo: diogocarapito/text-to-icpc2-v2       # production model = `main` branch
   private: false
-  dataset_repo: diogocarapito/text-to-icpc2-v2-data  # PRIVATE: contains user-submitted text
+  dataset_repo: diogocarapito/text-to-icpc2-v2-feedback  # PRIVATE: user-submitted text only
+  public_dataset_repo: diogocarapito/text-to-icpc2-v2-dataset  # PUBLIC: training/eval data (no user text)
   push_dataset: true
 
 promotion:                    # fully automatic, but gated on held-out data

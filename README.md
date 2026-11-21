@@ -7,13 +7,13 @@ This is a research demo, not a medical device.
 Successor to [text-to-icpc2](https://github.com/DiogoCarapito/text-to-icpc2) and [text-to-icpc2_demo](https://github.com/DiogoCarapito/text-to-icpc2_demo). See [docs/PLAN.md](docs/PLAN.md) for the roadmap and the design decisions.
 
 ```
-            ┌──────────── Mac (first trainings) / Modal GPU (after deploy) ───────────┐
+            ┌──────── Mac (MPS) / ephemeral DigitalOcean GPU Droplet (created per job) ────────┐
  ACSS ICPC-2 + ICD-10 ─┐   │                                                                          │
  Claude synthetic ─────┼─► build-data ─► train (classifier | retriever) ─► evaluate vs champion ─► gates ─► HF Hub (vN)
  v1 synonyms ──────────┤   │                                                                          │        │
  user feedback ────────┘   └──────────────────────────────────────────────────────────────────────────┘        │ reload
         ▲                                                                                                        ▼
-        └──────── /api/export ◄──── Postgres log ◄──── FastAPI web app (VPS, text-to-icpc2.com) ◄──── users
+        └──────── /api/export ◄──── Postgres log ◄──── FastAPI web app (text-to-icpc2.com) ◄──── users
 ```
 
 ## Layout
@@ -26,11 +26,15 @@ Successor to [text-to-icpc2](https://github.com/DiogoCarapito/text-to-icpc2) and
 | `src/icpc2/predict.py` | one predictor interface, shared by evaluation **and** serving |
 | `src/icpc2/eval/` | metrics per split, language and chapter; error dumps |
 | `src/icpc2/loop/` | trigger check → train → champion comparison → automatic promotion |
-| `src/icpc2/remote/modal_app.py` | remote GPU training and nightly cron on Modal |
+| `src/icpc2/remote/do_gpu.py` | ephemeral DigitalOcean GPU Droplets: create → train → fetch → destroy |
+| `src/icpc2/sweep.py` | benchmark sweeps (`configs/sweeps/`), results in `experiments/` |
+| `experiments/` | **public lab results**: every benchmark run's metrics, config, hardware, predictions |
+| `docs/JOURNAL.md` | dated lab notebook, 2024 → today |
 | `src/icpc2/web/` | FastAPI app, interaction log, export API, `/stats` usage page |
-| `deploy/` | docker-compose (app, postgres, nginx, certbot, backups) for the VPS |
+| `deploy/` | docker-compose for the server: app, Postgres, Caddy (automatic HTTPS), backups, retrain scheduler |
+| `scripts/` | gold review page builder, v1 log export |
 | `data/raw/` | ACSS ICPC-2 (PT-PT), slim ICD-10-CM PT/EN |
-| `data/gold/` | **hand-labelled test set, never trained on** (private, see below) |
+| `data/gold/` | Claude-drafted, **physician-verified** test set (`drafts.jsonl` → review → `gold.csv`), never trained on |
 
 ## Data splits
 
@@ -39,11 +43,12 @@ Successor to [text-to-icpc2](https://github.com/DiogoCarapito/text-to-icpc2) and
 | `train` | official descriptions, synthetic, v1 synonyms, user feedback | training |
 | `val` | 8% of synthetic/v1 (hash of normalised text) | model selection, proxy metric |
 | `feedback_test` | 20% of user-confirmed labels | real-world metric that grows with use |
-| `gold_dev` / `gold_test` | hand-labelled real inputs | **headline metric** and promotion gate |
+| `draft` | unverified gold drafts | eval-only proxy until verified |
+| `gold_dev` / `gold_test` | physician-verified entries | **headline metric** and promotion gate |
 
 A leakage guard removes any training text that also appears, after normalisation, in an evaluation split. v1 had no such guard: it validated on its own training data.
 
-**Privacy:** user-submitted text (feedback, gold) is git-ignored. It lives only in the **private** HF dataset `diogocarapito/text-to-icpc2-v2-data`. Inputs are scrubbed of long digit runs (SNS/NIF/phone numbers) before they are stored.
+**Public by default; private only where users typed:** code, configs, synthetic data, the gold set, experiment results and models are public (GitHub, the [HF dataset](https://huggingface.co/datasets/diogocarapito/text-to-icpc2-v2-dataset) and the [HF model](https://huggingface.co/diogocarapito/text-to-icpc2-v2)). The demo's interaction logs contain text that users typed, so they live only in the **private** HF repo `diogocarapito/text-to-icpc2-v2-feedback`. Inputs are scrubbed of long digit runs (SNS/NIF/phone numbers) before they are stored.
 
 ## Quick start (Mac)
 
@@ -58,66 +63,62 @@ make test
 .venv/bin/icpc2 synth submit                 # batch for all 686 codes (50% price)
 .venv/bin/icpc2 synth collect --wait && make data
 
-# benchmark (local MPS)
-.venv/bin/icpc2 train-classifier --model jhu-clsp/mmBERT-base
-.venv/bin/icpc2 train-classifier --model FacebookAI/xlm-roberta-base
-.venv/bin/icpc2 train-retriever  --model intfloat/multilingual-e5-base
-# reports/<run>/metrics.json + errors.csv for each
+# benchmark: a whole sweep on a fresh GPU droplet (destroyed afterwards)
+.venv/bin/icpc2 gpu sizes
+.venv/bin/icpc2 gpu run --size gpu-l40sx1-48gb -- icpc2 sweep configs/sweeps/benchmark-01.yaml
+cat experiments/benchmark-01/summary.csv
+# ...or locally:  .venv/bin/icpc2 sweep configs/sweeps/smoke.yaml
 
 .venv/bin/icpc2 promote models/classifier/<run>/model   # first push to HF → v1
+.venv/bin/icpc2 publish-dataset                          # public HF dataset
 
 # web app locally
 MODEL_PATH=models/classifier/<run>/model ICPC2_ADMIN_TOKEN=dev make serve
 open http://127.0.0.1:8000  ·  http://127.0.0.1:8000/stats?token=dev
 ```
 
-## Gold set (the most important thing to build)
+## Gold set
 
-1. `scripts/export_v1_logs.sh user@vps`: exports real inputs from the v1 demo's Postgres.
-2. `icpc2 gold-template --src data/feedback/v1_logs.csv --model models/classifier/<run>/model`: creates `data/gold/to_label.csv`, pre-filled with model suggestions.
-3. Correct the `code` column. Add your own realistic entries (abbreviations, typos, English). Append the rows to `data/gold/gold.csv` (format: `data/gold/gold.example.csv`).
-4. `icpc2 data push`: uploads to the private HF data repo, so the remote trainer can see it.
+1. `icpc2 gold-draft`: Claude drafts about 36 realistic entries per chapter (20% EN, about 30% hard cases), saved to `data/gold/drafts.jsonl`.
+2. A physician verifies each draft on the review page (`scripts/build_gold_review.py` builds it as a claude.ai artifact). Each draft is marked correct, recoded, discarded or "unsure".
+3. Export the verdicts and run `icpc2 gold-import <dir>` to write `data/gold/gold.csv` (80% test / 20% dev). Then `icpc2 rescore benchmark-01` re-scores every saved prediction without retraining.
+4. Add physician-written entries straight to `gold.csv` (`source=manual`). They are the test set least biased towards the LLM that wrote the training data.
 
-Aim for at least 300 rows across chapters (≥100 is needed before gold becomes the promotion metric).
+## Deploy (dedicated server)
 
-## Deploy (VPS)
-
-Replaces the v1 demo on the same domain and certificates:
+A small Ubuntu server with Docker. Caddy gets HTTPS certificates automatically once the domain's DNS points at the server.
 
 ```bash
-# on the VPS — first export the v1 logs (see above), then:
-cd text-to-icpc2_demo && docker compose down          # keep v1 volumes until the export is safe
-git clone https://github.com/DiogoCarapito/text-to-icpc2-v2 && cd text-to-icpc2-v2/deploy
-nano .env                                             # POSTGRES_PASSWORD, ICPC2_ADMIN_TOKEN, MODEL_REPO
+git clone https://github.com/diogocarapito/text-to-icpc2-v2 && cd text-to-icpc2-v2/deploy
+nano .env        # DOMAIN, ACME_EMAIL, POSTGRES_PASSWORD, ICPC2_ADMIN_TOKEN, HF_TOKEN, DIGITALOCEAN_TOKEN
 docker compose up -d --build
 ```
 
-The certbot volumes are new in v2. Issue the certificate once, exactly as in the v1 README (`docker compose run --entrypoint certbot certbot certonly --webroot ...`).
+Services: `app` (FastAPI + model), `db` (Postgres), `caddy` (TLS), `backup` (nightly pg_dump, 14 days) and `scheduler` (daily retrain check).
 
 ## Automatic retraining
 
 ```bash
-icpc2 loop                     # local backend: pull feedback → retrain if due → promote if gates pass
-icpc2 loop --dry-run --force   # see what would happen
-
-# after the demo is live: remote GPU on Modal, plus a nightly cron that doesn't need the Mac
-pip install modal && modal setup
-modal secret create icpc2 HF_TOKEN=... ICPC2_ADMIN_TOKEN=... ICPC2_VPS_URL=https://text-to-icpc2.com
-modal deploy src/icpc2/remote/modal_app.py
-# then set training.backend: modal in configs/loop.yaml
+icpc2 loop                      # pull feedback → retrain if due → promote if the gates pass
+icpc2 loop --backend do         # same, but training runs on an ephemeral DigitalOcean GPU Droplet
+icpc2 loop --dry-run --force    # see what would happen
 ```
+
+In production, the `scheduler` container runs `icpc2 loop --backend do` once a day. Every droplet is destroyed after its job, and a timer on the droplet destroys it anyway after `gpu.max_hours`.
 
 Promotion is fully automatic, with gates (`configs/loop.yaml`). The candidate must match or beat the champion on gold (or val) top-1, with no language or `feedback_test` slice regressing past its tolerance. Both models are evaluated on the same current data. Every promoted model is tagged `vN` on the HF Hub, so you can roll back by setting `MODEL_REVISION=vN`.
 
 ## Environment variables
 
-`.env` at the repo root (local) and `deploy/.env` (VPS). Never commit either.
+`.env` at the repo root (local) and `deploy/.env` (server). Never commit either.
 
 | var | where | purpose |
 |---|---|---|
-| `ANTHROPIC_API_KEY` | Mac | synthetic data (or `ant auth login`) |
-| `HF_TOKEN` | Mac, Modal | push models and the private data repo |
+| `ANTHROPIC_API_KEY` | Mac | synthetic data and gold drafts (or `ant auth login`) |
+| `HF_TOKEN` | Mac, server | push models and datasets; private feedback repo |
+| `DIGITALOCEAN_TOKEN` | Mac, server | GPU droplets (create, read and delete droplets; read SSH keys) |
 | `ICPC2_ADMIN_TOKEN` | all | shared secret: `/api/export`, `/api/admin/reload`, `/stats` (`openssl rand -hex 32`) |
-| `ICPC2_VPS_URL` | Mac, Modal | e.g. `https://text-to-icpc2.com` |
-| `POSTGRES_PASSWORD` | VPS | database |
-| `MODEL_REPO` / `MODEL_REVISION` | VPS | which model to serve (default `diogocarapito/text-to-icpc2-v2@main`) |
+| `ICPC2_VPS_URL` | Mac, server | e.g. `https://text-to-icpc2.com` |
+| `DOMAIN`, `ACME_EMAIL` | server | Caddy site and Let's Encrypt contact |
+| `POSTGRES_PASSWORD` | server | database |
+| `MODEL_REPO` / `MODEL_REVISION` | server | which model to serve (default `diogocarapito/text-to-icpc2-v2@main`) |

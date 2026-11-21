@@ -1,0 +1,294 @@
+<title>Gold ICPC-2 Review</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: one entry at a time, verdict bar under it, compact queue list below. Coding-desk feel. */
+:root {
+  --bg: #f6f7f5; --panel: #ffffff; --ink: #1b2420; --muted: #5d6a64; --line: #dde3df;
+  --accent: #1d6b57; --accent-ink: #ffffff; --ok: #217a3c; --fix: #9a5b00; --bad: #b23a2e; --unsure: #5a4fb0;
+  --chip: #e8efeb;
+  --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #121614; --panel: #1a201d; --ink: #e6ece8; --muted: #9aa8a1; --line: #2b3430;
+  --accent: #4fb596; --accent-ink: #0b1310; --ok: #5cc27a; --fix: #e3a64b; --bad: #ef7d70; --unsure: #a99cf2;
+  --chip: #23302a; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #121614; --panel: #1a201d; --ink: #e6ece8; --muted: #9aa8a1; --line: #2b3430;
+  --accent: #4fb596; --accent-ink: #0b1310; --ok: #5cc27a; --fix: #e3a64b; --bad: #ef7d70; --unsure: #a99cf2;
+  --chip: #23302a; color-scheme: dark; }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font: 15px/1.5 var(--sans); }
+.wrap { max-width: 760px; margin: 0 auto; padding-block: 20px 48px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid; gap: 16px; }
+header { display: grid; gap: 10px; }
+h1 { margin: 0; font-size: 1.25rem; font-weight: 600; letter-spacing: -0.01em; text-wrap: balance; }
+.sub { color: var(--muted); font-size: .85rem; margin: 0; }
+.progress { display: flex; height: 8px; border-radius: 4px; overflow: hidden; background: var(--line); }
+.progress span { display: block; height: 100%; }
+.counts { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: .82rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.counts b { color: var(--ink); font-weight: 600; }
+.dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 5px; vertical-align: 1px; }
+.filters { display: flex; flex-wrap: wrap; gap: 8px; }
+select, input, textarea { font: inherit; color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; }
+select:focus-visible, input:focus-visible, textarea:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 18px; display: grid; gap: 14px; }
+.meta { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: .75rem; color: var(--muted); }
+.tag { background: var(--chip); border-radius: 999px; padding: 2px 9px; text-transform: uppercase; letter-spacing: .06em; font-weight: 500; }
+.tag.hard { background: color-mix(in srgb, var(--fix) 18%, transparent); color: var(--fix); }
+.pos { margin-left: auto; font-variant-numeric: tabular-nums; font-family: var(--mono); }
+.entry { font-size: 1.45rem; line-height: 1.3; font-weight: 500; word-break: break-word; }
+.proposal { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; align-items: baseline; }
+.code { font-family: var(--mono); font-weight: 600; font-size: 1.3rem; color: var(--accent); }
+.ptitle { font-weight: 500; min-width: 0; }
+.small { color: var(--muted); font-size: .82rem; min-width: 0; }
+.confuse { font-size: .85rem; color: var(--muted); border-left: 3px solid var(--fix); padding-left: 10px; }
+.confuse .code { font-size: .95rem; color: var(--fix); }
+.status-line { font-size: .85rem; font-weight: 500; }
+.actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.actions button { font: inherit; font-weight: 600; font-size: .9rem; border-radius: 10px; padding: 10px 6px; cursor: pointer;
+  border: 1px solid var(--line); background: var(--panel); color: var(--ink); display: grid; gap: 2px; justify-items: center; }
+.actions button kbd { font: 500 .7rem var(--mono); color: var(--muted); }
+.actions .ok { background: var(--ok); border-color: var(--ok); color: #fff; }
+.actions .ok kbd { color: rgba(255,255,255,.75); }
+.actions button[aria-pressed="true"] { box-shadow: inset 0 0 0 2px var(--ink); }
+.actions button:disabled { opacity: .45; cursor: not-allowed; }
+.fixer { display: grid; gap: 8px; }
+.fixer[hidden] { display: none !important; }
+.results { display: grid; gap: 4px; max-height: 260px; overflow-y: auto; }
+.results button { text-align: left; font: inherit; border: 1px solid var(--line); background: var(--panel); color: var(--ink);
+  border-radius: 8px; padding: 6px 10px; cursor: pointer; display: grid; grid-template-columns: 3.4em 1fr; gap: 8px; }
+.results button:hover, .results button:focus-visible { border-color: var(--accent); }
+.results .code { font-size: .95rem; }
+textarea { width: 100%; min-height: 2.4em; resize: vertical; font-size: .9rem; }
+.nav { display: flex; justify-content: space-between; gap: 8px; }
+.nav button { font: inherit; border: 1px solid var(--line); background: transparent; color: var(--ink); border-radius: 8px; padding: 6px 12px; cursor: pointer; }
+.banner { font-size: .85rem; padding: 8px 12px; border-radius: 8px; background: var(--chip); color: var(--muted); }
+details { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; }
+summary { cursor: pointer; padding: 10px 14px; font-weight: 500; font-size: .9rem; }
+.queue { display: grid; max-height: 420px; overflow-y: auto; border-top: 1px solid var(--line); }
+.queue button { all: unset; cursor: pointer; display: grid; grid-template-columns: 14px 3.2em 1fr; gap: 8px; padding: 6px 14px; font-size: .85rem; border-bottom: 1px solid var(--line); }
+.queue button:focus-visible { outline: 2px solid var(--accent); }
+.queue button.cur { background: var(--chip); }
+.queue .code { font-size: .85rem; }
+.queue span:last-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.empty { color: var(--muted); text-align: center; padding: 30px 0; }
+@media (max-width: 460px) { .actions { grid-template-columns: repeat(2, 1fr); } .entry { font-size: 1.25rem; } }
+@media (prefers-reduced-motion: no-preference) { .card { transition: border-color .15s; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>Gold ICPC-2 Review</h1>
+    <p class="sub">Verify each drafted entry: is the proposed ICPC-2 code what you would code? Entries become the physician-verified test set for text-to-icpc2 v2.</p>
+    <div class="progress" id="bar" aria-hidden="true"></div>
+    <div class="counts" id="counts"></div>
+    <div class="filters">
+      <select id="f-status" aria-label="Estado">
+        <option value="pending">Pendentes</option><option value="all">Todos</option>
+        <option value="done">Revistos</option><option value="unsure">Dúvida</option><option value="fixed">Código alterado</option>
+      </select>
+      <select id="f-chapter" aria-label="Capítulo"></select>
+      <select id="f-lang" aria-label="Idioma"><option value="">PT + EN</option><option value="pt">PT</option><option value="en">EN</option></select>
+      <select id="f-diff" aria-label="Dificuldade"><option value="">Todas</option><option value="hard">Difíceis</option><option value="normal">Normais</option></select>
+    </div>
+    <div class="banner" id="banner">A ligar à base de dados…</div>
+  </header>
+
+  <section class="card" id="card" aria-live="polite"></section>
+
+  <details id="list">
+    <summary id="list-sum">Lista</summary>
+    <div class="queue" id="queue"></div>
+  </details>
+</div>
+
+<script>
+const ITEMS = /*ITEMS*/[];
+const CODES = /*CODES*/{};
+const CHAPTERS = /*CHAPTERS*/{};
+const STATUS = {
+  ok: { label: "Correto", color: "var(--ok)" },
+  fixed: { label: "Código alterado", color: "var(--fix)" },
+  discard: { label: "Descartado", color: "var(--bad)" },
+  unsure: { label: "Dúvida", color: "var(--unsure)" },
+};
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+let verdicts = {};          // id -> {status, code, note}
+let canWrite = false, db = null;
+let view = [], idx = 0, currentId = null, fixing = false;
+const writing = new Set();
+
+// chapter filter
+$("#f-chapter").innerHTML = `<option value="">Todos os capítulos</option>` +
+  Object.entries(CHAPTERS).map(([k, v]) => `<option value="${k}">${k} · ${esc(v)}</option>`).join("");
+try { const saved = JSON.parse(localStorage.getItem("gold-filters") || "{}");
+  for (const [k, v] of Object.entries(saved)) { const el = $("#" + k); if (el) el.value = v; } } catch {}
+
+function filters() {
+  return { s: $("#f-status").value, c: $("#f-chapter").value, l: $("#f-lang").value, d: $("#f-diff").value };
+}
+function computeView(keepId) {
+  const f = filters();
+  view = ITEMS.filter((it) => {
+    const v = verdicts[it.id];
+    if (f.c && it.chapter !== f.c) return false;
+    if (f.l && it.lang !== f.l) return false;
+    if (f.d && it.difficulty !== f.d) return false;
+    if (f.s === "pending") return !v || it.id === keepId;
+    if (f.s === "done") return !!v;
+    if (f.s === "unsure") return v?.status === "unsure";
+    if (f.s === "fixed") return v?.status === "fixed";
+    return true;
+  });
+  const at = keepId ? view.findIndex((x) => x.id === keepId) : -1;
+  idx = at >= 0 ? at : Math.min(idx, Math.max(0, view.length - 1));
+}
+
+function renderCounts() {
+  const n = ITEMS.length, c = { ok: 0, fixed: 0, discard: 0, unsure: 0 };
+  for (const v of Object.values(verdicts)) if (c[v.status] !== undefined) c[v.status]++;
+  const done = c.ok + c.fixed + c.discard + c.unsure;
+  $("#bar").innerHTML = Object.keys(c).map((k) => `<span style="width:${(c[k] / n) * 100}%;background:${STATUS[k].color}"></span>`).join("");
+  $("#counts").innerHTML = `<span><b>${done}</b> / ${n} revistos</span>` +
+    Object.keys(c).map((k) => `<span><i class="dot" style="background:${STATUS[k].color}"></i>${STATUS[k].label} <b>${c[k]}</b></span>`).join("");
+}
+
+function codeLine(code) {
+  const c = CODES[code] || ["?", "", ""];
+  return `<span class="code">${esc(code)}</span><span class="ptitle">${esc(c[0])}</span>` +
+    `<span></span><span class="small">${esc(c[1])}${c[2] ? " · inclui: " + esc(c[2]) : ""}</span>`;
+}
+
+function renderCard() {
+  const card = $("#card");
+  if (!view.length) {
+    card.innerHTML = `<div class="empty">${filters().s === "pending" ? "Nada pendente neste filtro. Bom trabalho." : "Sem entradas neste filtro."}</div>`;
+    currentId = null; renderQueue(); return;
+  }
+  const it = view[idx]; currentId = it.id;
+  const v = verdicts[it.id];
+  const conf = it.confusable_with && CODES[it.confusable_with]
+    ? `<div class="confuse">Confundível com <span class="code">${esc(it.confusable_with)}</span> ${esc(CODES[it.confusable_with][0])}</div>` : "";
+  const status = v ? `<div class="status-line" style="color:${STATUS[v.status].color}">${STATUS[v.status].label}${v.status === "fixed" ? ` → ${esc(v.code)} ${esc(CODES[v.code]?.[0] || "")}` : ""}</div>` : "";
+  const dis = canWrite ? "" : "disabled";
+  card.innerHTML = `
+    <div class="meta"><span class="tag">${it.lang}</span><span class="tag">${it.chapter} · ${esc(CHAPTERS[it.chapter])}</span>
+      ${it.difficulty === "hard" ? `<span class="tag hard">difícil</span>` : ""}<span class="pos">${idx + 1} / ${view.length}</span></div>
+    <div class="entry">${esc(it.text)}</div>
+    <div class="proposal">${codeLine(it.code)}</div>
+    ${conf}
+    ${it.rationale ? `<div class="small">${esc(it.rationale)}</div>` : ""}
+    ${status}
+    <div class="actions">
+      <button class="ok" data-act="ok" ${dis} aria-pressed="${v?.status === "ok"}">✓ Correto<kbd>1</kbd></button>
+      <button data-act="fix" ${dis} aria-pressed="${v?.status === "fixed"}">Outro código<kbd>2</kbd></button>
+      <button data-act="discard" ${dis} aria-pressed="${v?.status === "discard"}">Descartar<kbd>3</kbd></button>
+      <button data-act="unsure" ${dis} aria-pressed="${v?.status === "unsure"}">Dúvida<kbd>4</kbd></button>
+    </div>
+    <div class="fixer" id="fixer" ${fixing ? "" : "hidden"}>
+      <input id="fix-q" placeholder="Pesquisar código ou termo (ex.: K87, hipertensão)" autocomplete="off">
+      <div class="results" id="fix-res"></div>
+    </div>
+    <textarea id="note" placeholder="Nota opcional (ex.: texto pouco realista, ambíguo…)" ${dis}>${esc(v?.note || "")}</textarea>
+    <div class="nav"><button data-nav="-1">← Anterior</button><button data-nav="1">Seguinte →</button></div>`;
+  card.querySelectorAll("[data-act]").forEach((b) => b.addEventListener("click", () => act(b.dataset.act)));
+  card.querySelectorAll("[data-nav]").forEach((b) => b.addEventListener("click", () => move(+b.dataset.nav)));
+  if (fixing) { setupFixer(); $("#fix-q").focus(); }
+  renderQueue();
+}
+
+function renderQueue() {
+  $("#list-sum").textContent = `Lista (${view.length})`;
+  if (!$("#list").open) return;
+  $("#queue").innerHTML = view.map((it, i) => {
+    const v = verdicts[it.id];
+    return `<button data-i="${i}" class="${it.id === currentId ? "cur" : ""}"><i class="dot" style="background:${v ? STATUS[v.status].color : "var(--line)"}"></i>` +
+      `<span class="code">${esc(v?.code || it.code)}</span><span>${esc(it.text)}</span></button>`;
+  }).join("");
+  $("#queue").querySelectorAll("button").forEach((b) => b.addEventListener("click", () => { idx = +b.dataset.i; fixing = false; renderCard(); window.scrollTo({ top: 0 }); }));
+}
+$("#list").addEventListener("toggle", renderQueue);
+
+function setupFixer() {
+  const q = $("#fix-q"), res = $("#fix-res");
+  const all = Object.entries(CODES);
+  const norm = (s) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+  const draw = () => {
+    const t = norm(q.value.trim());
+    const hits = !t ? [] : all.filter(([k, c]) => norm(k).startsWith(t) || norm(c.join(" ")).includes(t)).slice(0, 12);
+    res.innerHTML = hits.map(([k, c]) => `<button data-code="${k}"><span class="code">${k}</span><span>${esc(c[0])}<br><span class="small">${esc(c[1])}</span></span></button>`).join("");
+    res.querySelectorAll("button").forEach((b) => b.addEventListener("click", () => save("fixed", b.dataset.code)));
+  };
+  q.addEventListener("input", draw);
+  q.addEventListener("keydown", (e) => { if (e.key === "Enter") { const first = res.querySelector("button"); if (first) first.click(); } if (e.key === "Escape") { fixing = false; renderCard(); } });
+}
+
+function act(a) {
+  if (!canWrite || !currentId) return;
+  if (a === "fix") { fixing = !fixing; renderCard(); return; }
+  const it = view[idx];
+  save(a, a === "ok" ? it.code : (verdicts[it.id]?.code || it.code));
+}
+
+async function save(status, code) {
+  const it = view[idx]; if (!it || writing.has(it.id)) return;
+  const note = ($("#note")?.value || "").trim();
+  const prev = verdicts[it.id];
+  const body = { status, code, proposed: it.code, note, at: new Date().toISOString() };
+  verdicts = { ...verdicts, [it.id]: body };
+  fixing = false;
+  writing.add(it.id);
+  // advance before re-render so the pending filter moves on
+  const keep = filters().s === "pending" ? null : it.id;
+  computeView(keep);
+  if (!keep && idx >= view.length) idx = Math.max(0, view.length - 1);
+  renderCounts(); renderCard();
+  try { await db.collection("verdicts").doc(it.id).set(body); }
+  catch (e) {
+    verdicts = { ...verdicts }; if (prev) verdicts[it.id] = prev; else delete verdicts[it.id];
+    $("#banner").textContent = e?.code === "invalid_argument" ? "Só o dono da página pode guardar verificações." : "Não foi possível guardar. Tente de novo.";
+    $("#banner").hidden = false;
+    if (e?.code === "invalid_argument") { canWrite = false; }
+    computeView(it.id); renderCounts(); renderCard();
+  } finally { writing.delete(it.id); }
+}
+
+function move(d) { if (!view.length) return; idx = (idx + d + view.length) % view.length; fixing = false; renderCard(); }
+
+document.addEventListener("keydown", (e) => {
+  if (e.target.matches("input, textarea, select")) return;
+  if (e.key === "1") act("ok"); else if (e.key === "2") act("fix"); else if (e.key === "3") act("discard");
+  else if (e.key === "4") act("unsure"); else if (e.key === "ArrowRight") move(1); else if (e.key === "ArrowLeft") move(-1);
+});
+["f-status", "f-chapter", "f-lang", "f-diff"].forEach((id) => $("#" + id).addEventListener("change", () => {
+  try { localStorage.setItem("gold-filters", JSON.stringify(Object.fromEntries(["f-status", "f-chapter", "f-lang", "f-diff"].map((k) => [k, $("#" + k).value])))); } catch {}
+  idx = 0; fixing = false; computeView(); renderCard();
+}));
+
+// first frame: drafts visible, read-only until the database answers
+computeView(); renderCounts(); renderCard();
+
+(async () => {
+  db = await window.claude?.use?.("db") ?? null;
+  const user = await window.claude?.use?.("user") ?? null;
+  if (!db) { $("#banner").textContent = "Base de dados indisponível nesta vista: só leitura."; return; }
+  const owner = (await user?.isOwner?.()) ?? false;
+  canWrite = owner;
+  $("#banner").textContent = owner ? "" : "Só leitura: apenas o autor da página regista verificações.";
+  $("#banner").hidden = owner;
+  const timer = setTimeout(() => { $("#banner").hidden = false; $("#banner").textContent = "A base de dados ainda não respondeu; as verificações podem estar desatualizadas."; }, 10000);
+  db.collection("verdicts").onSnapshot((snap) => {
+    if (!snap.metadata.fromCache) { clearTimeout(timer); if (canWrite) $("#banner").hidden = true; }
+    const next = {};
+    for (const d of snap.docs) next[d.id] = d.data();
+    for (const id of writing) if (verdicts[id]) next[id] = verdicts[id];
+    verdicts = next;
+    computeView(currentId); renderCounts(); renderCard();
+  }, (e) => { clearTimeout(timer); $("#banner").hidden = false; $("#banner").textContent = "Ligação à base de dados perdida: recarregue a página."; });
+  renderCard();
+})();
+</script>

@@ -60,9 +60,11 @@ def compute_metrics(eval_pred):
     }
 
 
-def train(model_name: str | None = None, epochs: int | None = None, limit: int | None = None) -> Path:
+def train(model_name: str | None = None, epochs: int | None = None, limit: int | None = None,
+          overrides: dict | None = None) -> Path:
     cfg = load_config("classifier")
     model_name = model_name or cfg["model"]
+    cfg.update(overrides or {})
     if epochs:
         cfg["epochs"] = epochs
     device = pick_device(cfg["device"])

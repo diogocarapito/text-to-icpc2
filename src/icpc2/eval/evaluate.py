@@ -14,7 +14,7 @@ from icpc2.train.common import load_examples
 
 log = logging.getLogger(__name__)
 
-EVAL_SPLITS = ["val", "feedback_test", "gold_dev", "gold_test"]
+EVAL_SPLITS = ["val", "draft", "feedback_test", "gold_dev", "gold_test"]
 
 
 def _metrics(gold: list[str], preds: list[list[str]]) -> dict:

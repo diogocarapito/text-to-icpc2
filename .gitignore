@@ -17,11 +17,10 @@ reports/*
 wandb/
 *.sqlite3
 
-# PRIVATE: user-submitted text lives only in the private HF data repo
+data/.gpu_known_hosts
+data/processed/public/
+data/gold/to_label.csv
+
+# PRIVATE: user-submitted text lives only in the private HF feedback repo
 data/feedback/*
 !data/feedback/.gitkeep
-data/gold/*
-!data/gold/.gitkeep
-!data/gold/gold.example.csv
-data/processed/synthetic.jsonl
-data/processed/synth_batches.json

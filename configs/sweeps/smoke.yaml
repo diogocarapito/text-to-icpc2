@@ -1,0 +1,6 @@
+# Tiny local check of the sweep machinery (minutes on a Mac).
+name: smoke
+runs:
+  - {name: v1-checkpoint, kind: baseline, model: diogocarapito/text-to-icpc2-bert-base-portuguese-cased}
+  - {name: clf-minilm, kind: classifier, model: sentence-transformers/all-MiniLM-L6-v2, limit: 3000, epochs: 1}
+  - {name: ret-minilm, kind: retriever, model: sentence-transformers/all-MiniLM-L6-v2, limit: 3000, epochs: 1, overrides: {query_prefix: "", doc_prefix: ""}}

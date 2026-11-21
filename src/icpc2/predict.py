@@ -25,16 +25,16 @@ class Predictor:
 class ClassifierPredictor(Predictor):
     type = "classifier"
 
-    def __init__(self, d: Path, device: str = "cpu"):
+    def __init__(self, d: Path, device: str = "cpu", max_length: int = 64, tokenizer: str | None = None):
         import torch
         from transformers import AutoModelForSequenceClassification, AutoTokenizer
 
         self.torch = torch
         self.device = device
-        self.tok = AutoTokenizer.from_pretrained(d)
+        self.tok = AutoTokenizer.from_pretrained(tokenizer or d)
         self.model = AutoModelForSequenceClassification.from_pretrained(d).to(device).eval()
         self.id2label = self.model.config.id2label
-        self.max_length = json.loads((d / "icpc2_model.json").read_text())["config"]["max_length"]
+        self.max_length = max_length
 
     def predict(self, texts, k=5, batch_size=128):
         out = []
@@ -53,7 +53,7 @@ class RetrieverPredictor(Predictor):
     type = "retriever"
     temperature = 0.05
 
-    def __init__(self, d: Path, device: str = "cpu"):
+    def __init__(self, d: Path, device: str = "cpu", **_):
         from sentence_transformers import SentenceTransformer
 
         self.cfg = json.loads((d / "retriever_cfg.json").read_text())
@@ -105,11 +105,28 @@ def resolve(model: str, revision: str | None = None) -> Path:
 
 def load_predictor(model: str, revision: str | None = None, device: str = "cpu") -> Predictor:
     d = resolve(model, revision)
-    meta = json.loads((d / "icpc2_model.json").read_text())
+    card = d / "icpc2_model.json"
+    if card.exists():
+        meta = json.loads(card.read_text())
+    else:  # legacy v1 checkpoint: plain HF classifier whose id2label are ICPC-2 codes
+        cfgj = json.loads((d / "config.json").read_text())
+        has_tok = any((d / f).exists() for f in ("tokenizer.json", "vocab.txt", "tokenizer_config.json"))
+        base = cfgj.get("_name_or_path") or "neuralmind/bert-base-portuguese-cased"
+        if "/" not in base or base.startswith("/"):  # a local training path, not a hub id
+            base = "neuralmind/bert-base-portuguese-cased"
+        meta = {"type": "classifier", "base_model": model, "config": {"max_length": 128},
+                "version": "legacy", "tokenizer": None if has_tok else base}
     cls = {"classifier": ClassifierPredictor, "retriever": RetrieverPredictor}[meta["type"]]
-    pred = cls(d, device=device)
+    kw = {"tokenizer": meta["tokenizer"]} if meta.get("tokenizer") else {}
+    pred = cls(d, device=device, max_length=meta["config"].get("max_length", 64), **kw)
     pred.meta = meta
-    pred.codes = {c["code"]: c for c in json.loads((d / "codes.json").read_text())}
+    codes_file = d / "codes.json"
+    if codes_file.exists():
+        pred.codes = {c["code"]: c for c in json.loads(codes_file.read_text())}
+    else:
+        from icpc2.codes import codes_table
+
+        pred.codes = {c["code"]: c for c in codes_table()}
     pred.version = meta.get("version") or meta.get("created", "unknown")
     log.info("Loaded %s predictor (%s) from %s", meta["type"], meta["base_model"], d)
     return pred

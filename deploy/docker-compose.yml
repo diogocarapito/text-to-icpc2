@@ -1,5 +1,11 @@
-# VPS deployment: app + postgres + nginx + certbot.
-#   cd deploy && cp ../.env.example .env  (fill in) && docker compose up -d --build
+# Dedicated server: app + postgres + caddy (automatic HTTPS) + backups + retrain scheduler.
+#   cd deploy && nano .env && docker compose up -d --build
+x-app-env: &app-env
+  DATABASE_URL: postgresql+psycopg://icpc2user:${POSTGRES_PASSWORD}@db:5432/icpc2
+  MODEL_REPO: ${MODEL_REPO:-diogocarapito/text-to-icpc2-v2}
+  ICPC2_ADMIN_TOKEN: ${ICPC2_ADMIN_TOKEN:?set in deploy/.env}
+  HF_TOKEN: ${HF_TOKEN:-}
+
 services:
   db:
     image: postgres:16-alpine
@@ -8,8 +14,7 @@ services:
       POSTGRES_DB: icpc2
       POSTGRES_USER: icpc2user
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set in deploy/.env}
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
+    volumes: [postgres_data:/var/lib/postgresql/data]
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U icpc2user -d icpc2"]
       interval: 5s
@@ -20,51 +25,57 @@ services:
     build: ..
     restart: always
     environment:
-      DATABASE_URL: postgresql+psycopg://icpc2user:${POSTGRES_PASSWORD}@db:5432/icpc2
-      MODEL_REPO: ${MODEL_REPO:-diogocarapito/text-to-icpc2-v2}
-      MODEL_REVISION: main
-      ICPC2_ADMIN_TOKEN: ${ICPC2_ADMIN_TOKEN:?set in deploy/.env}
-      HF_TOKEN: ${HF_TOKEN:-}
-    volumes:
-      - hf_cache:/hf
+      <<: *app-env
+      MODEL_REVISION: ${MODEL_REVISION:-main}
+    volumes: [hf_cache:/hf]
+    mem_limit: 3g
     depends_on:
-      db:
-        condition: service_healthy
+      db: {condition: service_healthy}
 
-  nginx:
-    image: nginx:alpine
+  caddy:
+    image: caddy:2-alpine
     restart: always
-    ports: ["80:80", "443:443"]
+    ports: ["80:80", "443:443", "443:443/udp"]
+    environment:
+      DOMAIN: ${DOMAIN:?set in deploy/.env}
+      ACME_EMAIL: ${ACME_EMAIL:?set in deploy/.env}
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
-      - certbot_www:/var/www/certbot
-      - certbot_conf:/etc/letsencrypt
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
     depends_on: [app]
 
-  certbot:
-    image: certbot/certbot
+  # Daily retrain check; training runs on an ephemeral DigitalOcean GPU Droplet.
+  scheduler:
+    build: ..
+    restart: always
+    user: root
+    environment:
+      <<: *app-env
+      ICPC2_VPS_URL: http://app:8000
+      DIGITALOCEAN_TOKEN: ${DIGITALOCEAN_TOKEN:-}
+      ICPC2_SSH_KEY: /keys/id_ed25519
     volumes:
-      - certbot_www:/var/www/certbot
-      - certbot_conf:/etc/letsencrypt
-    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+      - scheduler_keys:/keys
+      - scheduler_state:/app/reports
+      - ./scheduler.sh:/scheduler.sh:ro
+    entrypoint: ["/bin/sh", "/scheduler.sh"]
+    depends_on: [app]
 
   backup:  # nightly pg_dump of the interaction log, keeps 14 days
     image: postgres:16-alpine
     restart: always
     environment:
       PGPASSWORD: ${POSTGRES_PASSWORD}
-    volumes:
-      - ./backups:/backups
-    entrypoint: >
-      /bin/sh -c 'while :; do
-        pg_dump -h db -U icpc2user icpc2 | gzip > /backups/icpc2-$$(date +%F).sql.gz;
-        find /backups -name "*.sql.gz" -mtime +14 -delete; sleep 86400; done'
+    volumes: [./backups:/backups, ./backup.sh:/backup.sh:ro]
+    entrypoint: ["/bin/sh", "/backup.sh"]
     depends_on:
-      db:
-        condition: service_healthy
+      db: {condition: service_healthy}
 
 volumes:
   postgres_data:
   hf_cache:
-  certbot_www:
-  certbot_conf:
+  caddy_data:
+  caddy_config:
+  scheduler_keys:
+  scheduler_state:

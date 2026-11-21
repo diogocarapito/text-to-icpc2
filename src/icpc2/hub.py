@@ -1,8 +1,9 @@
 """Hugging Face Hub I/O.
 
 * Model repo (public): production model on `main`, every promoted version tagged vN.
-* Data repo (PRIVATE): gold set, feedback events, synthetic data — the shared source of truth
-  between your Mac and the remote GPU job. User-submitted text must never go to a public repo.
+* Feedback repo (PRIVATE): user interaction logs — shared between the VPS scheduler, your Mac and
+  the GPU droplet. User-submitted text never goes to a public repo.
+* Dataset repo (PUBLIC): the built training/eval table without user text (`push_public_dataset`).
 """
 
 import json
@@ -15,13 +16,11 @@ from icpc2.config import load_config, path
 
 log = logging.getLogger(__name__)
 
+# PRIVATE repo: only what contains user-submitted text (+ the loop history that counts it).
+# Everything else (synthetic data, gold set, drafts) is public in git and the public dataset repo.
 DATA_FILES = [
-    "data/gold/gold.csv",
     "data/feedback/events.jsonl",
     "data/feedback/state.json",
-    "data/processed/synthetic.jsonl",
-    "data/processed/synth_batches.json",
-    "data/raw/icpc2_en_titles.csv",
     "reports/loop_history.jsonl",
 ]
 
@@ -92,3 +91,47 @@ def _write_readme(d: Path, card: dict):
             lines.append(f"| {s} | {m['n']} | {m['top1']:.3f} | {m['top3']:.3f} | {m['top5']:.3f} "
                          f"| {m['macro_f1']:.3f} |")
     (d / "README.md").write_text("\n".join(lines) + "\n")
+
+
+def push_public_dataset():
+    """Publish the training/eval table WITHOUT user feedback rows, with a dataset card."""
+    import pandas as pd
+
+    cfg = load_config("loop")["hf"]
+    df = pd.read_parquet(path(load_config("data")["output"]))
+    df = df[~df["source"].str.startswith("feedback_")]
+    out = path("data/processed/public")
+    out.mkdir(parents=True, exist_ok=True)
+    for split, g in df.groupby("split"):
+        g.drop(columns="split").to_parquet(out / f"{split}.parquet", index=False)
+    (out / "README.md").write_text(DATASET_CARD.format(n=len(df), codes=df["code"].nunique(),
+                                   splits=df["split"].value_counts().to_string()))
+    api = HfApi()
+    api.create_repo(cfg["public_dataset_repo"], repo_type="dataset", private=False, exist_ok=True)
+    api.upload_folder(folder_path=str(out), repo_id=cfg["public_dataset_repo"], repo_type="dataset",
+                      commit_message="update dataset")
+    log.info("Published %d rows to %s", len(df), cfg["public_dataset_repo"])
+
+
+DATASET_CARD = """---
+language: [pt, en]
+license: apache-2.0
+task_categories: [text-classification]
+tags: [icpc-2, medical, primary-care, portuguese, synthetic]
+---
+# text-to-icpc2 v2 dataset
+
+Free-text clinical problems/diagnoses (European Portuguese and English) labelled with ICPC-2 codes
+(686 symptom + diagnosis codes). Built by https://github.com/diogocarapito/text-to-icpc2-v2.
+
+Sources: ACSS ICPC-2 (PT-PT) titles and inclusion terms; ACSS ICD-10-CM PT/EN descriptions mapped
+through the official ICPC-2 -> ICD-10 table (ambiguous mappings removed); LLM-generated variants
+(v1: gpt-4o-mini; v2: Claude, styles clinical/shorthand/lay/qualified/typo); gold test set drafted by
+Claude and verified by a family physician. Contains no patient data and no user-submitted text.
+
+{n} rows, {codes} codes. Splits:
+
+```
+{splits}
+```
+"""

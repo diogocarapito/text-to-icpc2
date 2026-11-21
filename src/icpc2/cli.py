@@ -15,7 +15,9 @@ app = typer.Typer(no_args_is_help=True, help="text-to-icpc2 v2")
 synth_app = typer.Typer(no_args_is_help=True, help="Synthetic data with the Claude API")
 data_app = typer.Typer(no_args_is_help=True, help="Sync private data with the HF Hub")
 app.add_typer(synth_app, name="synth")
+gpu_app = typer.Typer(no_args_is_help=True, help="Ephemeral DigitalOcean GPU Droplets")
 app.add_typer(data_app, name="data")
+app.add_typer(gpu_app, name="gpu")
 
 
 # ---------------------------------------------------------------- data
@@ -78,6 +80,14 @@ def pull_feedback():
 
     feedback.pull()
     feedback.derive_labels()
+
+
+@app.command("gold-draft")
+def gold_draft(n_per_chapter: int = 36, en_share: float = 0.2, rationale: bool = True):
+    """Claude drafts gold test candidates (data/gold/drafts.jsonl) for physician verification."""
+    from icpc2.data.gold import draft
+
+    typer.echo(f"{draft(n_per_chapter, en_share, with_rationale=rationale)} drafts")
 
 
 @app.command("gold-template")
@@ -170,7 +180,7 @@ def promote(model_dir: Path, force: bool = typer.Option(False, help="skip gates"
 
 
 @app.command("loop")
-def loop(backend: str | None = typer.Option(None, help="local | modal (default from loop.yaml)"),
+def loop(backend: str | None = typer.Option(None, help="local | do (default from loop.yaml)"),
          force: bool = False, dry_run: bool = False,
          no_pull: bool = typer.Option(False, help="don't pull feedback from the web app")):
     """Check feedback, retrain if due, promote automatically if the gates pass."""
@@ -178,6 +188,92 @@ def loop(backend: str | None = typer.Option(None, help="local | modal (default f
 
     backend = backend or load_config("loop")["training"]["backend"]
     typer.echo(json.dumps(run(backend, force=force, pull=not no_pull, dry_run=dry_run), indent=2))
+
+
+@app.command("sweep")
+def sweep(spec: str, only: str | None = typer.Option(None, help="comma-separated run names"),
+          keep_models: int = 1):
+    """Train + evaluate every run in a sweep spec; results -> experiments/<sweep>/."""
+    from icpc2.sweep import run_sweep
+
+    df = run_sweep(spec, only.split(",") if only else None, keep_models)
+    cols = [c for c in df.columns if c in ("run", "train_min") or c.endswith("_top1") and c.count("_") == 1]
+    typer.echo(df[cols].to_string(index=False) if not df.empty else "no runs")
+
+
+@app.command("rescore")
+def rescore_cmd(sweep_name: str):
+    """Re-score a sweep's saved predictions on the physician-verified gold.csv."""
+    from icpc2.sweep import rescore
+
+    typer.echo(rescore(sweep_name).to_string(index=False))
+
+
+@gpu_app.command("run", context_settings={"allow_extra_args": True, "ignore_unknown_options": True})
+def gpu_run(ctx: typer.Context, size: str | None = None, region: str | None = None,
+            keep: bool = typer.Option(False, help="don't destroy (it still self-destructs)")):
+    """Run a command on a fresh GPU droplet, fetch results, destroy it.
+    Example: icpc2 gpu run -- icpc2 sweep configs/sweeps/benchmark-01.yaml"""
+    from icpc2.remote import do_gpu
+
+    raise typer.Exit(do_gpu.run(ctx.args, size=size, region=region, keep=keep))
+
+
+@gpu_app.command("sizes")
+def gpu_sizes():
+    from icpc2.remote import do_gpu
+
+    for s in do_gpu.sizes():
+        typer.echo(f"{s['slug']:28s} ${s['price_hourly']:>6.2f}/h  {','.join(s['regions']) or '-'}")
+
+
+@gpu_app.command("list")
+def gpu_list():
+    from icpc2.remote import do_gpu
+
+    for d in do_gpu.list_droplets():
+        typer.echo(f"{d['id']}  {d['name']}  {d['size_slug']}  {d['status']}  {d['created_at']}")
+
+
+@gpu_app.command("cleanup")
+def gpu_cleanup():
+    """Destroy every droplet tagged icpc2-train."""
+    from icpc2.remote import do_gpu
+
+    typer.echo(f"destroyed {do_gpu.cleanup()}")
+
+
+@app.command("gold-import")
+def gold_import(verdict_dir: Path, test_share: float = 0.8):
+    """Turn exported review verdicts (JSON files, one per draft) into data/gold/gold.csv."""
+    import pandas as pd
+
+    from icpc2.text import hash_fraction
+
+    drafts = {json.loads(x)["id"]: json.loads(x) for x in open(path("data/gold/drafts.jsonl"))}
+    rows = []
+    for f in sorted(Path(verdict_dir).rglob("*.json")):
+        v = json.loads(f.read_text())
+        v = v.get("data", v)
+        d = drafts.get(f.stem)
+        if not d or v.get("status") not in ("ok", "fixed"):
+            continue
+        rows.append({"text": d["text"], "code": v["code"], "lang": d["lang"],
+                     "split": "test" if hash_fraction(d["id"], "gold") < test_share else "dev",
+                     "source": "claude_draft_" + v["status"], "notes": v.get("note", ""),
+                     "draft_id": d["id"], "proposed": d["code"], "difficulty": d["difficulty"]})
+    df = pd.DataFrame(rows)
+    df.to_csv(path("data/gold/gold.csv"), index=False)
+    n_fixed = (df["source"] == "claude_draft_fixed").sum() if len(df) else 0
+    typer.echo(f"{len(df)} verified gold rows ({n_fixed} with corrected code) -> data/gold/gold.csv")
+
+
+@app.command("publish-dataset")
+def publish_dataset():
+    """Push the public training/eval dataset (no user text) to the HF Hub."""
+    from icpc2.hub import push_public_dataset
+
+    push_public_dataset()
 
 
 @app.command("serve")

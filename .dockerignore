@@ -7,6 +7,7 @@ reports
 data/processed
 data/feedback
 data/gold
+experiments
 data/legacy
 data/raw/icd10cm_pt_en.csv
 data/*.sqlite3

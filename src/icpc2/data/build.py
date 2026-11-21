@@ -6,7 +6,8 @@ Split policy (the main fix over v1, which evaluated on its own training data):
   * official descriptions (ICPC-2 titles/inclusions, ICD-10 texts) -> always train; they define the codes
   * synthetic + legacy v1 augmentation -> train / val by a hash of the normalised text
   * user feedback -> train / feedback_test by hash (real-world proxy test that grows over time)
-  * gold (hand-labelled) -> gold_dev / gold_test, never trained on
+  * gold (physician-verified) -> gold_dev / gold_test, never trained on
+  * unverified gold drafts -> draft (eval-only proxy until verified)
   * any train row whose normalised text also appears in an eval split is removed (leakage guard)
 """
 
@@ -147,6 +148,20 @@ def gold_examples(cfg: dict) -> pd.DataFrame:
     })
 
 
+def draft_examples(cfg: dict) -> pd.DataFrame:
+    """Claude-drafted gold candidates not yet verified: eval-only proxy split `draft`."""
+    p = path("data/gold/drafts.jsonl")
+    if not p.exists():
+        return pd.DataFrame(columns=["text", "code", "lang", "source", "split"])
+    df = pd.DataFrame([json.loads(x) for x in open(p)])
+    gp = path(cfg["sources"]["gold"])
+    if gp.exists():
+        done = set(pd.read_csv(gp, dtype=str).fillna("").get("draft_id", []))
+        df = df[~df["id"].isin(done)]
+    return pd.DataFrame({"text": df["text"], "code": df["code"], "lang": df["lang"],
+                         "source": "draft_" + df["difficulty"], "split": "draft"})
+
+
 # ---------------------------------------------------------------- assemble
 def build(cfg: dict | None = None) -> pd.DataFrame:
     cfg = cfg or load_config("data")
@@ -167,13 +182,21 @@ def build(cfg: dict | None = None) -> pd.DataFrame:
                    else "train" for t in fb["text"]]
     parts.append(fb)
     parts.append(gold_examples(cfg))
+    parts.append(draft_examples(cfg))
 
     df = pd.concat(parts, ignore_index=True)
     df["text"] = df["text"].astype(str).str.strip()
     df = df[(df["text"].str.len() >= 2) & df["code"].isin(valid_codes)]
     df["key"] = df["text"].map(norm_key)
 
+    # official definitions always stay in train: a synthetic/legacy val row that duplicates one
+    # is dropped instead (otherwise the guard below would delete the official text from train)
+    official_keys = set(df.loc[df["source"].isin(OFFICIAL), "key"])
+    dup_val = (df["split"] == "val") & df["key"].isin(official_keys)
+    df = df[~dup_val]
+
     # leakage guard: drop train rows that appear (normalised) in any eval split
+    # (gold / feedback_test are ground truth, so for those the train copy is what goes)
     eval_keys = set(df.loc[df["split"] != "train", "key"])
     leak = (df["split"] == "train") & df["key"].isin(eval_keys)
     if leak.any():
@@ -181,8 +204,8 @@ def build(cfg: dict | None = None) -> pd.DataFrame:
     df = df[~leak]
 
     # gold wins over feedback_test wins over val if the same text sits in several eval splits
-    prio = {"gold_test": 0, "gold_dev": 1, "feedback_test": 2, "val": 3, "train": 4}
-    df = (df.assign(_p=df["split"].map(prio)).sort_values("_p")
+    prio = {"gold_test": 0, "gold_dev": 1, "draft": 2, "feedback_test": 3, "val": 4, "train": 5}
+    df = (df.assign(_p=df["split"].map(prio)).sort_values("_p", kind="stable")  # official rows come first
             .drop_duplicates(["key", "code"]).drop(columns="_p"))
     df = df.drop(columns="key").sort_values(["split", "code"]).reset_index(drop=True)
 
