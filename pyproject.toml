@@ -18,8 +18,10 @@ dependencies = [
 # Shared by training + serving: model inference
 infer = [
   "torch>=2.4",
-  "transformers>=4.48",          # >=4.48 needed for ModernBERT-style encoders (mmBERT)
-  "sentence-transformers>=3.3",
+  "transformers>=5.0",           # v5 API (warmup_steps as ratio); ModernBERT-style encoders (mmBERT)
+  "sentence-transformers>=5.0",
+  "sentencepiece>=0.2",          # slow->fast tokenizer conversion (XLM-R, older BERTs)
+  "protobuf>=4",
 ]
 train = [
   "icpc2[infer]",

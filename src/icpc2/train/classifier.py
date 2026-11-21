@@ -98,7 +98,7 @@ def train(model_name: str | None = None, epochs: int | None = None, limit: int |
         per_device_eval_batch_size=cfg["batch_size"] * 2,
         learning_rate=cfg["lr"],
         weight_decay=cfg["weight_decay"],
-        warmup_ratio=cfg["warmup_ratio"],
+        warmup_steps=cfg["warmup_ratio"],  # transformers>=5: float in [0,1) = ratio
         eval_strategy="epoch",
         save_strategy="epoch",
         save_total_limit=2,

@@ -20,7 +20,7 @@ from sentence_transformers import (
     SentenceTransformerTrainingArguments,
 )
 from sentence_transformers.losses import MultipleNegativesRankingLoss
-from sentence_transformers.training_args import BatchSamplers
+from sentence_transformers.sentence_transformer.training_args import BatchSamplers
 
 from icpc2.codes import load_codes
 from icpc2.config import load_config
@@ -78,7 +78,7 @@ def train(model_name: str | None = None, epochs: int | None = None, limit: int |
         num_train_epochs=cfg["epochs"],
         per_device_train_batch_size=cfg["batch_size"],
         learning_rate=cfg["lr"],
-        warmup_ratio=cfg["warmup_ratio"],
+        warmup_steps=cfg["warmup_ratio"],  # transformers>=5: float in [0,1) = ratio
         batch_sampler=BatchSamplers.NO_DUPLICATES,
         save_strategy="no",
         logging_steps=50,

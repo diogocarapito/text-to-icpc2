@@ -22,7 +22,7 @@ REMOTE_ROOT = "/root/app"
 image = (
     modal.Image.debian_slim(python_version="3.12")
     .pip_install(
-        "torch>=2.4", "transformers>=4.48", "sentence-transformers>=3.3", "datasets>=3.0",
+        "torch>=2.4", "transformers>=5.0", "sentencepiece>=0.2", "protobuf>=4", "sentence-transformers>=5.0", "datasets>=3.0",
         "accelerate>=1.0", "scikit-learn>=1.5", "pandas>=2.2", "pyarrow>=16", "pyyaml>=6",
         "typer>=0.12", "huggingface_hub>=0.25", "httpx>=0.27", "python-dotenv>=1.0",
     )
