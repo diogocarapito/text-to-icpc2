@@ -1,0 +1,33 @@
+# Automatic retrain loop (icpc2 loop) — runs on the Mac via launchd.
+vps:
+  base_url: https://text-to-icpc2.com     # env ICPC2_VPS_URL overrides
+  # token comes from env ICPC2_ADMIN_TOKEN (same value as on the VPS)
+
+trigger:
+  min_new_labels: 50          # retrain only if >= this many new user labels since last run
+  max_days_between: 30        # ...or if the last training is older than this (picks up new synth data)
+
+model_type: classifier        # classifier | retriever  (set to the benchmark winner)
+
+training:
+  # local = this machine (Mac MPS) — first trainings / benchmarks
+  # modal = remote GPU on Modal — switch to this once the demo is deployed
+  #         (`modal deploy src/icpc2/remote/modal_app.py` also schedules the nightly check)
+  backend: local
+
+hf:
+  model_repo: diogocarapito/text-to-icpc2-v2       # production model = `main` branch
+  private: false
+  dataset_repo: diogocarapito/text-to-icpc2-v2-data  # PRIVATE: contains user-submitted text
+  push_dataset: true
+
+promotion:                    # fully automatic, but gated on held-out data
+  primary_metric: top1        # evaluated on gold (if present) else val
+  min_delta: 0.0              # candidate must be >= champion + min_delta on primary metric
+  max_regression:             # no slice may drop more than this (absolute)
+    lang_pt: 0.01
+    lang_en: 0.02
+    feedback_test: 0.01
+  min_gold_examples: 100      # below this, gold is reported but val is used as primary
+
+history: reports/loop_history.jsonl

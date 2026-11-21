@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="pt">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>text-to-ICPC2</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<main>
+  <header>
+    <h1>text&#8209;to&#8209;ICPC2</h1>
+    <p class="sub" data-i18n="sub">Escreva um diagnóstico ou problema e obtenha o código ICPC-2.</p>
+    <div class="lang" role="group" aria-label="Idioma do texto">
+      <button type="button" data-lang="pt" class="on">PT</button>
+      <button type="button" data-lang="en">EN</button>
+    </div>
+  </header>
+
+  <form id="f" autocomplete="off">
+    <input id="q" name="q" maxlength="300" autofocus
+           placeholder="ex.: HTA não controlada, lombalgia mecânica, DM2" data-i18n-ph="ph">
+    <button type="submit" data-i18n="go">Classificar</button>
+  </form>
+  <p class="notice" data-i18n="notice">Não introduza dados identificativos de doentes. Os textos submetidos e o seu feedback são registados para melhorar o modelo.</p>
+
+  <section id="out" hidden>
+    <div class="meta" id="meta"></div>
+    <ol id="results"></ol>
+    <div id="fix" hidden>
+      <label for="fixq" data-i18n="fixlabel">Qual seria o código correto?</label>
+      <div class="fixrow">
+        <input id="fixq" list="codes" placeholder="K86 ou hipertensão…">
+        <button type="button" id="fixgo" data-i18n="save">Guardar</button>
+      </div>
+      <datalist id="codes"></datalist>
+    </div>
+    <p id="thanks" class="thanks" hidden data-i18n="thanks">Obrigado — o feedback foi registado.</p>
+  </section>
+
+  <footer>
+    <span id="model"></span> ·
+    <a href="https://github.com/DiogoCarapito/text-to-icpc2-v2">GitHub</a> ·
+    <span data-i18n="disclaimer">Demo de investigação, não é um dispositivo médico.</span>
+  </footer>
+</main>
+<script src="/static/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,20 @@
+# Synthetic data generation with the Claude API (icpc2 synth ...)
+# Auth: ANTHROPIC_API_KEY in .env, or `ant auth login`.
+model: claude-opus-5-5      # best PT-PT medical phrasing. Cheaper option: claude-haiku-5-5
+effort: medium              # low | medium | high
+max_tokens: 16000
+per_code:
+  pt:
+    clinical: 10            # how a GP writes it in the problem list / SClínico
+    shorthand: 10           # abbreviations, acronyms, telegraphic ("DM2 s/ compl.", "ITU baixa")
+    lay: 6                  # patient's own words / reason for encounter
+    qualified: 6            # with qualifiers that keep the same code (laterality, agudizada, controlada...)
+    typo: 6                 # realistic typos / missing accents / no capitals
+  en:
+    clinical: 8
+    shorthand: 6
+    lay: 4
+    qualified: 4
+state_file: data/processed/synth_batches.json
+output: data/processed/synthetic.jsonl
+en_titles_output: data/raw/icpc2_en_titles.csv

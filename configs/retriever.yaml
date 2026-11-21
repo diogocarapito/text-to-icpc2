@@ -1,0 +1,20 @@
+# Contrastive fine-tune of a multilingual embedding model; prediction = nearest neighbours
+# over (code descriptions + every labelled example), aggregated per code.
+# New confirmed user feedback can be added to the index WITHOUT retraining.
+# Benchmark candidates:
+#   intfloat/multilingual-e5-base     278M, needs "query: " prefix
+#   BAAI/bge-m3                       568M, strong multilingual, heavier on 18 GB
+#   Qwen/Qwen3-Embedding-0.6B         strong, slowest of the three on CPU serving
+model: intfloat/multilingual-e5-base
+query_prefix: "query: "
+doc_prefix: "passage: "
+max_length: 64
+epochs: 3
+batch_size: 128             # bigger = more in-batch negatives; lower if MPS runs out of memory
+lr: 3.0e-5
+warmup_ratio: 0.1
+device: auto
+knn_k: 25                   # neighbours retrieved before aggregating per code
+anchor_weight: 1.0          # weight of the official code-description anchors vs example neighbours
+output_root: models/retriever
+seed: 42

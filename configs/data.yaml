@@ -1,0 +1,27 @@
+# Dataset build configuration (icpc2 build-data)
+raw:
+  icpc2: data/raw/icpc2_ptpt.csv            # ACSS ICPC-2e v4.4 (PT-PT)
+  icd10_full: data/raw/icd10cm_pt_en.csv    # ACSS ICD-10-CM PT/EN (54 MB, gitignored)
+  icd10_slim: data/raw/icd10_slim.csv       # subset actually referenced by ICPC-2 (committed)
+  icpc2_en_titles: data/raw/icpc2_en_titles.csv   # produced by `icpc2 synth` (title_en per code)
+
+# ICPC-2 components kept as labels: 1 = symptoms/complaints, 7 = diagnoses/diseases (686 codes)
+components: ["1", "7"]
+
+icd10:
+  include_children: true      # also use ICD-10-CM sub-codes (e.g. A00.0 -> A000, A0001...)
+  drop_ambiguous: true        # drop ICD texts whose ICD code maps to >1 ICPC-2 code (e.g. Z71.1)
+  max_per_code_per_lang: 40   # cap so injury chapters don't dominate
+
+sources:
+  legacy_v1: data/legacy/v1_augmentation.csv   # v1 gpt-4o-mini + human synonyms (include==1 only)
+  synthetic: data/processed/synthetic.jsonl    # `icpc2 synth`
+  feedback: data/feedback/labels.csv           # derived from VPS logs by `icpc2 pull-feedback`
+  gold: data/gold/gold.csv                     # hand-labelled, NEVER trained on
+
+split:
+  val_fraction: 0.08          # held-out fraction of synthetic/legacy (hash of normalized text)
+  feedback_test_fraction: 0.2 # held-out fraction of user feedback (real-world proxy test)
+  seed: "icpc2-v2"            # salt for deterministic hash splits
+
+output: data/processed/examples.parquet

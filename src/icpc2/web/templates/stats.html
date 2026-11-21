@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="pt">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>text-to-ICPC2 · uso</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<main>
+  <h1>Utilização</h1>
+  <p class="sub">Modelo em produção: <b>{{ current or "—" }}</b></p>
+
+  <div class="tiles">
+    <div class="tile"><b>{{ total }}</b><span>pedidos</span></div>
+    <div class="tile"><b>{{ sessions }}</b><span>sessões</span></div>
+    <div class="tile"><b>{{ "%.0f"|format(fb_rate*100) }}%</b><span>pedidos com feedback</span></div>
+    <div class="tile"><b>{{ "%.0f"|format(top1_acc*100) }}%</b><span>top-1 aceite (n={{ n_labelled }})</span></div>
+    <div class="tile"><b>{{ "%.0f"|format(top5_acc*100) }}%</b><span>no top-5</span></div>
+    <div class="tile"><b>{{ "%.0f"|format(latency) }} ms</b><span>latência média</span></div>
+  </div>
+
+  <h2>Feedback</h2>
+  <p>{% for k, v in fb_kinds.items() %}{{ k }}: <b>{{ v }}</b>{% if not loop.last %} · {% endif %}{% endfor %}</p>
+
+  <h2>Pedidos por dia (30 dias)</h2>
+  <table>
+    {% for d, n in per_day %}
+    <tr><td style="width:7em">{{ d }}</td><td style="width:3em">{{ n }}</td>
+        <td><div class="daybar" style="width: {{ (n / max_day * 100)|round(1) }}%"></div></td></tr>
+    {% else %}<tr><td>Sem dados.</td></tr>{% endfor %}
+  </table>
+
+  <h2>Modelos carregados</h2>
+  <table>
+    {% for m in models %}<tr><td>{{ m.created_at.strftime("%Y-%m-%d %H:%M") }}</td><td>{{ m.version }}</td><td>{{ m.detail }}</td></tr>{% endfor %}
+  </table>
+
+  <h2>Últimos pedidos</h2>
+  <div class="scroll"><table>
+    <tr><th>quando</th><th>texto</th><th>top-1</th><th>modelo</th></tr>
+    {% for r in recent %}
+    <tr><td>{{ r.created_at.strftime("%m-%d %H:%M") }}</td><td>{{ r.text }}</td>
+        <td>{{ r.predictions[0].code if r.predictions else "" }}</td><td>{{ r.model_version or r.kind }}</td></tr>
+    {% endfor %}
+  </table></div>
+</main>
+</body>
+</html>

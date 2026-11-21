@@ -1,0 +1,19 @@
+# Fine-tuned encoder + softmax head over the 686 ICPC-2 codes.
+# Benchmark candidates (run `icpc2 train-classifier --model <id>` for each):
+#   jhu-clsp/mmBERT-base                         multilingual ModernBERT (2025), 1800+ langs, fast
+#   FacebookAI/xlm-roberta-base                  solid multilingual baseline
+#   PORTULAN/albertina-100m-portuguese-ptpt-encoder   PT-PT only (reference for PT ceiling)
+#   neuralmind/bert-base-portuguese-cased        v1 baseline (PT-BR only)
+model: jhu-clsp/mmBERT-base
+max_length: 64              # diagnoses are short; p99 of v1 data < 40 tokens
+epochs: 10
+batch_size: 64
+lr: 5.0e-5
+weight_decay: 0.01
+warmup_ratio: 0.06
+label_smoothing: 0.1
+class_weighting: sqrt       # none | balanced | sqrt  (sqrt = gentler than v1's "balanced")
+device: auto                # auto -> cuda > mps > cpu
+report_to: none             # or "wandb"
+output_root: models/classifier
+seed: 42
