@@ -125,6 +125,9 @@ def train(model_name: str | None = None, epochs: int | None = None, limit: int |
     final = out / "model"
     trainer.save_model(str(final))
     tok.save_pretrained(str(final))
+    import shutil
+
+    shutil.rmtree(out / "checkpoints", ignore_errors=True)  # best weights are already in final/
     write_model_card(final, "classifier", model_name, cfg,
                      {"val_metrics": {k: float(v) for k, v in val_metrics.items()},
                       "n_train": len(train_ds)})

@@ -1,5 +1,8 @@
 # Phase 1 — model selection with default hyper-parameters (configs/classifier.yaml, retriever.yaml).
-# Run on a GPU:  icpc2 gpu run --size gpu-l40sx1-48gb -- icpc2 sweep configs/sweeps/benchmark-01.yaml
+# Ordered by how much each run tells us, so a partial overnight run is still useful.
+# Local (Apple M3 Pro):  caffeinate -is .venv/bin/icpc2 sweep configs/sweeps/benchmark-01.yaml
+# GPU:                   icpc2 gpu run -- icpc2 sweep configs/sweeps/benchmark-01.yaml
+# Retrievers use the cached (GradCache) loss: effective batch 128, 32 in memory at a time.
 name: benchmark-01
 description: >
   Model selection. v1 checkpoint as baseline; v1 architecture (BERTimbau) retrained on v2 data to
@@ -7,23 +10,23 @@ description: >
   models as retrievers.
 runs:
   - {name: v1-checkpoint, kind: baseline, model: diogocarapito/text-to-icpc2-bert-base-portuguese-cased}
-  - {name: clf-bertimbau-base, kind: classifier, model: neuralmind/bert-base-portuguese-cased}
-  - {name: clf-albertina-ptpt-100m, kind: classifier, model: PORTULAN/albertina-100m-portuguese-ptpt-encoder}
-  - {name: clf-xlmr-base, kind: classifier, model: FacebookAI/xlm-roberta-base, overrides: {lr: 3.0e-5}}
   - {name: clf-mmbert-small, kind: classifier, model: jhu-clsp/mmBERT-small}
+  - {name: clf-bertimbau-base, kind: classifier, model: neuralmind/bert-base-portuguese-cased}
   - {name: clf-mmbert-base, kind: classifier, model: jhu-clsp/mmBERT-base}
-  - {name: clf-xlmr-large, kind: classifier, model: FacebookAI/xlm-roberta-large, overrides: {lr: 1.5e-5, batch_size: 32}}
-  - {name: ret-e5-base, kind: retriever, model: intfloat/multilingual-e5-base}
-  - {name: ret-e5-large, kind: retriever, model: intfloat/multilingual-e5-large, overrides: {batch_size: 96}}
+  - {name: ret-e5-base, kind: retriever, model: intfloat/multilingual-e5-base, overrides: {mini_batch_size: 32}}
+  - {name: clf-xlmr-base, kind: classifier, model: FacebookAI/xlm-roberta-base, overrides: {lr: 3.0e-5}}
+  - {name: clf-albertina-ptpt-100m, kind: classifier, model: PORTULAN/albertina-100m-portuguese-ptpt-encoder}
   - name: ret-bge-m3
     kind: retriever
     model: BAAI/bge-m3
-    overrides: {query_prefix: "", doc_prefix: "", batch_size: 96, lr: 2.0e-5}
+    overrides: {query_prefix: "", doc_prefix: "", lr: 2.0e-5, mini_batch_size: 16}
+  - {name: ret-e5-large, kind: retriever, model: intfloat/multilingual-e5-large, overrides: {mini_batch_size: 16}}
   - name: ret-qwen3-emb-0.6b
     kind: retriever
     model: Qwen/Qwen3-Embedding-0.6B
     overrides:
       query_prefix: "Instruct: Given a clinical problem written by a doctor, retrieve the matching ICPC-2 code description\nQuery: "
       doc_prefix: ""
-      batch_size: 64
       lr: 2.0e-5
+      mini_batch_size: 16
+  - {name: clf-xlmr-large, kind: classifier, model: FacebookAI/xlm-roberta-large, overrides: {lr: 1.5e-5, batch_size: 32}}

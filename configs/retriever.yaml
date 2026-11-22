@@ -10,7 +10,8 @@ query_prefix: "query: "
 doc_prefix: "passage: "
 max_length: 64
 epochs: 3
-batch_size: 128             # bigger = more in-batch negatives; lower if MPS runs out of memory
+batch_size: 128             # in-batch negatives per step
+mini_batch_size: null       # set (e.g. 32) to use the cached loss: same batch_size, far less memory
 lr: 3.0e-5
 warmup_ratio: 0.1
 device: auto

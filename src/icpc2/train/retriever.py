@@ -19,7 +19,10 @@ from sentence_transformers import (
     SentenceTransformerTrainer,
     SentenceTransformerTrainingArguments,
 )
-from sentence_transformers.losses import MultipleNegativesRankingLoss
+from sentence_transformers.sentence_transformer.losses import (
+    CachedMultipleNegativesRankingLoss,
+    MultipleNegativesRankingLoss,
+)
 from sentence_transformers.sentence_transformer.training_args import BatchSamplers
 
 from icpc2.codes import load_codes
@@ -72,7 +75,9 @@ def train(model_name: str | None = None, epochs: int | None = None, limit: int |
         "positive": [cfg["doc_prefix"] + anchor_text(codes[c]) for c in train_df["code"]],
     })
 
-    model = SentenceTransformer(model_name, device=device)
+    # MPS's fused attention has no dropout support (the cached loss re-runs forward in train mode)
+    mk = {"attn_implementation": "eager"} if device == "mps" else {}
+    model = SentenceTransformer(model_name, device=device, model_kwargs=mk)
     model.max_seq_length = cfg["max_length"]
     out = run_dir(cfg["output_root"], model_name)
     args = SentenceTransformerTrainingArguments(
@@ -88,8 +93,13 @@ def train(model_name: str | None = None, epochs: int | None = None, limit: int |
         report_to="none",
         bf16=device == "cuda",
     )
-    SentenceTransformerTrainer(model=model, args=args, train_dataset=pairs,
-                               loss=MultipleNegativesRankingLoss(model)).train()
+    # "cached" (GradCache) keeps the full in-batch negatives of batch_size while only
+    # mini_batch_size examples sit in memory at once — needed on 18 GB Apple silicon
+    if cfg.get("mini_batch_size"):
+        loss = CachedMultipleNegativesRankingLoss(model, mini_batch_size=cfg["mini_batch_size"])
+    else:
+        loss = MultipleNegativesRankingLoss(model)
+    SentenceTransformerTrainer(model=model, args=args, train_dataset=pairs, loss=loss).train()
 
     final = out / "model"
     model.save(str(final))
