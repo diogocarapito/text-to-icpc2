@@ -105,3 +105,8 @@ Same data (dataset v2.0) for every run. Scores are on the physician-verified gol
 - **Published:** `icpc2 promote` → [`diogocarapito/text-to-icpc2-v2`](https://huggingface.co/diogocarapito/text-to-icpc2-v2) tag **v1** (e5-base retriever, first promotion, no champion to gate against). `icpc2 publish-dataset` → [`diogocarapito/text-to-icpc2-v2-dataset`](https://huggingface.co/datasets/diogocarapito/text-to-icpc2-v2-dataset), 66,319 rows. The model and dataset cards include the gold results, limitations and an ICPC-2 (WONCA) licensing note.
 - **Local demo** (`icpc2 serve`, model pulled from the Hub at `v1`): 27–45 ms per request on the M3 Pro's CPU. Predict, feedback, `/stats` (token-protected) and `/api/export` (10-min delay) all work. Two misses spotted by hand: "lombalgia c/ irradiação MIE" → L03 (L86 expected), and "dm2 insulinotratada" → T90 (T89 per PT practice, ranked second).
 - Production checklist: [DEPLOY.md](DEPLOY.md). The scheduler is held back until the DigitalOcean GPU driver issue is fixed.
+
+## 2026-11-22 · Dataset lineage v1 → v2
+
+- 71% of the v1 dataset (12,832 of 18,052 rows) is in the v2 train+val data, where it makes up 19% (12,625 of 65,717). All v1 synonyms (gpt-4o-mini, human-edited, human) and official ICPC-2 texts are kept; only 39% of v1's ICD-10 descriptions survive v2's stricter ICD-10 rebuild. 6 v1 texts are in the gold set and were removed from training by the leakage guard.
+- New folder [`memoire/`](memoire/README.md) for in-depth, reproducible notes behind the write-up; first note: [01-dataset-lineage.md](memoire/01-dataset-lineage.md) (`scripts/dataset_lineage.py`).

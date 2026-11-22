@@ -50,6 +50,8 @@ ICPC-2 components 1 (symptoms) and 7 (diagnoses): **686 codes**. Process codes (
 
 **Synthetic generation:** `claude-opus-5-5` via the Message Batches API with structured JSON output. One request per code (686/686 succeeded) produced 38 PT-PT examples (clinical 10, shorthand 10, lay 6, qualified 6, typo 6) and 22 EN examples (8/6/4/4), with the code's inclusion terms, exclusions and criteria in the prompt. Post-filter: exact or normalised duplicates and texts equal to another code's title are dropped, leaving 40,037 kept. The batch took under 10 minutes and cost **$14.79** (974k input / 1.28M output tokens).
 
+**Lineage from v1:** 71% of the v1 dataset (12,832 of 18,052 rows) is in v2: all of its human-reviewed synonyms and official ICPC-2 texts, but only 39% of its ICD-10 descriptions, which were rebuilt with stricter rules. v1 makes up 19% of v2's train+val rows. Details: [memoire/01-dataset-lineage.md](memoire/01-dataset-lineage.md).
+
 **Splits and leakage guard:** each text is normalised (`norm_key`: lowercase, accents and punctuation stripped). Splits come from a hash of the normalised text with a fixed seed. Priority `gold_test > gold_dev > feedback_test > val > train`: if a normalised text appears in a higher split, it is removed from the lower ones. Official ICPC-2 texts are exempt and always stay in train.
 
 ### 4.3 Gold evaluation set

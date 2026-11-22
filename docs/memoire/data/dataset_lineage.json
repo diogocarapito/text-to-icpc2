@@ -1,0 +1,178 @@
+{
+  "v1_csv": {
+    "file": "text-to-icpc2/data/data_pre_train.csv",
+    "commit": "cffe197 2025-06-25",
+    "unique_texts": 17152,
+    "by_origin": [
+      {
+        "origin": "gpt-4o-mini",
+        "rows": 7131,
+        "same_text": 7129,
+        "same_text_code": 7128,
+        "in_gold": 2,
+        "pct_same_text": 100.0
+      },
+      {
+        "origin": "gpt-4o-mini_human-dc",
+        "rows": 189,
+        "same_text": 189,
+        "same_text_code": 189,
+        "in_gold": 0,
+        "pct_same_text": 100.0
+      },
+      {
+        "origin": "human-dc",
+        "rows": 35,
+        "same_text": 35,
+        "same_text_code": 35,
+        "in_gold": 0,
+        "pct_same_text": 100.0
+      },
+      {
+        "origin": "icd10_description",
+        "rows": 8569,
+        "same_text": 3351,
+        "same_text_code": 3317,
+        "in_gold": 4,
+        "pct_same_text": 39.1
+      },
+      {
+        "origin": "icpc2_description",
+        "rows": 686,
+        "same_text": 686,
+        "same_text_code": 686,
+        "in_gold": 0,
+        "pct_same_text": 100.0
+      },
+      {
+        "origin": "icpc2_inclusion",
+        "rows": 1317,
+        "same_text": 1317,
+        "same_text_code": 1317,
+        "in_gold": 0,
+        "pct_same_text": 100.0
+      },
+      {
+        "origin": "icpc2_short",
+        "rows": 125,
+        "same_text": 125,
+        "same_text_code": 125,
+        "in_gold": 0,
+        "pct_same_text": 100.0
+      },
+      {
+        "origin": "TOTAL",
+        "rows": 18052,
+        "same_text": 12832,
+        "same_text_code": 12797,
+        "in_gold": 6,
+        "pct_same_text": 71.1
+      }
+    ]
+  },
+  "v1_hf_copy": {
+    "file": "text-to-icpc2/data/data_pre_train_hf",
+    "by_origin": [
+      {
+        "origin": "gpt-4o-mini",
+        "rows": 7074,
+        "same_text": 7072,
+        "same_text_code": 7072,
+        "in_gold": 2,
+        "pct_same_text": 100.0
+      },
+      {
+        "origin": "gpt-4o-mini_human-dc",
+        "rows": 189,
+        "same_text": 189,
+        "same_text_code": 189,
+        "in_gold": 0,
+        "pct_same_text": 100.0
+      },
+      {
+        "origin": "human-dc",
+        "rows": 35,
+        "same_text": 35,
+        "same_text_code": 35,
+        "in_gold": 0,
+        "pct_same_text": 100.0
+      },
+      {
+        "origin": "icd10_description",
+        "rows": 7956,
+        "same_text": 3303,
+        "same_text_code": 3291,
+        "in_gold": 4,
+        "pct_same_text": 41.5
+      },
+      {
+        "origin": "icpc2_description",
+        "rows": 668,
+        "same_text": 668,
+        "same_text_code": 668,
+        "in_gold": 0,
+        "pct_same_text": 100.0
+      },
+      {
+        "origin": "icpc2_inclusion",
+        "rows": 1295,
+        "same_text": 1295,
+        "same_text_code": 1295,
+        "in_gold": 0,
+        "pct_same_text": 100.0
+      },
+      {
+        "origin": "icpc2_short",
+        "rows": 125,
+        "same_text": 125,
+        "same_text_code": 125,
+        "in_gold": 0,
+        "pct_same_text": 100.0
+      },
+      {
+        "origin": "TOTAL",
+        "rows": 17342,
+        "same_text": 12687,
+        "same_text_code": 12675,
+        "in_gold": 6,
+        "pct_same_text": 73.2
+      }
+    ]
+  },
+  "v2_train_val_by_family": [
+    {
+      "family": "icd10",
+      "rows": 17924,
+      "text_also_in_v1": 3058,
+      "pct_of_v2": 27.3
+    },
+    {
+      "family": "icpc2",
+      "rows": 2794,
+      "text_also_in_v1": 2120,
+      "pct_of_v2": 4.3
+    },
+    {
+      "family": "legacy",
+      "rows": 7290,
+      "text_also_in_v1": 7290,
+      "pct_of_v2": 11.1
+    },
+    {
+      "family": "synth",
+      "rows": 37709,
+      "text_also_in_v1": 157,
+      "pct_of_v2": 57.4
+    },
+    {
+      "family": "TOTAL",
+      "rows": 65717,
+      "text_also_in_v1": 12625,
+      "pct_of_v2": 100.0
+    }
+  ],
+  "v2_legacy_by_split": {
+    "train": 6740,
+    "val": 550
+  }
+}
