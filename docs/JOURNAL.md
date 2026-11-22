@@ -97,3 +97,11 @@ Same data (dataset v2.0) for every run. Scores are on the physician-verified gol
 - `ret-qwen3-emb-0.6b`: ran, but at about 21 s/step (6+ h left at 28%), with the machine swapping. Stopped.
 
 → The 560M+ models need the GPU path.
+
+## 2026-11-22 · v1 of the v2 model published; local demo
+
+- **Statistics** (`scripts/gold_stats.py`, `experiments/benchmark-01/gold_stats.json`): e5-base gold_test top-1 0.922 [95% CI 0.896–0.946]. Paired bootstrap against BERTimbau: +0.026 [−0.002, +0.057], **not significant**. Against mmBERT-small: +0.035 [+0.007, +0.065]. Against v1: +0.576.
+- **Error analysis** (36 gold_test errors): 27 have the right code in the top 3, and 21 are in the right chapter. The top-1 score separates right (median 0.96) from wrong (0.63). Themes: P vs Z (psychological vs social), symptom vs diagnosis, sex-specific chapters (X/Y), P77 vs A84. Details in [WRITEUP.md](WRITEUP.md) §5.2.
+- **Published:** `icpc2 promote` → [`diogocarapito/text-to-icpc2-v2`](https://huggingface.co/diogocarapito/text-to-icpc2-v2) tag **v1** (e5-base retriever, first promotion, no champion to gate against). `icpc2 publish-dataset` → [`diogocarapito/text-to-icpc2-v2-dataset`](https://huggingface.co/datasets/diogocarapito/text-to-icpc2-v2-dataset), 66,319 rows. The model and dataset cards include the gold results, limitations and an ICPC-2 (WONCA) licensing note.
+- **Local demo** (`icpc2 serve`, model pulled from the Hub at `v1`): 27–45 ms per request on the M3 Pro's CPU. Predict, feedback, `/stats` (token-protected) and `/api/export` (10-min delay) all work. Two misses spotted by hand: "lombalgia c/ irradiação MIE" → L03 (L86 expected), and "dm2 insulinotratada" → T90 (T89 per PT practice, ranked second).
+- Production checklist: [DEPLOY.md](DEPLOY.md). The scheduler is held back until the DigitalOcean GPU driver issue is fixed.

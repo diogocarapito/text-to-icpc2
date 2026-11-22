@@ -6,6 +6,8 @@ This is a research demo, not a medical device.
 
 Successor to [text-to-icpc2](https://github.com/DiogoCarapito/text-to-icpc2) and [text-to-icpc2_demo](https://github.com/DiogoCarapito/text-to-icpc2_demo). See [docs/PLAN.md](docs/PLAN.md) for the roadmap and the design decisions.
 
+**Current model:** [`diogocarapito/text-to-icpc2-v2`](https://huggingface.co/diogocarapito/text-to-icpc2-v2) `v1`, a multilingual-e5-base retriever: **0.922 top-1 / 0.985 top-5** on 460 physician-verified entries (PT 0.925, EN 0.907). The 2024 model scores 0.346 on the same set.
+
 ```
             ┌──────── Mac (MPS) / ephemeral DigitalOcean GPU Droplet (created per job) ────────┐
  ACSS ICPC-2 + ICD-10 ─┐   │                                                                          │
@@ -30,6 +32,8 @@ Successor to [text-to-icpc2](https://github.com/DiogoCarapito/text-to-icpc2) and
 | `src/icpc2/sweep.py` | benchmark sweeps (`configs/sweeps/`), results in `experiments/` |
 | `experiments/` | **public lab results**: every benchmark run's metrics, config, hardware, predictions |
 | `docs/JOURNAL.md` | dated lab notebook, 2024 → today |
+| `docs/WRITEUP.md` | article and paper material: methods, results with CIs, error analysis, threats to validity |
+| `docs/DEPLOY.md` | production checklist for text-to-icpc2.com |
 | `src/icpc2/web/` | FastAPI app, interaction log, export API, `/stats` usage page |
 | `deploy/` | docker-compose for the server: app, Postgres, Caddy (automatic HTTPS), backups, retrain scheduler |
 | `scripts/` | gold review page builder, v1 log export |

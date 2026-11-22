@@ -1,6 +1,6 @@
 # v2 plan
 
-See [JOURNAL.md](JOURNAL.md) for the dated record of what happened and the numbers.
+See [JOURNAL.md](JOURNAL.md) for the dated record, [WRITEUP.md](WRITEUP.md) for the article and paper material, and [DEPLOY.md](DEPLOY.md) for production.
 
 ## Decisions
 
@@ -24,17 +24,17 @@ Scaffold, dataset build (leakage guard, ambiguity filter, EN), trainers, shared 
 ### Phase 1: data ✅ (verification pending)
 - [x] Claude synthetic data for all 686 codes: 40,037 examples
 - [x] 611 gold drafts across all 17 chapters
-- [ ] **Physician verification** on the review page, then `icpc2 gold-import`
+- [x] **Physician verification** on the review page, then `icpc2 gold-import` (602 kept)
 - [ ] Physician-written entries (aim for 100 or more; the least LLM-biased test set)
 
 ### Phase 2: benchmark
 - [x] Sweep runner, DO GPU runner, v1 checkpoint as baseline (top-1 0.352 on the drafts)
-- [ ] `benchmark-01`: 10 models, default hyper-parameters (GPU)
+- [~] `benchmark-01`: 4 of 10 done on MPS (e5-base retriever leads); large models need the GPU
 - [ ] `benchmark-02`: hyper-parameter search on the best 2–3
-- [ ] `icpc2 rescore` on verified gold; pick the winner; `icpc2 promote` → **v1 on the HF Hub**; `icpc2 publish-dataset`
+- [x] `icpc2 rescore` on verified gold; pick the winner; `icpc2 promote` → **v1 on the HF Hub**; `icpc2 publish-dataset`
 
 ### Phase 3: deploy
-- [ ] New server, DNS, `docker compose up`; smoke test; `/stats`
+- [ ] New server, DNS, `docker compose up`; smoke test; `/stats` (checklist: [DEPLOY.md](DEPLOY.md))
 - [ ] Optional: ONNX/int8 if CPU latency is over 150 ms
 
 ### Phase 4: the loop and the paper

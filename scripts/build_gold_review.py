@@ -12,8 +12,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from icpc2.codes import CHAPTERS_PT, codes_table  # noqa: E402
-from icpc2.config import path  # noqa: E402
+from icpc2.codes import CHAPTERS_PT, codes_table
+from icpc2.config import path
 
 drafts = [json.loads(x) for x in open(path("data/gold/drafts.jsonl"))]
 items = [{k: d.get(k, "") for k in ("id", "text", "code", "lang", "difficulty", "confusable_with",
