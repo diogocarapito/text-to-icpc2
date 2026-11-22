@@ -82,7 +82,7 @@ def _git_ref() -> str:
     if git("status", "--porcelain", "--untracked-files=no"):
         raise SystemExit("Uncommitted changes: commit + push first (the droplet clones the public repo)")
     sha = git("rev-parse", "HEAD")
-    if sha not in git("branch", "-r", "--contains", sha):
+    if not git("branch", "-r", "--contains", sha):  # no remote branch contains HEAD
         raise SystemExit("HEAD is not pushed to origin: push first")
     return sha
 
