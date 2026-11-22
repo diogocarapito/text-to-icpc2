@@ -8,45 +8,41 @@ runs:
 - name: v1-checkpoint
   kind: baseline
   model: diogocarapito/text-to-icpc2-bert-base-portuguese-cased
+- name: clf-mmbert-small
+  kind: classifier
+  model: jhu-clsp/mmBERT-small
 - name: clf-bertimbau-base
   kind: classifier
   model: neuralmind/bert-base-portuguese-cased
-- name: clf-albertina-ptpt-100m
+- name: clf-mmbert-base
   kind: classifier
-  model: PORTULAN/albertina-100m-portuguese-ptpt-encoder
+  model: jhu-clsp/mmBERT-base
+- name: ret-e5-base
+  kind: retriever
+  model: intfloat/multilingual-e5-base
+  overrides:
+    mini_batch_size: 32
 - name: clf-xlmr-base
   kind: classifier
   model: FacebookAI/xlm-roberta-base
   overrides:
     lr: 3.0e-05
-- name: clf-mmbert-small
+- name: clf-albertina-ptpt-100m
   kind: classifier
-  model: jhu-clsp/mmBERT-small
-- name: clf-mmbert-base
-  kind: classifier
-  model: jhu-clsp/mmBERT-base
-- name: clf-xlmr-large
-  kind: classifier
-  model: FacebookAI/xlm-roberta-large
-  overrides:
-    lr: 1.5e-05
-    batch_size: 32
-- name: ret-e5-base
-  kind: retriever
-  model: intfloat/multilingual-e5-base
-- name: ret-e5-large
-  kind: retriever
-  model: intfloat/multilingual-e5-large
-  overrides:
-    batch_size: 96
+  model: PORTULAN/albertina-100m-portuguese-ptpt-encoder
 - name: ret-bge-m3
   kind: retriever
   model: BAAI/bge-m3
   overrides:
     query_prefix: ''
     doc_prefix: ''
-    batch_size: 96
     lr: 2.0e-05
+    mini_batch_size: 16
+- name: ret-e5-large
+  kind: retriever
+  model: intfloat/multilingual-e5-large
+  overrides:
+    mini_batch_size: 16
 - name: ret-qwen3-emb-0.6b
   kind: retriever
   model: Qwen/Qwen3-Embedding-0.6B
@@ -56,5 +52,11 @@ runs:
 
       Query: '
     doc_prefix: ''
-    batch_size: 64
     lr: 2.0e-05
+    mini_batch_size: 16
+- name: clf-xlmr-large
+  kind: classifier
+  model: FacebookAI/xlm-roberta-large
+  overrides:
+    lr: 1.5e-05
+    batch_size: 32

@@ -13,6 +13,7 @@ import logging
 from pathlib import Path
 
 import numpy as np
+import torch
 from datasets import Dataset
 from sentence_transformers import (
     SentenceTransformer,
@@ -77,6 +78,7 @@ def train(model_name: str | None = None, epochs: int | None = None, limit: int |
 
     # MPS's fused attention has no dropout support (the cached loss re-runs forward in train mode)
     mk = {"attn_implementation": "eager"} if device == "mps" else {}
+    mk["dtype"] = torch.float32  # transformers>=5 keeps the checkpoint dtype; bf16 autocast on CUDA
     model = SentenceTransformer(model_name, device=device, model_kwargs=mk)
     model.max_seq_length = cfg["max_length"]
     out = run_dir(cfg["output_root"], model_name)

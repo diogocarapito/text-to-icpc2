@@ -7,7 +7,8 @@
 model: jhu-clsp/mmBERT-base
 max_length: 64              # diagnoses are short; p99 of v1 data < 40 tokens
 epochs: 10
-batch_size: 64
+batch_size: 64              # effective batch
+max_device_batch: {mps: 16} # per-step cap; the rest via gradient accumulation (18 GB unified memory)
 lr: 5.0e-5
 weight_decay: 0.01
 warmup_ratio: 0.06

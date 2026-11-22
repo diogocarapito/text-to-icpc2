@@ -90,14 +90,19 @@ def train(model_name: str | None = None, epochs: int | None = None, limit: int |
 
     model = AutoModelForSequenceClassification.from_pretrained(
         model_name, num_labels=len(labels),
-        id2label=dict(enumerate(labels)), label2id=l2i, ignore_mismatched_sizes=True)
+        id2label=dict(enumerate(labels)), label2id=l2i, ignore_mismatched_sizes=True,
+        dtype=torch.float32)  # transformers>=5 keeps the checkpoint dtype (Albertina ships bf16)
 
+    # same effective batch everywhere; small devices accumulate gradients instead of OOMing
+    per_device = min(cfg["batch_size"], (cfg.get("max_device_batch") or {}).get(device, cfg["batch_size"]))
+    accum = max(1, cfg["batch_size"] // per_device)
     out = run_dir(cfg["output_root"], model_name)
     args = TrainingArguments(
         output_dir=str(out / "checkpoints"),
         num_train_epochs=cfg["epochs"],
-        per_device_train_batch_size=cfg["batch_size"],
-        per_device_eval_batch_size=cfg["batch_size"] * 2,
+        per_device_train_batch_size=per_device,
+        gradient_accumulation_steps=accum,
+        per_device_eval_batch_size=per_device * 2,
         learning_rate=cfg["lr"],
         weight_decay=cfg["weight_decay"],
         warmup_steps=cfg["warmup_ratio"],  # transformers>=5: float in [0,1) = ratio

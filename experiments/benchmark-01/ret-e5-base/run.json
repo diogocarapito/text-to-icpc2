@@ -1,0 +1,13 @@
+{
+  "name": "ret-e5-base",
+  "kind": "retriever",
+  "model": "intfloat/multilingual-e5-base",
+  "overrides": {
+    "mini_batch_size": 32
+  },
+  "model_dir": "/Users/diogocarapito/Programming/text-to-icpc2-v2/models/retriever/20261122-021736-multilingual-e5-base/model",
+  "train_seconds": 5081,
+  "hardware": "Apple MPS (arm64)",
+  "git_sha": "ab6069d",
+  "finished": "2026-11-22T03:42:24"
+}

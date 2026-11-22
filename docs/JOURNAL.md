@@ -74,3 +74,26 @@ A family physician reviewed all 611 Claude drafts on the review page (`scripts/b
 |---|---|---|---|---|---|
 | v1-checkpoint | 0.346 | 0.465 | 0.511 | 0.417 | 0.035 |
 | clf-mmbert-small | **0.887** | 0.954 | 0.961 | 0.896 | 0.849 |
+
+## 2026-11-22 · benchmark-01, overnight on MPS (01:18 → 07:00)
+
+Same data (dataset v2.0) for every run. Scores are on the physician-verified gold set (`experiments/benchmark-01/rescore_gold.csv`).
+
+| run | gold_test top-1 | top-3 | top-5 | macro-F1 | PT | EN | gold_dev top-1 | train (M3 Pro) |
+|---|---|---|---|---|---|---|---|---|
+| v1-checkpoint (2024) | 0.346 | 0.465 | 0.511 | 0.271 | 0.417 | 0.035 | 0.366 | – |
+| clf-mmbert-small | 0.887 | 0.954 | 0.961 | 0.831 | 0.896 | 0.849 | 0.908 | 40 min |
+| clf-bertimbau-base | 0.896 | 0.941 | 0.954 | 0.845 | 0.922 | 0.779 | 0.873 | 57 min |
+| **ret-e5-base** | **0.922** | **0.980** | **0.985** | **0.879** | 0.925 | **0.907** | **0.930** | 85 min |
+
+- **The retriever leads** on every column, and its top-3 of 0.98 matters for the demo's "pick from the list" interface. It can also absorb confirmed feedback without retraining.
+- BERTimbau (PT-BR only, v1's architecture) is the best classifier on PT (0.922), but loses about 0.07 on EN against the multilingual mmBERT-small. The v1 → v2 jump comes mostly from **data**, not architecture: the same BERTimbau goes from 0.346 to 0.896.
+- n = 86 for EN gold_test, so EN differences under about 0.07 are within noise.
+
+**Failed on MPS (18 GB unified memory), not on merit:**
+- `clf-mmbert-base`, `clf-xlmr-base`: out of memory at batch 64. Fix: `max_device_batch: {mps: 16}` with gradient accumulation (same effective batch).
+- `clf-albertina-ptpt-100m`: `Float vs BFloat16`. transformers v5 keeps the checkpoint dtype and Albertina ships bf16. Fix: load as float32.
+- `ret-bge-m3`, `ret-e5-large`: out of memory even with the cached loss (mini-batch 16).
+- `ret-qwen3-emb-0.6b`: ran, but at about 21 s/step (6+ h left at 28%), with the machine swapping. Stopped.
+
+→ The 560M+ models need the GPU path.

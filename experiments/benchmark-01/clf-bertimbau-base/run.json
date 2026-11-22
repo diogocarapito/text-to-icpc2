@@ -1,0 +1,10 @@
+{
+  "name": "clf-bertimbau-base",
+  "kind": "classifier",
+  "model": "neuralmind/bert-base-portuguese-cased",
+  "model_dir": "/Users/diogocarapito/Programming/text-to-icpc2-v2/models/classifier/20261122-011916-bert-base-portuguese-cased/model",
+  "train_seconds": 3407,
+  "hardware": "Apple MPS (arm64)",
+  "git_sha": "ab6069d",
+  "finished": "2026-11-22T02:15:08"
+}
