@@ -67,7 +67,12 @@ form button, #fixgo { padding: 0 18px; border: 0; border-radius: 10px; backgroun
 .fixrow { display: flex; gap: 8px; }
 .thanks { color: var(--ok); font-size: .9rem; }
 html[lang="en"] .pt-only, html:not([lang="en"]) .en-only { display: none; }
-.about { margin-top: 40px; border-top: 1px solid var(--line); padding-top: 14px; font-size: .9rem; }
+.sections { margin-top: 40px; }
+.about { border-top: 1px solid var(--line); padding: 14px 0; font-size: .9rem; }
+.about pre { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px;
+             overflow-x: auto; font-size: .8rem; line-height: 1.45; margin: 10px 0 0; }
+.about code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .85em; }
+.about pre code { font-size: inherit; }
 .about summary { cursor: pointer; color: var(--muted); font-weight: 600; }
 .about summary:hover { color: var(--fg); }
 .about p, .about ul { margin: 10px 0 0; color: var(--fg); }
@@ -85,3 +90,58 @@ td, th { text-align: left; padding: 5px 6px; border-bottom: 1px solid var(--line
 .daybar { height: 10px; background: var(--accent); border-radius: 2px; }
 h2 { font-size: 1.05rem; margin-top: 28px; }
 .scroll { overflow-x: auto; }
+/* ---------------------------------------------------------------- admin dashboard (/painel) */
+:root { --s0: #1f6f5c; --s1: #1baf7a; --s2: #eb6834; --grid: #ecebe6; --axis: #c3c2b7; --err: #b3261e; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --s0: #4fb39a; --s1: #199e70; --s2: #d95926; --grid: #2c2b29; --axis: #4a4945; --err: #ef7b72; }
+}
+:root[data-theme="dark"] { --s0: #4fb39a; --s1: #199e70; --s2: #d95926; --grid: #2c2b29; --axis: #4a4945; --err: #ef7b72; }
+main.wide { max-width: 1100px; }
+main.login { max-width: 380px; padding-top: 80px; }
+main.login form { margin-top: 16px; }
+.login-error { color: var(--err); font-size: .9rem; }
+.err { color: var(--err); }
+.controls form { display: flex; }
+button.ghost { border: 1px solid var(--line); background: transparent; color: var(--muted); border-radius: 8px; padding: 0 10px; font-size: .85rem; }
+button.ghost:hover { color: var(--fg); }
+.range { display: flex; gap: 6px; flex-wrap: wrap; margin: 4px 0 16px; }
+.range a { border: 1px solid var(--line); border-radius: 8px; padding: 4px 12px; color: var(--muted); text-decoration: none; font-size: .85rem; }
+.range a.on { background: var(--accent); border-color: var(--accent); color: var(--accent-fg); font-weight: 600; }
+.tiles .tile span { display: block; }
+.tiles .tile b { margin: 2px 0; }
+.tiles .tile small { color: var(--muted); font-size: .75rem; }
+h3 { font-size: .9rem; margin: 0 0 10px; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; margin-bottom: 12px; min-width: 0; }
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); gap: 0 12px; }
+.grid2 .wide-card { grid-column: 1 / -1; }
+.note { color: var(--muted); font-size: .8rem; margin: 0 0 12px; }
+.empty { color: var(--muted); }
+th.num, td.num { text-align: right; font-variant-numeric: tabular-nums; }
+td.nowrap { white-space: nowrap; }
+.legend { display: flex; gap: 14px; font-size: .8rem; color: var(--muted); margin-bottom: 6px; }
+.sw { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
+.sw.s1, .key.s1 { background: var(--s1); } .sw.s2, .key.s2 { background: var(--s2); } .key.s0 { background: var(--s0); }
+.chart { width: 100%; min-height: 120px; }
+.chart svg { display: block; overflow: visible; }
+.chart .grid { stroke: var(--grid); stroke-width: 1; }
+.chart .axis { stroke: var(--axis); stroke-width: 1; }
+.chart .tick { fill: var(--muted); font-size: 10px; font-variant-numeric: tabular-nums; }
+.chart .bar.s0 { fill: var(--s0); } .chart .bar.s1 { fill: var(--s1); } .chart .bar.s2 { fill: var(--s2); }
+.chart .hit { fill: transparent; cursor: default; outline: none; }
+.chart .hit.on, .chart .hit:focus-visible { fill: var(--fg); fill-opacity: .05; }
+.tableview { margin-top: 8px; font-size: .85rem; }
+.tableview summary { cursor: pointer; color: var(--muted); }
+.tip { position: fixed; z-index: 10; pointer-events: none; background: var(--card); border: 1px solid var(--line);
+       border-radius: 8px; padding: 6px 10px; font-size: .8rem; box-shadow: 0 4px 14px rgba(0,0,0,.12); }
+.tip-h { color: var(--muted); margin-bottom: 2px; }
+.tip-r { display: flex; align-items: center; gap: 6px; }
+.tip-r b { font-variant-numeric: tabular-nums; }
+.tip-r span { color: var(--muted); }
+.key { display: inline-block; width: 10px; height: 2px; border-radius: 1px; }
+.meter-row { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(60px, 1fr) auto; gap: 10px; align-items: center; padding: 4px 0; font-size: .85rem; }
+.m-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.m-name small { color: var(--muted); }
+.m-track { height: 8px; background: var(--bar); border-radius: 4px; overflow: hidden; }
+.m-fill { display: block; height: 100%; background: var(--s0); border-radius: 4px; }
+.m-fig { font-variant-numeric: tabular-nums; min-width: 3.5em; text-align: right; }
+@media (max-width: 560px) { .meter-row { grid-template-columns: 1fr auto; } .m-track { grid-column: 1 / -1; grid-row: 2; } }

@@ -46,11 +46,18 @@
     <p id="thanks" class="thanks" hidden data-i18n="thanks">{{ t.thanks }}</p>
   </section>
 
-  <details class="about">
-    <summary data-i18n="about_title">{{ t.about_title }}</summary>
-    <div class="pt-only">{{ about.pt | safe }}</div>
-    <div class="en-only">{{ about.en | safe }}</div>
-  </details>
+  <div class="sections">
+    {%- for l in ["pt", "en"] %}
+    <div class="{{ l }}-only">
+      {%- for sec in sections[l] %}
+      <details class="about">
+        {%- if sec.title %}<summary>{{ sec.title }}</summary>{% endif %}
+        {{ sec.html | safe }}
+      </details>
+      {%- endfor %}
+    </div>
+    {%- endfor %}
+  </div>
 
   <footer>
     <span id="model"></span> ·

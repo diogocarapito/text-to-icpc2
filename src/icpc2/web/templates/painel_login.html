@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="pt">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Painel</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <script>try { const t = localStorage.getItem("theme"); if (t) document.documentElement.dataset.theme = t; } catch {}</script>
+</head>
+<body>
+<main class="login">
+  <h1>Painel</h1>
+  <p class="sub">Introduza o código de acesso.</p>
+  <form method="post" action="/painel/entrar" autocomplete="off">
+    <input type="password" name="codigo" aria-label="Código de acesso" autofocus required>
+    <button type="submit">Entrar</button>
+  </form>
+  {% if error %}<p class="login-error" role="alert">Código incorreto.</p>{% endif %}
+</main>
+</body>
+</html>

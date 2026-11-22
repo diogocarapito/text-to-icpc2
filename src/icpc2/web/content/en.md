@@ -1,7 +1,8 @@
 ---
 # Page text in English.
 # Edit the text in quotes; keep the names to the left of the colons.
-# Everything below the second "---" is the "About the project" section, in Markdown.
+# Below the second "---" is the text of the sections, in Markdown.
+# Each "# ..." heading is a section that opens and closes (e.g. "# About the project", "# API").
 
 title: "text-to-ICPC2"
 description: "Suggests ICPC-2 codes from diagnoses or problems written as free text, in Portuguese or English."
@@ -26,12 +27,14 @@ code_lookup: "code lookup"
 # error messages
 error_unknown_code: "Code {code} does not exist."
 error_model_loading: "The model is loading. Try again in a moment."
+error_rate_limit: "Too many requests. Wait a minute and try again."
 
 # footer and controls
 disclaimer: "Research demo, not a medical device."
 theme: "Toggle light/dark mode"
-about_title: "About the project"
 ---
+
+# About the project
 
 **text-to-ICPC2** suggests ICPC-2 codes from diagnoses or problems written as free text, in Portuguese or English, to support coding in primary care. It covers the 686 symptom/complaint and diagnosis codes of ICPC-2 (ACSS, Portugal).
 
@@ -42,3 +45,42 @@ The current model is a retriever based on **multilingual-e5-base**, trained on t
 - Code: [github.com/DiogoCarapito/text-to-icpc2-v2](https://github.com/DiogoCarapito/text-to-icpc2-v2)
 
 Developed by Diogo Carapito with the support of a research grant from [AICIB](https://aicib.pt/) and [APMGF](https://apmgf.pt/) (the Portuguese Association of General and Family Medicine), as part of the General and Family Medicine residency programme. It is the second version of [text-to-icpc2](https://github.com/DiogoCarapito/text-to-icpc2).
+
+# API
+
+The API is public and free, with no sign-up. Submitted texts are logged just like the ones typed on this page, so **do not send patient-identifying data**. Limit: 120 requests per minute per address.
+
+**Classify a text**: `POST /api/predict`
+
+```bash
+curl -s https://text-to-icpc2.com/api/predict \
+  -H 'Content-Type: application/json' \
+  -d '{"text": "uncontrolled hypertension", "lang": "en"}'
+```
+
+- `text`: the diagnosis or problem, 1 to 300 characters.
+- `lang`: language of the text, `pt` (default) or `en`.
+
+Response (shortened):
+
+```json
+{
+  "request_id": 1234,
+  "model_version": "v1",
+  "latency_ms": 31.2,
+  "predictions": [
+    {"code": "K86", "score": 0.97,
+     "title_pt": "Hipertensão sem complicações",
+     "title_en": "Hypertension uncomplicated",
+     "inclusion": ["hipertensão essencial", "…"]}
+  ]
+}
+```
+
+`predictions` holds the 5 most likely codes, best first. `score` (0 to 1) is a similarity score, not a probability. If the text is a code (e.g. `K86`), the response is that code and `model_version` is `null`.
+
+**Send feedback**: `POST /api/feedback` with `{"request_id": 1234, "kind": "correct", "code": "K86"}`. `kind` is one of `correct`, `wrong`, `corrected` (with the right code) or `copy`.
+
+**Other:** `GET /api/codes` (the 686 codes with titles) · `GET /health` (model version).
+
+Interactive documentation: [/docs](/docs).

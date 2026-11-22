@@ -47,7 +47,7 @@ docker compose logs -f app                           # first start downloads the
 curl https://text-to-icpc2.com/health                # {"model":"v1",...}
 ```
 
-- Usage dashboard: `https://text-to-icpc2.com/stats?token=<ICPC2_ADMIN_TOKEN>`
+- Dashboard (hidden, not linked): `https://text-to-icpc2.com/painel`. Enter `ICPC2_ADMIN_TOKEN` once; a cookie keeps that browser signed in for 30 days. Changing the token signs every browser out.
 - Export for retraining (from the Mac): `ICPC2_VPS_URL=https://text-to-icpc2.com icpc2 pull-feedback`
 
 ## 5. Scheduler (automatic retrains): hold for now

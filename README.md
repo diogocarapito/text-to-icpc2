@@ -34,7 +34,7 @@ Successor to [text-to-icpc2](https://github.com/DiogoCarapito/text-to-icpc2) and
 | `docs/JOURNAL.md` | dated lab notebook, 2024 → today |
 | `docs/WRITEUP.md` | article and paper material: methods, results with CIs, error analysis, threats to validity |
 | `docs/DEPLOY.md` | production checklist for text-to-icpc2.com |
-| `src/icpc2/web/` | FastAPI app, interaction log, export API, `/stats` usage page |
+| `src/icpc2/web/` | FastAPI app, interaction log, public API, hidden `/painel` dashboard; page text in `web/content/{pt,en}.md` |
 | `deploy/` | docker-compose for the server: app, Postgres, Caddy (automatic HTTPS), backups, retrain scheduler |
 | `scripts/` | gold review page builder, v1 log export |
 | `data/raw/` | ACSS ICPC-2 (PT-PT), slim ICD-10-CM PT/EN |
@@ -78,7 +78,7 @@ cat experiments/benchmark-01/summary.csv
 
 # web app locally
 MODEL_PATH=models/classifier/<run>/model ICPC2_ADMIN_TOKEN=dev make serve
-open http://127.0.0.1:8000  ·  http://127.0.0.1:8000/stats?token=dev
+open http://127.0.0.1:8000  ·  http://127.0.0.1:8000/painel   # code: dev
 ```
 
 ## Gold set
@@ -121,7 +121,7 @@ Promotion is fully automatic, with gates (`configs/loop.yaml`). The candidate mu
 | `ANTHROPIC_API_KEY` | Mac | synthetic data and gold drafts (or `ant auth login`) |
 | `HF_TOKEN` | Mac, server | push models and datasets; private feedback repo |
 | `DIGITALOCEAN_TOKEN` | Mac, server | GPU droplets (create, read and delete droplets; read SSH keys) |
-| `ICPC2_ADMIN_TOKEN` | all | shared secret: `/api/export`, `/api/admin/reload`, `/stats` (`openssl rand -hex 32`) |
+| `ICPC2_ADMIN_TOKEN` | all | shared secret: `/api/export`, `/api/admin/reload` (Bearer) and the `/painel` dashboard code (`openssl rand -hex 32`) |
 | `ICPC2_VPS_URL` | Mac, server | e.g. `https://text-to-icpc2.com` |
 | `DOMAIN`, `ACME_EMAIL` | server | Caddy site and Let's Encrypt contact |
 | `POSTGRES_PASSWORD` | server | database |

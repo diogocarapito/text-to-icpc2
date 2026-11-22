@@ -4,28 +4,34 @@ Env:
   MODEL_PATH          local model dir (dev)       — or —
   MODEL_REPO          HF repo id (default diogocarapito/text-to-icpc2-v2), MODEL_REVISION (main)
   DATABASE_URL        sqlite:///... or postgresql+psycopg://...
-  ICPC2_ADMIN_TOKEN   bearer token for /api/export, /api/admin/reload, /stats
+  ICPC2_ADMIN_TOKEN   admin code: Bearer token for /api/export and /api/admin/reload;
+                      typed once on /painel (the hidden dashboard), which then sets a cookie
+  ICPC2_RATE_PER_MIN  /api/predict requests per minute per client address (default 120)
 """
 
+import asyncio
+import hashlib
 import hmac
 import logging
 import os
 import threading
 import time
 import uuid
+from collections import deque
 from contextlib import asynccontextmanager
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
+from urllib.parse import parse_qs
 
 from fastapi import Depends, FastAPI, HTTPException, Request, Response
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel, Field
-from sqlalchemy import func, insert, select
+from sqlalchemy import insert, select
 
 from icpc2.text import as_icpc2_code, scrub
-from icpc2.web import content
+from icpc2.web import content, dashboard
 from icpc2.web.db import feedback_t, make_engine, model_events_t, requests_t
 
 log = logging.getLogger("icpc2.web")
@@ -71,12 +77,54 @@ app = FastAPI(title="text-to-icpc2", lifespan=lifespan)
 app.mount("/static", StaticFiles(directory=HERE / "static"), name="static")
 
 
-def require_admin(request: Request):
-    token = os.environ.get("ICPC2_ADMIN_TOKEN", "")
+ADMIN_COOKIE = "icpc2_admin"
+
+
+def _admin_token() -> str:
+    return os.environ.get("ICPC2_ADMIN_TOKEN", "")
+
+
+def _cookie_value(token: str) -> str:
+    # derived from the token, so changing ICPC2_ADMIN_TOKEN logs every browser out
+    return hmac.new(token.encode(), b"icpc2-admin-session-v1", hashlib.sha256).hexdigest()
+
+
+def is_admin(request: Request) -> bool:
+    token = _admin_token()
+    if not token:
+        return False
     given = request.headers.get("authorization", "").removeprefix("Bearer ").strip() or \
         request.query_params.get("token", "")
-    if not token or not hmac.compare_digest(given, token):
+    if given and hmac.compare_digest(given, token):
+        return True
+    cookie = request.cookies.get(ADMIN_COOKIE, "")
+    return bool(cookie) and hmac.compare_digest(cookie, _cookie_value(token))
+
+
+def require_admin(request: Request):
+    if not is_admin(request):
         raise HTTPException(401, "unauthorized")
+
+
+# in-memory, per client address; nothing is written anywhere (the app stores no IPs)
+RATE_PER_MIN = int(os.environ.get("ICPC2_RATE_PER_MIN", "120"))
+_hits: dict[str, deque] = {}
+_hits_lock = threading.Lock()
+
+
+def _rate_ok(client: str) -> bool:
+    now = time.monotonic()
+    with _hits_lock:
+        if len(_hits) > 10_000:  # drop idle clients
+            for k in [k for k, q in _hits.items() if not q or now - q[-1] > 60]:
+                del _hits[k]
+        q = _hits.setdefault(client, deque())
+        while q and now - q[0] > 60:
+            q.popleft()
+        if len(q) >= RATE_PER_MIN:
+            return False
+        q.append(now)
+        return True
 
 
 def _codes() -> dict:
@@ -88,10 +136,10 @@ def _codes() -> dict:
 
 
 # ---------------------------------------------------------------- pages
-@app.get("/", response_class=HTMLResponse)
+@app.get("/", response_class=HTMLResponse, include_in_schema=False)
 def index(request: Request, response: Response):
     ctx = {"t": content.ui("pt"), "i18n": {l: content.ui(l) for l in content.LANGS},
-           "about": {l: content.load(l)["about_html"] for l in content.LANGS}}
+           "sections": {l: content.load(l)["sections"] for l in content.LANGS}}
     resp = templates.TemplateResponse(request, "index.html", ctx)
     if not request.cookies.get("sid"):
         resp.set_cookie("sid", str(uuid.uuid4()), max_age=3600 * 24 * 365, samesite="lax")
@@ -111,6 +159,8 @@ class PredictIn(BaseModel):
 
 @app.post("/api/predict")
 def predict(body: PredictIn, request: Request):
+    if not _rate_ok(request.client.host if request.client else "?"):
+        raise HTTPException(429, content.text(body.lang, "error_rate_limit"))
     text = body.text.strip()
     codes = _codes()
     t0 = time.perf_counter()
@@ -168,7 +218,7 @@ def codes():
             for c in _codes().values()]
 
 
-@app.get("/api/export", dependencies=[Depends(require_admin)])
+@app.get("/api/export", dependencies=[Depends(require_admin)], include_in_schema=False)
 def export(since_id: int = 0, limit: int = 1000):
     with engine.connect() as conn:
         reqs = conn.execute(select(requests_t).where(requests_t.c.id > since_id, requests_t.c.kind == "model")
@@ -191,7 +241,7 @@ def export(since_id: int = 0, limit: int = 1000):
     return {"events": events}
 
 
-@app.post("/api/admin/reload", dependencies=[Depends(require_admin)])
+@app.post("/api/admin/reload", dependencies=[Depends(require_admin)], include_in_schema=False)
 def reload():
     load_model()
     if S.load_error:
@@ -199,30 +249,51 @@ def reload():
     return {"model": S.predictor.version}
 
 
-@app.get("/stats", response_class=HTMLResponse, dependencies=[Depends(require_admin)])
-def stats(request: Request):
-    since = datetime.now(UTC) - timedelta(days=30)
-    with engine.connect() as c:
-        total = c.execute(select(func.count()).select_from(requests_t)).scalar()
-        sessions = c.execute(select(func.count(func.distinct(requests_t.c.session_id)))).scalar()
-        day = func.date(requests_t.c.created_at)
-        per_day = c.execute(select(day, func.count()).where(requests_t.c.created_at >= since)
-                            .group_by(day).order_by(day)).all()
-        fb_kinds = dict(c.execute(select(feedback_t.c.kind, func.count()).group_by(feedback_t.c.kind)).all())
-        ranks = dict(c.execute(select(feedback_t.c.rank, func.count())
-                               .where(feedback_t.c.kind.in_(["correct", "copy", "corrected"]))
-                               .group_by(feedback_t.c.rank)).all())
-        with_fb = c.execute(select(func.count(func.distinct(feedback_t.c.request_id)))).scalar()
-        latency = c.execute(select(func.avg(requests_t.c.latency_ms)).where(requests_t.c.kind == "model")).scalar()
-        models = c.execute(select(model_events_t).order_by(model_events_t.c.id.desc()).limit(10)).all()
-        recent = c.execute(select(requests_t).order_by(requests_t.c.id.desc()).limit(30)).all()
-    labelled = sum(ranks.values()) or 1
-    ctx = {
-        "total": total, "sessions": sessions, "with_fb": with_fb,
-        "fb_rate": with_fb / total if total else 0, "fb_kinds": fb_kinds,
-        "top1_acc": ranks.get(1, 0) / labelled, "top5_acc": sum(v for k, v in ranks.items() if k) / labelled,
-        "n_labelled": sum(ranks.values()), "latency": latency or 0,
-        "per_day": [(str(d), n) for d, n in per_day], "max_day": max([n for _, n in per_day], default=1),
-        "models": models, "recent": recent, "current": S.predictor.version if S.predictor else None,
-    }
-    return templates.TemplateResponse(request, "stats.html", ctx)
+# ---------------------------------------------------------------- admin dashboard (hidden)
+# Not linked anywhere. GET /painel shows a code form until the admin code is entered once;
+# then an HttpOnly cookie keeps the browser signed in for 30 days.
+def _set_admin_cookie(resp: Response, request: Request) -> Response:
+    resp.set_cookie(ADMIN_COOKIE, _cookie_value(_admin_token()), max_age=3600 * 24 * 30, httponly=True,
+                    secure=request.url.scheme == "https", samesite="strict", path="/")
+    return resp
+
+
+def _noindex(resp: Response) -> Response:
+    resp.headers["X-Robots-Tag"] = "noindex, nofollow"
+    resp.headers["Cache-Control"] = "no-store"
+    return resp
+
+
+@app.get("/painel", response_class=HTMLResponse, include_in_schema=False)
+def painel(request: Request, range: str = "30"):
+    if not is_admin(request):
+        return _noindex(templates.TemplateResponse(request, "painel_login.html", {"error": False}))
+    if request.query_params.get("token"):  # old ?token= links: swap for the cookie, clean the URL
+        return _noindex(_set_admin_cookie(RedirectResponse("/painel", 303), request))
+    ctx = dashboard.compute(engine, range, _codes())
+    ctx["current"] = S.predictor.version if S.predictor else None
+    ctx["load_error"] = S.load_error
+    return _noindex(templates.TemplateResponse(request, "painel.html", ctx))
+
+
+@app.post("/painel/entrar", include_in_schema=False)
+async def painel_login(request: Request):
+    code = (parse_qs((await request.body()).decode(errors="replace")).get("codigo") or [""])[0].strip()
+    token = _admin_token()
+    if token and code and hmac.compare_digest(code, token):
+        return _noindex(_set_admin_cookie(RedirectResponse("/painel", 303), request))
+    await asyncio.sleep(1)  # slow down guessing (without blocking other requests)
+    return _noindex(templates.TemplateResponse(request, "painel_login.html", {"error": True}, status_code=401))
+
+
+@app.post("/painel/sair", include_in_schema=False)
+def painel_logout():
+    resp = RedirectResponse("/painel", 303)
+    resp.delete_cookie(ADMIN_COOKIE, path="/")
+    return _noindex(resp)
+
+
+@app.get("/stats", include_in_schema=False)
+def stats_redirect(request: Request):
+    q = f"?{request.url.query}" if request.url.query else ""
+    return RedirectResponse(f"/painel{q}", 307)
