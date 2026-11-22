@@ -1,0 +1,1 @@
+/Users/diogocarapito/Programming/text-to-icpc2-v2/models/classifier/20261121-234930-mmBERT-small/model

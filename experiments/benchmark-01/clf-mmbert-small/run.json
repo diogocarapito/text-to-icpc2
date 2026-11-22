@@ -1,0 +1,10 @@
+{
+  "name": "clf-mmbert-small",
+  "kind": "classifier",
+  "model": "jhu-clsp/mmBERT-small",
+  "model_dir": "/Users/diogocarapito/Programming/text-to-icpc2-v2/models/classifier/20261121-234930-mmBERT-small/model",
+  "train_seconds": 2426,
+  "hardware": "Apple MPS (arm64)",
+  "git_sha": "98056a2",
+  "finished": "2026-11-22T00:29:01"
+}

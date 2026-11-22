@@ -42,3 +42,13 @@ A dated, public record of what was tried, what was measured, and what changed. I
 - `icpc2 sweep`: benchmark runner; results committed under `experiments/`.
 - `icpc2 gpu run`: ephemeral DO droplet with a self-destruct timer.
 - `icpc2 rescore`: re-scores saved predictions once gold is verified.
+
+## 2026-11-22 · benchmark-01, first local runs (Apple M3 Pro, MPS)
+
+| run | draft top-1 | top-3 | PT | EN | val top-1 | train |
+|---|---|---|---|---|---|---|
+| v1 checkpoint | 0.352 | 0.466 | 0.427 | 0.042 | 0.436 | – |
+| clf-mmbert-small (v2 data, defaults) | **0.897** | 0.957 | 0.900 | 0.882 | 0.820 | 40 min |
+
+- The smallest multilingual classifier trained on v2 data already improves draft top-1 by **+0.55** over the v1 checkpoint, and English goes from near-chance to 0.88. *Caveat:* the drafts share their generator (Claude) with the synthetic training data, so these numbers are likely optimistic. They will be re-scored on physician-verified gold and on physician-written entries.
+- `ret-e5-base` (batch 128, 62k pairs) ran **out of memory on MPS** (18 GB unified memory). Moved to the GPU sweep.

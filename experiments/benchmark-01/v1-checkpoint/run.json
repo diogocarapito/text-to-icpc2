@@ -1,0 +1,10 @@
+{
+  "name": "v1-checkpoint",
+  "kind": "baseline",
+  "model": "diogocarapito/text-to-icpc2-bert-base-portuguese-cased",
+  "model_dir": "diogocarapito/text-to-icpc2-bert-base-portuguese-cased",
+  "train_seconds": 0,
+  "hardware": "Apple MPS (arm64)",
+  "git_sha": "98056a2",
+  "finished": "2026-11-21T23:48:29"
+}
