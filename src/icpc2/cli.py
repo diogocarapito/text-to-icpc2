@@ -251,12 +251,16 @@ def gold_import(verdict_dir: Path, test_share: float = 0.8):
     from icpc2.text import hash_fraction
 
     drafts = {json.loads(x)["id"]: json.loads(x) for x in open(path("data/gold/drafts.jsonl"))}
-    rows = []
+    rows, rejected = [], []
     for f in sorted(Path(verdict_dir).rglob("*.json")):
         v = json.loads(f.read_text())
         v = v.get("data", v)
         d = drafts.get(f.stem)
-        if not d or v.get("status") not in ("ok", "fixed"):
+        if not d:
+            continue
+        if v.get("status") not in ("ok", "fixed"):
+            rejected.append({"draft_id": d["id"], "status": v.get("status"), "text": d["text"],
+                             "proposed": d["code"], "note": v.get("note", "")})
             continue
         rows.append({"text": d["text"], "code": v["code"], "lang": d["lang"],
                      "split": "test" if hash_fraction(d["id"], "gold") < test_share else "dev",
@@ -264,6 +268,7 @@ def gold_import(verdict_dir: Path, test_share: float = 0.8):
                      "draft_id": d["id"], "proposed": d["code"], "difficulty": d["difficulty"]})
     df = pd.DataFrame(rows)
     df.to_csv(path("data/gold/gold.csv"), index=False)
+    pd.DataFrame(rejected).to_csv(path("data/gold/rejected.csv"), index=False)
     n_fixed = (df["source"] == "claude_draft_fixed").sum() if len(df) else 0
     typer.echo(f"{len(df)} verified gold rows ({n_fixed} with corrected code) -> data/gold/gold.csv")
 

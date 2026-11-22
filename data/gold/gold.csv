@@ -1,0 +1,603 @@
+text,code,lang,split,source,notes,draft_id,proposed,difficulty
+"colica do lactente, chora ao fim da tarde",D01,pt,test,claude_draft_ok,,g0000,D01,normal
+dor epigastrica pos-prandial ha 2 sem,D02,pt,dev,claude_draft_ok,,g0001,D02,normal
+ardor retroesternal apos refeicoes copiosas,D03,pt,test,claude_draft_ok,,g0002,D03,normal
+"prurido anal nocturno, oxiuros visiveis na fita-cola",D96,pt,test,claude_draft_ok,,g0003,D96,hard
+"diarreia e vomitos desde ontem, varios casos na familia",D73,pt,test,claude_draft_ok,,g0004,D73,hard
+Diarreia por Campylobacter (coprocultura +),D70,pt,dev,claude_draft_ok,,g0005,D70,hard
+"transito intestinal lento, evacua 2x/sem",D12,pt,test,claude_draft_ok,,g0006,D12,normal
+"pele e escleroticas amareladas, em estudo",D13,pt,test,claude_draft_ok,,g0007,D13,normal
+Rectorragias c/ sangue vivo a revestir as fezes,D16,pt,test,claude_draft_ok,,g0008,D16,normal
+fezes negras tipo borra de cafe,D15,pt,test,claude_draft_ok,,g0009,D15,normal
+"dificuldade em engolir solidos, progressiva",D21,pt,test,claude_draft_ok,,g0010,D21,normal
+Esofagite de refluxo grau B (EDA),D84,pt,test,claude_draft_ok,,g0011,D84,normal
+"Hernia do hiato por deslizamento, sintomatica",D90,pt,test,claude_draft_ok,,g0012,D90,hard
+hernia crural dta,D91,pt,dev,claude_draft_ok,,g0013,D91,hard
+tumefacao inguinal esq que reduz em decubito - hernia,D89,pt,test,claude_draft_ok,,g0014,D89,normal
+"UD bulbar, H. pylori +",D85,pt,test,claude_draft_ok,,g0015,D85,hard
+gastrite cronica antral em EDA,D87,pt,test,claude_draft_ok,,g0016,D87,normal
+Diverticulose do sigmoide na colonoscopia,D92,pt,dev,claude_draft_ok,,g0017,D92,normal
+Colon irritavel c/ predominio de obstipacao,D93,pt,test,claude_draft_ok,,g0018,D93,hard
+"D. Crohn ileal, seguido em GE",D94,pt,test,claude_draft_ok,,g0019,D94,normal
+dor ao evacuar por fissura anal cronica,D95,pt,test,claude_draft_ok,,g0020,D95,hard
+"litiase vesicular sintomatica, aguarda cirurgia",D98,pt,test,claude_draft_ok,,g0021,D98,normal
+esteatose hepatica na eco abdominal,D97,pt,test,claude_draft_ok,,g0022,D97,normal
+"Hepatite C cronica, tratada c/ antivirais",D72,pt,test,claude_draft_ok,,g0023,D72,normal
+Polipo do colon (adenoma tubular) excisado,D78,pt,test,claude_draft_ok,,g0024,D78,hard
+"receio de ter cancro do intestino, pai faleceu de CCR",D26,pt,test,claude_draft_ok,,g0025,D26,hard
+aftas orais recorrentes,D83,pt,dev,claude_draft_ok,,g0026,D83,normal
+dor dentaria por abcesso periapical,D82,pt,test,claude_draft_ok,,g0027,D82,hard
+"intolerancia ao gluten, celiaca confirmada por biopsia",D99,pt,dev,claude_draft_ok,,g0028,D99,normal
+"Teething, irritable and drooling",D19,en,test,claude_draft_ok,,g0029,D19,normal
+"night-time teeth grinding, partner complains",D29,en,test,claude_draft_ok,,g0030,D29,hard
+"Mumps - bilat parotid swelling, unvaccinated",D71,en,test,claude_draft_ok,,g0031,D71,normal
+"Ca head of pancreas, palliative care",D76,en,test,claude_draft_ok,,g0032,D76,normal
+bloating and excessive wind,D08,en,test,claude_draft_ok,,g0035,D08,normal
+"olho vermelho esq desde ontem, s/ secreção nem dor",F02,pt,test,claude_draft_ok,,g0036,F02,normal
+"conjuntivite bilat c/ secreção amarelada, acordou c/ olhos colados",F70,pt,test,claude_draft_ok,,g0037,F70,normal
+"conjuntivite primaveril - agrava todos os anos em abril, prurido++",F71,pt,test,claude_draft_ok,,g0038,F71,hard
+treçolho palp sup dta,F72,pt,test,claude_draft_ok,,g0039,F72,normal
+hemorragia subconj OE apos esforço de tosse,F75,pt,test,claude_draft_ok,,g0040,F75,hard
+"CE ocular OD - limalha, trabalha em serralharia",F76,pt,dev,claude_draft_ok,,g0041,F76,normal
+erosao da cornea pos traumatismo c/ ramo de arvore,F79,pt,test,claude_draft_ok,,g0042,F79,hard
+RD nao proliferativa ligeira na retinografia de rastreio,F83,pt,test,claude_draft_ok,,g0043,F83,normal
+"DMI exsudativa OD, faz injecções intravitreas no HSM",F84,pt,dev,claude_draft_ok,,g0044,F84,normal
+"catarata OE, em lista de espera p/ cirurgia",F92,pt,test,claude_draft_ok,,g0045,F92,normal
+"hipertensao ocular, vigiada em oftalmo, ainda s/ terapeutica",F93,pt,test,claude_draft_ok,,g0046,F93,hard
+"vista cansada ao perto, precisa de afastar o jornal - presbiopia",F91,pt,test,claude_draft_ok,,g0047,F91,hard
+"ve a dobrar ha 2 dias, sem outras queixas",F05,pt,test,claude_draft_ok,,g0048,F05,normal
+pontos negros a flutuar no campo visual OD,F04,pt,test,claude_draft_ok,,g0049,F04,normal
+olhos secos e c/ ardor ao fim do dia (trabalha ao computador),F13,pt,test,claude_draft_ok,,g0050,F13,normal
+lacrimejo constante olho esq,F03,pt,test,claude_draft_ok,,g0051,F03,normal
+"queda da palpebra dta, notada pela familia",F16,pt,test,claude_draft_ok,,g0052,F16,normal
+"estrabismo convergente - criança 4A, referenciada oftalmo ped",F95,pt,test,claude_draft_ok,,g0053,F95,normal
+"olho preguiçoso OE, faz oclusao c/ penso",F99,pt,test,claude_draft_ok,,g0054,F99,hard
+"obstruçao do canal lacrimal - lactente 2M, olho sempre a chorar",F80,pt,test,claude_draft_ok,,g0055,F80,normal
+"uveite anterior OD, c/ corticoide topico prescrito oftalmo",F73,pt,test,claude_draft_ok,,g0056,F73,hard
+queratite herpetica OE,F85,pt,test,claude_draft_ok,,g0057,F85,hard
+"receio de ficar cego, pai tinha glaucoma - sem alteraçoes",F27,pt,test,claude_draft_ok,,g0058,F27,hard
+"amaurose OE desde acidente antigo, OD normal",F28,pt,test,claude_draft_ok,,g0059,F28,hard
+"olho dto inchado, sem dor nem vermelhidao",F15,pt,dev,claude_draft_ok,,g0060,F15,normal
+desconforto e olho irritado c/ as lentes de contacto,F18,pt,test,claude_draft_ok,,g0061,F18,normal
+descolamento retina OD - operado 2022,F82,pt,test,claude_draft_ok,,g0062,F82,normal
+oculos novos fazem-lhe dor nos olhos e tonturas,F17,pt,test,claude_draft_ok,,g0063,F17,hard
+nistagmo horizontal - referenciar,F14,pt,test,claude_draft_ok,,g0064,F14,normal
+"chalazion L lower lid, warm compresses",F72,en,test,claude_draft_ok,,g0065,F72,normal
+"itchy eyes both sides, no rhinitis, no discharge",F13,en,test,claude_draft_ok,,g0066,F13,hard
+"sore R eye, worse on eye movement",F01,en,dev,claude_draft_ok,,g0067,F01,normal
+choroidal melanoma - under ocular oncology,F74,en,test,claude_draft_ok,,g0068,F74,normal
+colour blind - red/green,F99,en,test,claude_draft_ok,,g0069,F99,normal
+black eye after fall on stairs,F75,en,test,claude_draft_ok,,g0070,F75,normal
+"registered severely sight impaired, both eyes",F94,en,dev,claude_draft_ok,,g0071,F94,normal
+"HTA essencial, controlada c/ IECA",K86,pt,test,claude_draft_ok,,g0072,K86,normal
+HTA c/ HVE no ecocardiograma,K87,pt,test,claude_draft_ok,,g0073,K87,hard
+"TA elevada em consulta, isolada, ainda sem criterios de HTA",K85,pt,test,claude_draft_ok,,g0074,K85,hard
+"ICC NYHA II, sob diurético",K77,pt,test,claude_draft_ok,,g0075,K77,normal
+angor de esforço estavel,K74,pt,dev,claude_draft_ok,,g0076,K74,normal
+"EAM há 2 semanas, alta da cardio",K75,pt,test,claude_draft_ok,,g0077,K75,hard
+"enfarte antigo (2015), sem angor",K76,pt,test,claude_draft_ok,,g0078,K76,hard
+hemorroidas internas c/ rectorragias ocasionais,K96,pt,dev,claude_draft_ok,,g0079,K96,normal
+TVP gemelar esq. - hipocoagulado,K94,pt,test,claude_draft_ok,,g0080,K94,normal
+"TEP em 2022, mantém anticoagulação",K93,pt,dev,claude_draft_ok,,g0081,K93,normal
+AIT - parestesias e disartria que reverteram em 20 min,K89,pt,test,claude_draft_ok,,g0082,K89,normal
+AVC isquemico territorio ACM dta,K90,pt,test,claude_draft_ok,,g0083,K90,normal
+hemiparesia dta sequelar a AVC de 2019,K91,pt,test,claude_draft_ok,,g0084,K91,hard
+"aneurisma aorta abd 4 cm, vigilancia eco anual",K99,pt,dev,claude_draft_ok,,g0085,K99,normal
+"palpitaçoes esporadicas, ECG s/ alt.",K04,pt,test,claude_draft_ok,,g0086,K04,normal
+"TSV paroxistica, já fez ablação?",K79,pt,test,claude_draft_ok,,g0087,K79,normal
+"sopro sistolico foco aórtico, a aguardar eco",K81,pt,dev,claude_draft_ok,,g0088,K81,normal
+PVM ligeiro em eco,K83,pt,test,claude_draft_ok,,g0089,K83,normal
+estenose mitral - antec. de febre reumatica na infancia,K71,pt,dev,claude_draft_ok,,g0090,K71,hard
+BCRD completo em ECG de rotina,K84,pt,test,claude_draft_ok,,g0091,K84,normal
+edemas maleolares bilat. a esclarecer,K07,pt,dev,claude_draft_ok,,g0092,K07,normal
+hist familiar doença coronaria precoce (irmão aos 45a),K22,pt,test,claude_draft_ok,,g0093,K22,normal
+pericardite aguda pós-viral,K70,pt,test,claude_draft_ok,,g0094,K70,normal
+CIA encerrada em criança,K73,pt,dev,claude_draft_ok,,g0095,K73,normal
+"telangiectasias nas coxas, motivo estético",K06,pt,test,claude_draft_ok,,g0096,K06,hard
+"tensão baixa habitual, assintomatica",K29,pt,test,claude_draft_ok,,g0097,K29,hard
+"sensação de peso no peito, sem dx estabelecido",K02,pt,test,claude_draft_ok,,g0098,K02,hard
+cor pulmonale secundário a DPOC,K82,pt,dev,claude_draft_ok,,g0099,K82,normal
+"doente refere dor 'no coração' em pontada, em estudo",K01,pt,test,claude_draft_ok,,g0100,K01,normal
+Permanent AF on apixaban,K78,en,test,claude_draft_ok,,g0101,K78,normal
+"varicose veins both legs, aching by evening",K95,en,test,claude_draft_ok,,g0102,K95,normal
+PVD - intermittent claudication R calf,K92,en,test,claude_draft_ok,,g0103,K92,normal
+frequent ventricular ectopics on 24h Holter,K80,en,test,claude_draft_ok,,g0104,K80,normal
+"orthostatic BP drop, dizzy on standing",K88,en,test,claude_draft_ok,,g0105,K88,normal
+"anxious re heart attack since dad died of MI, no cardiac findings",K24,en,test,claude_draft_ok,,g0106,K24,hard
+"dilated cardiomyopathy on echo, no HF symptoms",K84,en,test,claude_draft_ok,,g0107,K84,hard
+"insonia inicial ha +/- 3 meses, acorda cansado",P06,pt,test,claude_draft_ok,,g0108,P06,normal
+"Fumador 30 UMA, pondera cessação",P17,pt,test,claude_draft_ok,,g0109,P17,normal
+"Sindr. dependencia alcoolica, seguido no CRI",P15,pt,test,claude_draft_ok,,g0110,P15,normal
+Dep. major - sertralina 100mg,P76,pt,dev,claude_draft_ok,,g0111,P76,normal
+"Ataques de panico recorrentes, dx pela psiq",P74,pt,test,claude_draft_ok,,g0112,P74,normal
+"D. Alzheimer fase moderada, dependente AVDs",P70,pt,test,claude_draft_ok,,g0113,P70,normal
+"PHDA medicado c/ metilfenidato, seg. pedopsiq",P81,pt,test,claude_draft_ok,,g0114,P81,normal
+"Faz chichi na cama todas as noites, 7 anos",P12,pt,test,claude_draft_ok,,g0115,P12,normal
+"Doenca bipolar tipo I, estabilizada c/ litio",P73,pt,test,claude_draft_ok,,g0116,P73,normal
+Esquizofrenia paranoide - injetavel mensal,P72,pt,test,claude_draft_ok,,g0117,P72,normal
+"Dislexia, tem apoio na escola",P24,pt,dev,claude_draft_ok,,g0118,P24,normal
+"Queixas mnesicas, esquece-se onde poe as coisas; MMSE normal",P20,pt,test,claude_draft_ok,,g0119,P20,hard
+"gaguez desde a infancia, agrava c/ nervos",P10,pt,test,claude_draft_ok,,g0120,P10,normal
+Consumo diario de haxixe,P19,pt,test,claude_draft_ok,,g0121,P19,normal
+"Uso abusivo de alprazolam prescrito, pede receitas antes do tempo",P18,pt,dev,claude_draft_ok,,g0122,P18,hard
+"Luto recente (falecimento do marido ha 3 sem), chora muito",P02,pt,test,claude_draft_ok,,g0123,P02,hard
+"Ansiosa c/ doenca do filho, sem criterios de perturbacao",P01,pt,test,claude_draft_ok,,g0124,P01,hard
+Sindrome ansioso-depressivo,P76,pt,test,claude_draft_ok,,g0125,P76,hard
+"DE psicogenica, ereçoes matinais preservadas",P08,pt,test,claude_draft_ok,,g0126,P08,hard
+PSPT cronica - ex-combatente do Ultramar,P82,pt,test,claude_draft_ok,,g0127,P82,hard
+"Estado confusional agudo no contexto de ITU, idosa",P71,pt,dev,claude_draft_ok,,g0128,P71,hard
+POC - lavagem compulsiva das maos,P79,pt,test,claude_draft_ok,,g0129,P79,normal
+"Defice intelectual moderado, vive c/ a mae",P85,pt,test,claude_draft_ok,,g0130,P85,normal
+"Receio de estar a ficar maluco, sem sintomas psicoticos",P27,pt,test,claude_draft_ok,,g0131,P27,hard
+"Dificuldade em adaptar-se a reforma, sente-se inutil",P25,pt,test,claude_draft_ok,,g0132,P25,normal
+Perturb. personalidade borderline,P80,pt,test,claude_draft_ok,,g0133,P80,normal
+"PEA (espectro do autismo), seg. desenvolvimento",P99,pt,test,claude_draft_ok,,g0134,P99,normal
+"Mae refere que crianca recusa comer, birras as refeicoes",P11,pt,dev,claude_draft_ok,,g0135,P11,normal
+"Psicose pos-parto, internada na psiquiatria",P98,pt,test,claude_draft_ok,,g0136,P98,hard
+"Drunk, brought in by friends after party",P16,en,test,claude_draft_ok,,g0137,P16,hard
+"Multiple unexplained physical sx, somatising - frequent attender",P75,en,test,claude_draft_ok,,g0138,P75,normal
+"Deliberate paracetamol OD last wk, now under CMHT",P77,en,test,claude_draft_ok,,g0139,P77,normal
+"Bulimic - binge/purge cycles, under eating disorders team",P86,en,test,claude_draft_ok,,g0140,P86,normal
+Reduced sex drive since stopping work,P07,en,test,claude_draft_ok,,g0141,P07,normal
+"6yo soiling pants, not constipated",P13,en,test,claude_draft_ok,,g0142,P13,normal
+"Hearing voices, no dx yet - refer psych",P29,en,dev,claude_draft_ok,,g0143,P29,normal
+"DM2 sob metformina, HbA1c 7,8%",T90,pt,test,claude_draft_ok,,g0144,T90,normal
+Diabetes tipo 2 insulinotratada desde 2018,T89,pt,dev,claude_draft_fixed,,g0145,T90,hard
+"DM tipo 1 desde os 12 anos, c/ bomba de insulina",T89,pt,test,claude_draft_ok,,g0146,T89,normal
+"episodio de hipoglicemia c/ sudorese e tremor, diabético sob gliclazida",T87,pt,dev,claude_draft_ok,,g0147,T87,hard
+"receio de ter diabetes, pai diabético, glicemia jejum normal",T27,pt,test,claude_draft_ok,,g0148,T27,hard
+preocupada c/ cancro da tiroide depois de amiga ter sido diagnosticada,T26,pt,test,claude_draft_ok,,g0149,T26,normal
+"nodulo tiroideu lobo dto 1,2cm, eco TIRADS 3",T81,pt,test,claude_draft_ok,,g0150,T81,hard
+adenoma folicular da tiróide (histologia pós-lobectomia),T72,pt,test,claude_draft_ok,,g0151,T72,normal
+ca papilar tiroide - tiroidectomia total 2019,T71,pt,test,claude_draft_ok,,g0152,T71,normal
+D. Graves sob tiamazol,T85,pt,test,claude_draft_ok,,g0153,T85,normal
+hipotiroidismo - levotiroxina 75mcg,T86,pt,dev,claude_draft_ok,,g0154,T86,normal
+hipotiroidismo congénito detetado no rastreio neonatal (teste do pezinho),T80,pt,test,claude_draft_ok,,g0155,T80,hard
+"estatura abaixo do P3, velocidade de crescimento lenta, em estudo",T10,pt,test,claude_draft_ok,,g0156,T10,hard
+"obesidade grau II, IMC 37",T82,pt,test,claude_draft_ok,,g0157,T82,normal
+"IMC 28 - excesso ponderal, aconselhada dieta",T83,pt,test,claude_draft_ok,,g0158,T83,hard
+aumento ponderal 8kg desde que deixou de fumar,T07,pt,dev,claude_draft_ok,,g0159,T07,normal
+"emagrecimento involuntario ~6kg em 2 meses, em estudo",T08,pt,test,claude_draft_ok,,g0160,T08,normal
+"baixo peso, IMC 17,5, sem perda recente",T29,pt,test,claude_draft_ok,,g0161,T29,hard
+sem apetite há 3 semanas,T03,pt,test,claude_draft_ok,,g0162,T03,normal
+"lactente 4m, recusa biberão, mãe c/ duvidas na preparação do leite",T04,pt,test,claude_draft_ok,,g0163,T04,normal
+filha c/ dificuldade em alimentar o doente acamado (demência avançada),T05,pt,test,claude_draft_ok,,g0164,T05,hard
+"idosa desidratada por calor, mucosas secas",T11,pt,test,claude_draft_ok,,g0165,T11,normal
+"polidipsia, bebe cerca de 4L/dia, glicemia normal",T01,pt,test,claude_draft_ok,,g0166,T01,normal
+hipercolesterolemia LDL 190,T93,pt,test,claude_draft_ok,,g0167,T93,normal
+quisto do canal tireoglosso - referenciado ORL/cirurgia,T78,pt,test,claude_draft_ok,,g0168,T78,normal
+limitação na marcha e AVD por obesidade mórbida,T28,pt,test,claude_draft_ok,,g0169,T28,hard
+condrocalcinose joelho dto (pseudogota),T99,pt,test,claude_draft_ok,,g0170,T99,hard
+"ferropenia s/ anemia, ferritina 9, Hb normal",T91,pt,dev,claude_draft_ok,,g0171,T91,hard
+"hiperparatiroidismo primario, PTH e Ca elevados",T99,pt,test,claude_draft_ok,,g0172,T99,normal
+"T2DM, diet controlled",T90,en,test,claude_draft_ok,,g0173,T90,normal
+"raised cholesterol, started atorvastatin",T93,en,test,claude_draft_ok,,g0174,T93,normal
+"low vit D (25-OH 18 nmol/L), on colecalciferol",T91,en,test,claude_draft_ok,,g0175,T91,normal
+"c/o always hungry, eating much more than usual",T02,en,test,claude_draft_ok,,g0176,T02,normal
+"adrenal incidentaloma on CT, awaiting endo work-up",T73,en,dev,claude_draft_ok,,g0177,T73,hard
+"suppurative thyroiditis, on IV abx",T70,en,test,claude_draft_ok,,g0178,T70,normal
+"gout - recurrent attacks, allopurinol started",T92,en,test,claude_draft_ok,,g0179,T92,normal
+"ardor a urinar há 3 dias, s/ febre",U01,pt,test,claude_draft_ok,,g0180,U01,normal
+polaquiuria + urgencia miccional,U02,pt,dev,claude_draft_ok,,g0181,U02,normal
+acorda 3x/noite p urinar,U02,pt,test,claude_draft_ok,,g0182,U02,normal
+perdas de urina qd tosse ou espirra,U04,pt,test,claude_draft_ok,,g0183,U04,normal
+incontinencia urinaria apos prostatectomia radical,U04,pt,test,claude_draft_ok,,g0184,U04,hard
+diurese muito diminuída nas últimas 24h,U05,pt,dev,claude_draft_ok,,g0185,U05,normal
+gotejo pós-miccional,U05,pt,test,claude_draft_ok,,g0186,U05,normal
+"urina com sangue, indolor",U06,pt,test,claude_draft_ok,,g0187,U06,normal
+microhematuria em tira-teste ocasional,U06,pt,test,claude_draft_ok,,g0188,U06,hard
+urina turva c/ cheiro intenso,U07,pt,dev,claude_draft_ok,,g0189,U07,normal
+"globo vesical, não urina desde ontem",U08,pt,test,claude_draft_ok,,g0190,U08,hard
+dor suprapubica tipo peso na bexiga,U13,pt,test,claude_draft_ok,,g0191,U13,normal
+"colica renal esq, aguarda eco",U14,pt,test,claude_draft_ok,,g0192,U14,hard
+"pai c/ litiase, receia ter pedra no rim",U27,pt,test,claude_draft_ok,,g0193,U27,normal
+"ex-fumador, preocupado com ca da bexiga, assintomatico",U26,pt,test,claude_draft_ok,,g0194,U26,hard
+"transplantado renal, sob imunossupressão",U28,pt,test,claude_draft_ok,,g0195,U28,normal
+PNA dta,U70,pt,test,claude_draft_ok,,g0196,U70,normal
+ITU baixa nao complicada,U71,pt,test,claude_draft_ok,,g0197,U71,normal
+bacteriuria assintomatica em urocultura de rotina,U71,pt,test,claude_draft_ok,,g0198,U71,hard
+disuria c/ corrimento uretral - uretrite nao gonococica,U72,pt,dev,claude_draft_ok,,g0199,U72,hard
+"ca celulas renais, nefrectomia em 2019",U75,pt,test,claude_draft_ok,,g0200,U75,normal
+carcinoma urotelial vesical em seguimento urologia,U76,pt,dev,claude_draft_ok,,g0201,U76,normal
+tumor urotelial do ureter esq,U77,pt,test,claude_draft_ok,,g0202,U77,normal
+"papiloma vesical ressecado, histologia benigna",U78,pt,test,claude_draft_ok,,g0203,U78,hard
+"massa renal em TAC, aguarda biopsia",U79,pt,test,claude_draft_ok,,g0204,U79,hard
+rim poliquistico do adulto,U85,pt,test,claude_draft_ok,,g0205,U85,normal
+nefropatia IgA,U88,pt,test,claude_draft_ok,,g0206,U88,normal
+proteinuria ortostatica em adolescente,U90,pt,dev,claude_draft_ok,,g0207,U90,hard
+litiase renal bilateral,U95,pt,test,claude_draft_ok,,g0208,U95,normal
+"sterile pyuria, MSU culture negative",U98,en,dev,claude_draft_ok,,g0209,U98,hard
+"CKD stage 3a, eGFR 52",U99,en,test,claude_draft_ok,,g0210,U99,hard
+R hydronephrosis on US,U99,en,test,claude_draft_ok,,g0211,U99,normal
+"came off bike, bruised kidney",U80,en,test,claude_draft_ok,,g0212,U80,normal
+"urge incontinence, can't reach toilet in time",U04,en,test,claude_draft_ok,,g0213,U04,normal
+post-strep glomerulonephritis,U88,en,test,claude_draft_ok,,g0214,U88,normal
+6mm L ureteric stone on CT KUB,U95,en,test,claude_draft_ok,,g0215,U95,normal
+HBP sob tansulosina,Y85,pt,test,claude_draft_ok,,g0216,Y85,normal
+DE em diabetico tipo 2,Y07,pt,test,claude_draft_ok,,g0217,Y07,normal
+"ADK prostata Gleason 7, em hormonoterapia",Y77,pt,test,claude_draft_ok,,g0218,Y77,normal
+hidrocelo dto volumoso,Y86,pt,test,claude_draft_ok,,g0219,Y86,normal
+"fimose - crianca 5 anos, mae preocupada",Y81,pt,test,claude_draft_ok,,g0220,Y81,normal
+parafimose apos algaliação,Y81,pt,test,claude_draft_ok,,g0221,Y81,normal
+balanopostite candidiásica,Y75,pt,test,claude_draft_ok,,g0222,Y75,normal
+epididimite aguda esq.,Y74,pt,test,claude_draft_ok,,g0223,Y74,normal
+"criptorquidia esquerda, enviado cir pediatrica",Y83,pt,test,claude_draft_ok,,g0224,Y83,normal
+"testiculo retractil dto, sem indicação cirurgica",Y84,pt,test,claude_draft_ok,,g0225,Y84,hard
+hipospadia glandular,Y82,pt,dev,claude_draft_ok,,g0226,Y82,normal
+condilomas perianais,Y76,pt,test,claude_draft_ok,,g0227,Y76,normal
+"herpes genital recidivante, faz aciclovir supressivo",Y72,pt,test,claude_draft_ok,,g0228,Y72,normal
+uretrite gonococica confirmada por PCR,Y71,pt,test,claude_draft_ok,,g0229,Y71,hard
+sifilis latente tardia - VDRL+ TPHA+,Y70,pt,test,claude_draft_ok,,g0230,Y70,normal
+prostatite cronica,Y73,pt,test,claude_draft_ok,,g0231,Y73,normal
+pedido de vasectomia,Y13,pt,test,claude_draft_ok,,g0232,Y13,normal
+oligoastenospermia - casal sem gravidez ha 2 anos,Y10,pt,test,claude_draft_ok,,g0233,Y10,normal
+ginecomastia puberal bilat,Y16,pt,test,claude_draft_ok,,g0234,Y16,normal
+"nodulo testicular dto a esclarecer, pedida eco",Y05,pt,test,claude_draft_ok,,g0235,Y05,hard
+"seminoma, pos orquidectomia esq",Y78,pt,dev,claude_draft_ok,,g0236,Y78,normal
+"dor perineal ha 2 sem, sem febre",Y02,pt,dev,claude_draft_ok,,g0237,Y02,hard
+corrimento uretral purulento,Y03,pt,test,claude_draft_ok,,g0238,Y03,hard
+"jacto fraco e nicturia, sem estudo",Y06,pt,test,claude_draft_ok,,g0239,Y06,hard
+"preocupado com ca prostata, pai faleceu disso",Y26,pt,test,claude_draft_ok,,g0240,Y26,hard
+"receio de DST apos relação desprotegida, assintomatico",Y25,pt,test,claude_draft_ok,,g0241,Y25,hard
+torção testicular - enviado SU,Y99,pt,dev,claude_draft_ok,,g0242,Y99,hard
+d. Peyronie,Y99,pt,test,claude_draft_ok,,g0243,Y99,hard
+contusao escrotal (pontapé no futebol),Y80,pt,test,claude_draft_ok,,g0244,Y80,normal
+"priapism, on trazodone",Y08,en,test,claude_draft_ok,,g0245,Y08,normal
+"pain penile shaft, no lesion seen",Y01,en,test,claude_draft_ok,,g0246,Y01,normal
+"worried about ED, erections normal",Y24,en,test,claude_draft_ok,,g0247,Y24,hard
+contraception advice - condoms,Y14,en,dev,claude_draft_ok,,g0249,Y14,normal
+spermatocele L,Y99,en,test,claude_draft_ok,,g0250,Y99,normal
+"redness of foreskin, no dx yet",Y04,en,dev,claude_draft_ok,,g0251,Y04,normal
+febre ha 3 dias sem foco aparente,A03,pt,test,claude_draft_ok,,g0252,A03,normal
+cansaço facil desde ha uns meses,A04,pt,test,claude_draft_ok,,g0253,A04,normal
+sincope vasovagal durante colheita de sangue,A06,pt,dev,claude_draft_ok,,g0254,A06,normal
+"queixas algicas difusas, varias articulações e musculos, sem criterios p/ fibromialgia",A01,pt,test,claude_draft_ok,,g0255,A01,hard
+calafrios ao fim do dia,A02,pt,dev,claude_draft_ok,,g0256,A02,normal
+"suores noturnos abundantes, muda pijama",A09,pt,dev,claude_draft_ok,,g0257,A09,normal
+mal estar geral inespecifico,A05,pt,test,claude_draft_ok,,g0258,A05,normal
+"toracalgia atipica, ECG s/ alterações",A11,pt,test,claude_draft_ok,,g0259,A11,hard
+"lactente muito irritavel, chora horas seguidas, sem colicas",A16,pt,test,claude_draft_ok,,g0260,A16,hard
+"receio dos efeitos secundarios da estatina, ainda nao iniciou",A13,pt,test,claude_draft_ok,,g0261,A13,hard
+mae c/ ca mama aos 45 anos,A21,pt,test,claude_draft_ok,,g0262,A21,normal
+contacto proximo c/ caso de TB pulmonar no emprego,A23,pt,test,claude_draft_ok,,g0263,A23,hard
+tem medo de ter cancro desde que um colega faleceu,A26,pt,test,claude_draft_ok,,g0264,A26,normal
+"TB pulmonar, 2º mes de antibacilares",A70,pt,test,claude_draft_ok,,g0265,A70,normal
+varicela c/ vesiculas sobreinfetadas,A72,pt,test,claude_draft_ok,,g0266,A72,hard
+"mononucleose, serologia EBV positiva",A75,pt,test,claude_draft_ok,,g0267,A75,normal
+"5a doença na criança, face esbofeteada",A76,pt,dev,claude_draft_ok,,g0268,A76,normal
+sd viral inespecifico,A77,pt,test,claude_draft_ok,,g0269,A77,normal
+doença de Lyme apos picada de carraça no campo,A78,pt,dev,claude_draft_ok,,g0270,A78,normal
+"metastases hepaticas, primario desconhecido",A79,pt,test,claude_draft_ok,,g0271,A79,hard
+"politraumatizado apos acidente de viaçao, varias fraturas",A81,pt,test,claude_draft_ok,,g0272,A81,hard
+IMV c/ benzodiazepinas,A84,pt,test,claude_draft_ok,,g0273,A84,normal
+tosse seca atribuida ao IECA,A85,pt,test,claude_draft_ok,,g0274,A85,hard
+reação local intensa a vacina da gripe,A87,pt,test,claude_draft_ok,,g0275,A87,hard
+frieiras nos dedos das maos todos os invernos,A88,pt,test,claude_draft_ok,,g0276,A88,normal
+"sonolencia diurna excessiva, sem dx",A29,pt,dev,claude_draft_ok,,g0277,A29,hard
+trissomia 21,A90,pt,dev,claude_draft_ok,,g0278,A90,hard
+bebe ex-prematuro de 32 semanas,A93,pt,test,claude_draft_ok,,g0279,A93,normal
+"aconselhamento estilo de vida e rastreios, sem queixas",A98,pt,test,claude_draft_ok,,g0280,A98,normal
+"low Na on routine bloods, cause not found",A91,en,dev,claude_draft_ok,,g0281,A91,normal
+peanut allergy - carries epipen,A92,en,dev,claude_draft_ok,,g0282,A92,normal
+pt raised wish for assisted dying,A20,en,test,claude_draft_ok,,g0283,A20,normal
+old BKA following crush injury,A82,en,test,claude_draft_ok,,g0284,A82,normal
+CO poisoning from faulty boiler,A86,en,test,claude_draft_ok,,g0285,A86,normal
+"terrified of dying, no specific illness",A25,en,test,claude_draft_ok,,g0286,A25,normal
+"PEG tube problems, leaking and sore",A89,en,dev,claude_draft_ok,,g0287,A89,normal
+"otalgia esq há 2 dias, s/ febre",H01,pt,dev,claude_draft_ok,,g0288,H01,normal
+"OMA dta, timpano abaulado",H71,pt,dev,claude_draft_ok,,g0289,H71,normal
+rolhao de cerumen bilat - lavagem,H81,pt,dev,claude_draft_ok,,g0290,H81,normal
+otite ext dta apos piscina,H70,pt,test,claude_draft_ok,,g0291,H70,normal
+VPPB canal posterior esq,H82,pt,dev,claude_draft_ok,,g0292,H82,normal
+"acufenos ouvido esq, pior à noite",H03,pt,test,claude_draft_ok,,g0293,H03,normal
+"otorreia purulenta dta, a esclarecer",H04,pt,test,claude_draft_ok,,g0294,H04,normal
+"presbiacusia bilat, já com próteses auditivas",H84,pt,test,claude_draft_ok,,g0295,H84,normal
+perfuração timpânica esq residual pós OMA,H77,pt,test,claude_draft_ok,,g0296,H77,hard
+rotura do timpano após mergulho (barotrauma),H79,pt,dev,claude_draft_ok,,g0297,H79,hard
+"CE no CAE dto - missanga, criança 4A",H76,pt,test,claude_draft_ok,,g0298,H76,normal
+disfunção tubar pós IVAS,H73,pt,dev,claude_draft_ok,,g0299,H73,normal
+"otite serosa bilat, aguarda consulta ORL p/ tubos",H72,pt,test,claude_draft_ok,,g0300,H72,normal
+"colesteatoma OE, operado 2019",H74,pt,test,claude_draft_ok,,g0301,H74,hard
+hipoacusia neurossensorial súbita dta (audiograma),H86,pt,test,claude_draft_ok,,g0302,H86,hard
+"refere ouvir pior há 1 mês, otoscopia normal, pedido audiograma",H02,pt,dev,claude_draft_ok,,g0303,H02,hard
+ouvido dto tapado desde a viagem de avião,H13,pt,test,claude_draft_ok,,g0304,H13,hard
+"receio de ficar surdo como o pai, sem queixas",H27,pt,dev,claude_draft_ok,,g0305,H27,normal
+"orelhas em abano, pais pedem referenciação",H80,pt,test,claude_draft_ok,,g0306,H80,normal
+"adolescente incomodada c/ o aspeto das orelhas, acha-as grandes, exame normal",H15,pt,test,claude_draft_ok,,g0307,H15,hard
+prurido nos canais auditivos recorrente,H29,pt,dev,claude_draft_ok,,g0308,H29,normal
+"escoriação do CAE esq por cotonete, sangrou",H78,pt,test,claude_draft_ok,,g0309,H78,hard
+otorragia dta s/ trauma conhecido,H05,pt,test,claude_draft_ok,,g0310,H05,normal
+D. Meniere - crises de vertigem c/ zumbido,H82,pt,dev,claude_draft_ok,,g0311,H82,normal
+"otosclerose bilat, seguida ORL",H83,pt,dev,claude_draft_ok,,g0312,H83,normal
+surdez profissional - serralheiro 30 anos s/ proteção,H85,pt,test,claude_draft_ok,,g0313,H85,normal
+"tumor glómico timpânico, em vigilância",H75,pt,dev,claude_draft_ok,,g0314,H75,normal
+"exostoses do CAE bilat (surfista), canal estreito",H99,pt,test,claude_draft_ok,,g0315,H99,hard
+dificuldade auditiva impede trabalho em call center,H28,pt,test,claude_draft_ok,,g0316,H28,hard
+otitis externa R after swimming lessons,H70,en,test,claude_draft_ok,,g0318,H70,normal
+"OME both ears, grommets discussed",H72,en,test,claude_draft_ok,,g0319,H72,normal
+"impacted wax bilat, irrigated",H81,en,test,claude_draft_ok,,g0320,H81,normal
+"ears clicking when swallowing, TMs normal",H29,en,test,claude_draft_ok,,g0321,H29,hard
+"worried about going deaf, audiogram normal",H27,en,dev,claude_draft_ok,,g0322,H27,hard
+"BPPV R, Epley manoeuvre done",H82,en,test,claude_draft_ok,,g0323,H82,normal
+lombalgia mecanica ha 3 dias apos carregar caixas,L03,pt,dev,claude_draft_ok,,g0324,L03,normal
+"Cervicalgia c/ contratura, sem trauma",L01,pt,test,claude_draft_ok,,g0325,L01,normal
+"lombociatalgia dta, irradia até ao pé, Lasègue +",L86,pt,test,claude_draft_ok,,g0326,L86,hard
+Espondilartrose lombar (Rx),L84,pt,dev,claude_draft_ok,,g0327,L84,hard
+cervicartrose c/ cefaleias de origem cervical,L83,pt,test,claude_draft_ok,,g0328,L83,hard
+Tendinopatia do supraespinhoso esq - eco,L92,pt,test,claude_draft_ok,,g0329,L92,hard
+epicondilite medial (cotovelo do golfista),L87,pt,test,claude_draft_ok,,g0330,L87,hard
+"Gonartrose bilat, pior à esq",L90,pt,test,claude_draft_ok,,g0331,L90,normal
+coxartrose dta - aguarda consulta ortopedia,L89,pt,dev,claude_draft_ok,,g0332,L89,normal
+Rizartrose polegar dto,L91,pt,test,claude_draft_ok,,g0333,L91,normal
+"fasceite plantar esq, dor ao 1º passo de manha",L87,pt,test,claude_draft_ok,,g0334,L87,normal
+Entorse tibiotarsica esq grau I a jogar basket,L77,pt,test,claude_draft_ok,,g0335,L77,normal
+rotura menisco interno joelho dto apos torção no futebol (RM),L96,pt,test,claude_draft_ok,,g0336,L96,hard
+Fx Colles punho esq - imobilizado,L72,pt,test,claude_draft_ok,,g0337,L72,normal
+fractura base 5º metatarsiano,L74,pt,test,claude_draft_ok,,g0338,L74,normal
+Fratura vertebral D12 por osteoporose,L95,pt,dev,claude_draft_ok,,g0339,L95,hard
+fx 7º e 8º arcos costais esq apos queda,L76,pt,test,claude_draft_ok,,g0340,L76,normal
+Luxação glenoumeral recidivante dta,L80,pt,test,claude_draft_ok,,g0341,L80,normal
+"Joanete pé esq, dor com calçado",L98,pt,test,claude_draft_ok,,g0343,L98,normal
+"DDA - displasia desenvolvimento anca, eco alterada aos 2M",L82,pt,test,claude_draft_ok,,g0344,L82,normal
+"D. Osgood-Schlatter joelho dto, joga futebol",L94,pt,test,claude_draft_ok,,g0345,L94,hard
+costocondrite - dor reproduzivel a palpação esternocostal,L99,pt,dev,claude_draft_ok,,g0346,L99,hard
+"Fibromialgia, seguida em reumato",A01,pt,dev,claude_draft_fixed,,g0347,L18,normal
+caibras nocturnas nos gemeos,L14,pt,test,claude_draft_ok,,g0348,L14,normal
+"dores nas pernas à noite, criança 6A, provavel dor de crescimento",L29,pt,test,claude_draft_ok,,g0349,L29,normal
+preocupada c/ AR pq a mae tem; sem artrite ao exame,L27,pt,test,claude_draft_ok,,g0350,L27,hard
+"Escoliose dorsolombar adolescente, Cobb 18º",L85,pt,test,claude_draft_ok,,g0351,L85,normal
+Seropositive RA on methotrexate,L88,en,test,claude_draft_ok,,g0352,L88,normal
+"Ankylosing spondylitis, HLA-B27 positive",L88,en,test,claude_draft_ok,,g0353,L88,hard
+"R knee pain, no injury, ?cause",L15,en,test,claude_draft_ok,,g0354,L15,normal
+Painful L shoulder x 2/52,L08,en,test,claude_draft_ok,,g0355,L08,normal
+TMJ clicking and jaw pain on chewing,L07,en,test,claude_draft_ok,,g0356,L07,normal
+"Osteomyelitis L tibia, on IV abx",L70,en,dev,claude_draft_ok,,g0357,L70,normal
+"#NOF after mechanical fall, post DHS",L75,en,test,claude_draft_ok,,g0358,L75,normal
+"cefaleias frontais há 1 sem, s/ sinais de alarme",N01,pt,test,claude_draft_ok,,g0359,N01,normal
+"dor de cabeça desde que bateu c/ a cabeça no armário há 2d, sem perda consc",N01,pt,dev,claude_draft_ok,,g0360,N01,hard
+"dor hemiface esq, sem causa dentaria aparente",N03,pt,test,claude_draft_ok,,g0361,N03,normal
+"pernas inquietas, pior ao deitar",N04,pt,test,claude_draft_ok,,g0362,N04,normal
+dormencia na planta do pé dto,N06,pt,test,claude_draft_ok,,g0363,N06,normal
+"convulsao febril aos 18M, 1º episodio",N07,pt,dev,claude_draft_ok,,g0364,N07,hard
+abalos mioclonicos dos membros ao adormecer,N08,pt,test,claude_draft_ok,,g0365,N08,normal
+perdeu o cheiro e o sabor dos alimentos há 3 sem,N16,pt,dev,claude_draft_ok,,g0366,N16,normal
+tonturas ao levantar-se rapidamente,N17,pt,test,claude_draft_ok,,g0367,N17,hard
+falta de força no MSE desde ontem,N18,pt,test,claude_draft_ok,,g0368,N18,normal
+"fala arrastada, notado pela familia",N19,pt,test,claude_draft_ok,,g0369,N19,normal
+receia ter esclerose multipla como a irmã; exame neuro N,N27,pt,test,claude_draft_ok,,g0370,N27,hard
+"desequilibrio na marcha, base alargada",N29,pt,test,claude_draft_ok,,g0372,N29,hard
+"sindr pós-polio, sequela no MID",N70,pt,test,claude_draft_ok,,g0373,N70,normal
+meningite viral - seguimento após alta,N71,pt,dev,claude_draft_ok,,g0374,N71,normal
+"glioblastoma multiforme, em QT",N74,pt,test,claude_draft_ok,,g0375,N74,normal
+paresia facial periferica dta de inicio subito,N91,pt,test,claude_draft_ok,,g0376,N91,hard
+"lesao expansiva cerebral em RM, aguarda biopsia",N76,pt,test,claude_draft_ok,,g0377,N76,hard
+TCE c/ concussão em jogo de futebol,N79,pt,test,claude_draft_ok,,g0378,N79,normal
+hematoma subdural cronico apos queda em casa,N80,pt,test,claude_draft_ok,,g0379,N80,hard
+lesao do nervo radial pós fratura do umero,N81,pt,dev,claude_draft_ok,,g0380,N81,hard
+espinha bifida oculta,N85,pt,test,claude_draft_ok,,g0381,N85,normal
+"EM surto-remissão, sob interferão",N86,pt,test,claude_draft_ok,,g0382,N86,normal
+parkinsonismo secundario a haloperidol,N87,pt,test,claude_draft_ok,,g0383,N87,hard
+epilepsia controlada c/ levetiracetam,N88,pt,dev,claude_draft_ok,,g0384,N88,normal
+"enxaqueca s/ aura, crises mensais",N89,pt,test,claude_draft_ok,,g0385,N89,normal
+"cefaleia em salvas, crises periorbitárias noturnas",N90,pt,test,claude_draft_ok,,g0386,N90,hard
+nevralgia do trigemio ramo V2,N92,pt,test,claude_draft_ok,,g0387,N92,normal
+"R carpal tunnel, night splint, ?ortho referral",N93,en,dev,claude_draft_ok,,g0388,N93,normal
+T2DM with peripheral neuropathy both feet,N94,en,test,claude_draft_ok,,g0389,N94,hard
+tension headaches - stress at work,N95,en,dev,claude_draft_ok,,g0390,N95,normal
+MND - palliative care input,N99,en,test,claude_draft_ok,,g0391,N99,normal
+pins and needles both hands on waking,N05,en,test,claude_draft_ok,,g0392,N05,normal
+can't manage stairs due to neuro deficit - OT referral,N28,en,test,claude_draft_ok,,g0393,N28,normal
+"brain abscess, d/c on IV abx via OPAT",N73,en,dev,claude_draft_ok,,g0394,N73,normal
+constipação c/ rinorreia e febricula ha 2 dias,R74,pt,test,claude_draft_ok,,g0395,R74,normal
+amigdalite pultacea,R76,pt,test,claude_draft_ok,,g0396,R76,normal
+faringoamigdalite - teste rapido strep A positivo,R72,pt,test,claude_draft_ok,,g0397,R72,hard
+sinusite maxilar aguda,R75,pt,dev,claude_draft_ok,,g0398,R75,normal
+"peso nos seios da face qd baixa a cabeça, sem febre",R09,pt,test,claude_draft_ok,,g0399,R09,hard
+laringite aguda viral,R77,pt,test,claude_draft_ok,,g0400,R77,normal
+"rouquidao ha 2 sem, professora",R23,pt,test,claude_draft_ok,,g0401,R23,hard
+bronquiolite - lactente 4 meses,R78,pt,test,claude_draft_ok,,g0402,R78,normal
+asma bronquica mal controlada,R96,pt,dev,claude_draft_ok,,g0403,R96,normal
+"DPOC GOLD B, ex-fumador",R95,pt,test,claude_draft_ok,,g0404,R95,normal
+bronquite cronica tabagica,R79,pt,test,claude_draft_ok,,g0405,R79,hard
+"sd gripal, mialgias e febre 39",R80,pt,test,claude_draft_ok,,g0406,R80,normal
+PAC lobo inf dto,R81,pt,test,claude_draft_ok,,g0407,R81,normal
+derrame pleural esq. em estudo,R82,pt,test,claude_draft_ok,,g0408,R82,normal
+"dor tipo pleuritico hemitorax dto, rx normal",R01,pt,dev,claude_draft_ok,,g0409,R01,hard
+epistaxis recorrentes,R06,pt,test,claude_draft_ok,,g0410,R06,normal
+tosse seca ha 3 semanas,R05,pt,dev,claude_draft_ok,,g0411,R05,normal
+expetoraçao amarelada matinal,R25,pt,test,claude_draft_ok,,g0412,R25,hard
+"hemoptises, fumador, aguarda TC",R24,pt,test,claude_draft_ok,,g0413,R24,hard
+adenocarcinoma do pulmao sob QT,R84,pt,dev,claude_draft_ok,,g0414,R84,normal
+ca laringe operado,R85,pt,test,claude_draft_ok,,g0415,R85,normal
+"receio de ter cancro do pulmao, fuma 40 UMA, sem sintomas",R26,pt,test,claude_draft_ok,,g0416,R26,hard
+rinite alergica a acaros,R97,pt,dev,claude_draft_ok,,g0417,R97,normal
+"hipertrofia adenoideia, ressona muito",R90,pt,dev,claude_draft_ok,,g0418,R90,normal
+corpo estranho narina dta (feijao),R87,pt,test,claude_draft_ok,,g0419,R87,normal
+sd hiperventilaçao,R98,pt,test,claude_draft_ok,,g0420,R98,normal
+soluços persistentes ha 2 dias,R29,pt,dev,claude_draft_ok,,g0421,R29,normal
+bronquiectasias,R99,pt,dev,claude_draft_ok,,g0422,R99,normal
+tosse convulsa (PCR B. pertussis +),R71,pt,dev,claude_draft_ok,,g0423,R71,normal
+"SOB on exertion, cause not yet clear",R02,en,dev,claude_draft_ok,,g0424,R02,normal
+"wheezy chest, no asthma dx",R03,en,test,claude_draft_ok,,g0425,R03,hard
+post nasal drip,R08,en,test,claude_draft_ok,,g0426,R08,hard
+chronic pharyngitis,R83,en,dev,claude_draft_ok,,g0427,R83,normal
+"lung mass on CT, awaiting biopsy",R92,en,test,claude_draft_ok,,g0428,R92,hard
+boil inside L nostril,R73,en,test,claude_draft_ok,,g0429,R73,normal
+"worried re TB after contact at work, IGRA neg",R27,en,test,claude_draft_ok,,g0430,R27,hard
+"Dificuldades económicas graves, ñ consegue comprar a medicação",Z01,pt,test,claude_draft_ok,,g0431,Z01,hard
+Insegurança alimentar - recorre ao banco alimentar,Z02,pt,test,claude_draft_ok,,g0432,Z02,normal
+"casa sem agua canalizada, vai buscar agua ao fontanario",Z02,pt,test,claude_draft_ok,,g0433,Z02,hard
+Habitação degradada c/ humidade e bolores,Z03,pt,test,claude_draft_ok,,g0434,Z03,normal
+"Imigrante recente, barreira linguistica e cultural",Z04,pt,dev,claude_draft_ok,,g0435,Z04,normal
+Conflito com a chefia no local de trabalho,Z05,pt,test,claude_draft_ok,,g0436,Z05,normal
+Desempregado há 2 anos,Z06,pt,dev,claude_draft_ok,,g0437,Z06,normal
+nao sabe ler nem escrever,Z07,pt,test,claude_draft_ok,,g0438,Z07,normal
+Pensão de invalidez indeferida pela SS,Z08,pt,test,claude_draft_ok,,g0439,Z08,normal
+processo judicial em curso por acidente de viação,Z09,pt,test,claude_draft_ok,,g0440,Z09,normal
+Insatisfeito c/ tempo de espera p/ cirurgia no hospital,Z10,pt,dev,claude_draft_ok,,g0441,Z10,hard
+nao cumpre medicacao anti-hipertensora,Z11,pt,test,claude_draft_ok,,g0442,Z11,normal
+discussões frequentes com o marido,Z12,pt,test,claude_draft_ok,,g0443,Z12,normal
+"Marido alcoolico, problemas em casa",Z13,pt,test,claude_draft_ok,,g0444,Z13,hard
+VD - agressões físicas pelo companheiro,Z13,pt,test,claude_draft_ok,,g0445,Z13,hard
+"Cuidadora do marido c/ demência, exausta",Z14,pt,test,claude_draft_ok,,g0446,Z14,hard
+Separação recente do companheiro,Z15,pt,dev,claude_draft_ok,,g0447,Z15,normal
+Conflitos c/ filho adolescente,Z16,pt,test,claude_draft_ok,,g0448,Z16,normal
+filha c/ paralisia cerebral - sobrecarga da mãe,Z18,pt,test,claude_draft_ok,,g0449,Z18,normal
+Morte do filho em acidente há 6 meses,Z19,pt,dev,claude_draft_ok,,g0450,Z19,normal
+Má relação c/ a irmã,Z20,pt,dev,claude_draft_ok,,g0451,Z20,normal
+"Pai com hábitos alcoólicos, agressivo em casa",Z21,pt,test,claude_draft_ok,,g0452,Z21,normal
+"Mãe acamada pós-AVC, sobrecarga do cuidador",Z22,pt,dev,claude_draft_ok,,g0453,Z22,normal
+luto pela mae falecida em janeiro,Z23,pt,test,claude_draft_ok,,g0454,Z23,hard
+Assaltado na rua e agredido,Z25,pt,test,claude_draft_ok,,g0455,Z25,normal
+receio de ser despedido c/ reestruturação da empresa,Z27,pt,test,claude_draft_ok,,g0456,Z27,hard
+"Zangou-se c/ a melhor amiga, mto afetada",Z24,pt,test,claude_draft_ok,,g0457,Z24,normal
+"Dependente p/ AVDs, nao sai de casa sozinho",Z28,pt,dev,claude_draft_ok,,g0458,Z28,normal
+suspeita de simulação p/ prolongar CIT,Z29,pt,test,claude_draft_ok,,g0459,Z29,hard
+Lost his job last month,Z06,en,test,claude_draft_ok,,g0460,Z06,normal
+"Worried about being evicted, rent arrears",Z27,en,test,claude_draft_ok,,g0461,Z27,hard
+"Homeless, sleeping rough",Z03,en,test,claude_draft_ok,,g0462,Z03,normal
+Bereavement - wife died 2/12 ago,Z15,en,test,claude_draft_ok,,g0463,Z15,hard
+Stress re ongoing custody court case,Z09,en,test,claude_draft_ok,,g0464,Z09,hard
+Assaulted outside pub Sat night,Z25,en,test,claude_draft_ok,,g0465,Z25,normal
+Noise pollution from nearby factory affecting sleep,Z29,en,test,claude_draft_ok,,g0466,Z29,hard
+"adenopatia cervical esq ~1,5cm, em vigilancia",B02,pt,test,claude_draft_ok,,g0467,B02,normal
+"ganglio submandibular doloroso ha 3 dias, s/ febre",B02,pt,test,claude_draft_ok,,g0468,B02,hard
+abcesso ganglionar axilar dto,B70,pt,test,claude_draft_ok,,g0469,B70,normal
+adenite mesenterica (eco abdominal),B71,pt,test,claude_draft_ok,,g0470,B71,normal
+"VIH+ seguido na infecciologia, TARV",B90,pt,dev,claude_draft_ok,,g0471,B90,normal
+receio de ter apanhado VIH - relação ocasional s/ preservativo,B25,pt,test,claude_draft_ok,,g0472,B25,hard
+preocupada c/ leucemia pq aparecem nodoas negras,B26,pt,test,claude_draft_ok,,g0473,B26,hard
+"LLC estadio A de Binet, s/ tratamento",B73,pt,test,claude_draft_ok,,g0474,B73,hard
+linfoma nao Hodgkin folicular,B72,pt,test,claude_draft_ok,,g0475,B72,normal
+Mieloma multiplo sob QT no IPO,B74,pt,test,claude_draft_ok,,g0476,B74,normal
+policitemia vera - faz flebotomias,B75,pt,test,claude_draft_ok,,g0477,B75,hard
+"medo de ter anemia, pede analises",B27,pt,dev,claude_draft_ok,,g0478,B27,hard
+traço talassemico beta,B78,pt,test,claude_draft_ok,,g0479,B78,hard
+esferocitose hereditaria,B78,pt,dev,claude_draft_ok,,g0480,B78,normal
+anemia ferropenica por menorragias,B80,pt,test,claude_draft_ok,,g0481,B80,normal
+anemia pos hemorragia digestiva alta,B80,pt,test,claude_draft_ok,,g0482,B80,hard
+anemia perniciosa - vit B12 IM mensal,B81,pt,test,claude_draft_ok,,g0483,B81,normal
+"anemia macrocitica, aguarda doseamentos",B81,pt,test,claude_draft_ok,,g0484,B81,normal
+anemia megaloblastica,B82,pt,dev,claude_draft_ok,,g0485,B82,hard
+anemia da doença cronica (IRC),B82,pt,test,claude_draft_ok,,g0486,B82,normal
+"trombocitopenia ligeira, plaq 110 mil",B83,pt,test,claude_draft_ok,,g0487,B83,normal
+D. von Willebrand,B83,pt,test,claude_draft_ok,,g0488,B83,normal
+PTI cronica,B83,pt,test,claude_draft_ok,,g0489,B83,hard
+leucocitose persistente s/ causa aparente,B84,pt,dev,claude_draft_ok,,g0490,B84,normal
+esplenomegalia em eco abdominal,B87,pt,test,claude_draft_ok,,g0491,B87,normal
+defice selectivo de IgA,B99,pt,test,claude_draft_ok,,g0492,B99,normal
+rotura do baço apos queda de bicicleta,B76,pt,test,claude_draft_ok,,g0493,B76,normal
+contusao esplenica s/ laceração apos acidente viação,B77,pt,dev,claude_draft_ok,,g0494,B77,hard
+queixa de 'sangue grosso',B04,pt,test,claude_draft_ok,,g0495,B04,normal
+unable to keep working full time due to chronic anaemia fatigue,B28,en,dev,claude_draft_ok,,g0496,B28,hard
+"keeps getting infections, ?immune problem, no dx yet",B29,en,test,claude_draft_ok,,g0497,B29,hard
+congenital anaemia - Diamond-Blackfan,B79,en,dev,claude_draft_ok,,g0498,B79,normal
+"eosinophilia, cause not found",B84,en,dev,claude_draft_ok,,g0499,B84,normal
+"Hodgkin's in remission, annual f/u",B72,en,test,claude_draft_ok,,g0500,B72,normal
+sickle cell trait,B78,en,test,claude_draft_ok,,g0501,B78,normal
+IDA on ferrous sulphate,B80,en,test,claude_draft_ok,,g0502,B80,normal
+onicomicose unhas dos pés,S74,pt,test,claude_draft_ok,,g0503,S74,normal
+Zona D8 esq,S70,pt,test,claude_draft_ok,,g0504,S70,normal
+dor toracica persistente pos zona - nevralgia pos-herpetica,S70,pt,dev,claude_draft_ok,,g0505,S70,hard
+erisipela MI esq,S76,pt,test,claude_draft_ok,,g0506,S76,normal
+queixa de celulite nas coxas (estética),S29,pt,test,claude_draft_ok,,g0507,S29,hard
+eczema das maos,S88,pt,dev,claude_draft_ok,,g0508,S88,hard
+"DA - pregas flexurais, criança",S87,pt,test,claude_draft_ok,,g0509,S87,normal
+descamaçao couro cabeludo tipo caspa,S86,pt,test,claude_draft_ok,,g0510,S86,hard
+psoriase vulgar cotovelos/joelhos,S91,pt,test,claude_draft_ok,,g0511,S91,normal
+acne juvenil face,S96,pt,test,claude_draft_ok,,g0512,S96,normal
+unha encravada halux esq,S94,pt,test,claude_draft_ok,,g0513,S94,normal
+paroniquia 3º dedo mao dta,S09,pt,test,claude_draft_ok,,g0514,S09,hard
+abcesso nadega dta,S10,pt,dev,claude_draft_ok,,g0515,S10,normal
+hidradenite supurativa axilas,S92,pt,test,claude_draft_ok,,g0516,S92,hard
+quisto sebaceo retroauricular,S93,pt,test,claude_draft_ok,,g0517,S93,normal
+basalioma asa nasal,S77,pt,test,claude_draft_ok,,g0518,S77,normal
+"lesao pigmentada dorso, aguarda resultado biopsia",S79,pt,dev,claude_draft_ok,,g0519,S79,hard
+receio de melanoma - sinais benignos ao exame,S26,pt,dev,claude_draft_ok,,g0520,S26,hard
+escaldão costas apos praia,S80,pt,test,claude_draft_ok,,g0521,S80,hard
+queimadura c/ oleo quente dorso mao,S14,pt,test,claude_draft_ok,,g0522,S14,normal
+ferida do dedo infetada pos-corte c/ faca,S11,pt,test,claude_draft_ok,,g0524,S11,hard
+picada abelha c/ reaçao local,S12,pt,dev,claude_draft_ok,,g0525,S12,normal
+sarna - varios elementos do agregado,S72,pt,test,claude_draft_ok,,g0526,S72,normal
+pediculose couro cabeludo,S73,pt,test,claude_draft_ok,,g0527,S73,normal
+moluscos contagiosos tronco,S95,pt,dev,claude_draft_ok,,g0528,S95,normal
+intertrigo submamario por candida,S75,pt,test,claude_draft_ok,,g0529,S75,hard
+"ulcera venosa perna, cronica",S97,pt,test,claude_draft_ok,,g0530,S97,normal
+herpes labial recorrente,S71,pt,test,claude_draft_ok,,g0531,S71,normal
+"itchy skin all over, no rash seen",S02,en,test,claude_draft_ok,,g0532,S02,normal
+plantar warts L foot,S03,en,test,claude_draft_ok,,g0533,S03,normal
+bruised thigh after fall,S16,en,test,claude_draft_ok,,g0534,S16,normal
+patchy hair loss scalp,S23,en,test,claude_draft_ok,,g0535,S23,normal
+herald patch then scaly rash trunk - pityriasis rosea,S90,en,test,claude_draft_ok,,g0536,S90,hard
+dry flaky skin shins,S21,en,dev,claude_draft_ok,,g0537,S21,normal
+"red patch L cheek, cause unclear",S06,en,test,claude_draft_ok,,g0538,S06,normal
+"atraso menstrual de 2 semanas, teste caseiro duvidoso",W01,pt,test,claude_draft_ok,,g0539,W01,normal
+"ansiosa c/ possibilidade de engravidar, relação sem proteção, não quer gravidez agora",W02,pt,test,claude_draft_ok,,g0540,W02,hard
+"perdas hematicas vaginais às 9 sem, colo fechado, eco c/ BCF presente",W03,pt,test,claude_draft_ok,,g0541,W03,hard
+"G1 10s, enjoos de manhã",W05,pt,test,claude_draft_ok,,g0542,W05,normal
+vem p/ PDS - rotura de preservativo ontem,W10,pt,dev,claude_draft_ok,,g0543,W10,normal
+renovação ACO,W11,pt,dev,claude_draft_ok,,g0544,W11,normal
+"pedido de laqueação de trompas, prole completa",W13,pt,test,claude_draft_ok,,g0545,W13,normal
+implante subcutaneo etonogestrel - vigilancia,W14,pt,test,claude_draft_ok,,g0546,W14,hard
+hemorragia vaginal abundante 10 dias após parto,W17,pt,test,claude_draft_ok,,g0548,W17,normal
+"hipogalactia, bebé com pouco aumento ponderal",W19,pt,test,claude_draft_ok,,g0549,W19,hard
+receio de malformações no feto por ter tomado isotretinoina antes de saber que estava gravida,W27,pt,test,claude_draft_ok,,g0550,W27,hard
+"disfunção da sinfise pubica na gravidez, dificuldade em andar",W28,pt,test,claude_draft_ok,,g0551,W28,hard
+gravida 30s refere diminuição dos movimentos fetais,W29,pt,test,claude_draft_ok,,g0552,W29,normal
+endometrite pos-parto c/ febre,W70,pt,test,claude_draft_ok,,g0553,W70,normal
+ITU em gravida de 20 semanas,W71,pt,dev,claude_draft_ok,,g0554,W71,hard
+gravidez molar - seguimento beta-hCG,W73,pt,test,claude_draft_ok,,g0555,W73,normal
+"pre-eclampsia 34s, proteinuria",W81,pt,dev,claude_draft_ok,,g0556,W81,normal
+abortamento retido as 8 semanas,W82,pt,test,claude_draft_ok,,g0557,W82,normal
+IVG medicamentosa as 7 sem - consulta de revisao,W83,pt,test,claude_draft_ok,,g0558,W83,normal
+"anemia ferropenica na gravidez, Hb 9,5",W84,pt,dev,claude_draft_ok,,g0559,W84,hard
+DG controlada c/ dieta,W85,pt,test,claude_draft_ok,,g0560,W85,normal
+"parto eutocico, RN saudavel",W90,pt,dev,claude_draft_ok,,g0561,W90,normal
+"cesariana por apresentação pelvica, RN bem",W92,pt,test,claude_draft_ok,,g0562,W92,normal
+mamilos gretados a amamentar,W95,pt,test,claude_draft_ok,,g0563,W95,normal
+gravidez ectopica tubaria direita,W80,pt,test,claude_draft_ok,,g0564,W80,normal
+gestação 12s - vigilancia,W78,pt,test,claude_draft_ok,,g0565,W78,normal
+"gravidez nao planeada e nao desejada, ainda indecisa quanto a IVG",W79,pt,test,claude_draft_ok,,g0566,W79,hard
+preocupada c/ as estrias e o aumento de peso na gravidez,W21,pt,test,claude_draft_ok,,g0567,W21,normal
+Missed period ?pregnant,W01,en,test,claude_draft_ok,,g0568,W01,normal
+"Requesting EC, UPSI 48h ago",W10,en,dev,claude_draft_ok,,g0569,W10,normal
+Mirena coil check,W12,en,test,claude_draft_ok,,g0570,W12,normal
+"Hyperemesis, ketones ++, 8/40",W05,en,dev,claude_draft_ok,,g0571,W05,normal
+"PIH 32/40, BP 148/96, no proteinuria",W81,en,test,claude_draft_ok,,g0572,W81,hard
+"SVD, stillborn",W91,en,test,claude_draft_ok,,g0573,W91,normal
+Breast abscess while breastfeeding,W94,en,dev,claude_draft_ok,,g0574,W94,hard
+"dismenorreia desde a menarca, falta à escola",X02,pt,test,claude_draft_ok,,g0575,X02,normal
+"Amenorreia ha 4 meses, teste gravidez neg",X05,pt,test,claude_draft_ok,,g0576,X05,normal
+"menstruacoes mto abundantes, troca penso de hora a hora",X06,pt,dev,claude_draft_ok,,g0577,X06,normal
+perdas sanguineas entre periodos sob ACO,X08,pt,test,claude_draft_ok,,g0578,X08,hard
+"atrofia vulvovaginal pos-menopausa, ardor e dispareunia",X11,pt,dev,claude_draft_ok,,g0579,X11,hard
+refere sangrar apos as relações,X13,pt,dev,claude_draft_ok,,g0580,X13,normal
+corrimento esbranquiçado s/ cheiro ha 1 semana,X14,pt,test,claude_draft_ok,,g0581,X14,normal
+comichao na vulva ha 15 dias,X16,pt,test,claude_draft_ok,,g0582,X16,normal
+Candidiase vulvovaginal recorrente - 4 episodios/ano,X72,pt,dev,claude_draft_ok,,g0583,X72,hard
+mioma intramural 3cm na eco pelvica,X78,pt,test,claude_draft_ok,,g0585,X78,normal
+Fibroadenoma mama esq (biopsia),X79,pt,test,claude_draft_ok,,g0586,X79,hard
+nodulo palpavel QSE mama dta - pedida eco mamaria,X19,pt,test,claude_draft_ok,,g0587,X19,hard
+"Ca mama dta, mastectomia 2019, sob letrozol",X76,pt,test,claude_draft_ok,,g0588,X76,normal
+"ansiosa c/ possibilidade de cancro da mama, mae faleceu de ca mama; exame normal",X26,pt,test,claude_draft_ok,,g0589,X26,hard
+CIN 2 na biopsia do colo - seg. consulta patologia cervical,X86,pt,test,claude_draft_ok,,g0590,X86,hard
+"CIN III / carcinoma in situ do colo, conizacao programada",X81,pt,test,claude_draft_ok,,g0591,X81,hard
+"prolapso uterino grau II, sensacao de peso vaginal",X87,pt,test,claude_draft_ok,,g0592,X87,normal
+"quisto bartholin esq, doloroso",X99,pt,test,claude_draft_ok,,g0593,X99,normal
+lesões verrucosas vulvares - HPV,X91,pt,dev,claude_draft_ok,,g0594,X91,normal
+mastalgia ciclica bilateral,X18,pt,dev,claude_draft_ok,,g0595,X18,normal
+"mastopatia fibroquistica, mamografia sem alteraçoes suspeitas",X88,pt,test,claude_draft_ok,,g0596,X88,normal
+"dor na penetracao, dispareunia superficial",X04,pt,test,claude_draft_ok,,g0597,X04,normal
+"SPM - irritabilidade, edemas e cefaleia na semana antes do periodo",X89,pt,test,claude_draft_ok,,g0598,X89,hard
+pretende adiar menstruação por causa de viagem,X10,pt,dev,claude_draft_ok,,g0599,X10,normal
+"galactorreia bilateral, prolactina pedida",X21,pt,test,claude_draft_ok,,g0600,X21,normal
+"dor pelvica cronica ha 6 meses, em estudo",X01,pt,test,claude_draft_ok,,g0601,X01,normal
+"carcinoma epidermoide do colo uterino, em QT/RT no IPO",X75,pt,test,claude_draft_ok,,g0602,X75,normal
+"secura vaginal no pos-parto, a amamentar",X15,pt,test,claude_draft_ok,,g0603,X15,hard
+"mid-cycle pain, one-sided, few hours each month",X03,en,dev,claude_draft_ok,,g0604,X03,normal
+"chlamydia NAAT positive - treated, partner notified",X92,en,dev,claude_draft_ok,,g0605,X92,normal
+"PMB - single episode, 5 yrs post menopause, 2WW referral",X12,en,dev,claude_draft_ok,,g0606,X12,normal
+"BV - fishy discharge, clue cells on micro",X84,en,test,claude_draft_ok,,g0607,X84,normal
+"condom split, worried she may have caught something, asymptomatic, wants screen",X23,en,test,claude_draft_ok,,g0608,X23,hard
+"ovarian ca stage III, on palliative chemo",X77,en,dev,claude_draft_ok,,g0609,X77,normal
+"cervical ectropion seen on speculum, smear NAD",X85,en,dev,claude_draft_ok,,g0610,X85,hard

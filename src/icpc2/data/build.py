@@ -154,10 +154,13 @@ def draft_examples(cfg: dict) -> pd.DataFrame:
     if not p.exists():
         return pd.DataFrame(columns=["text", "code", "lang", "source", "split"])
     df = pd.DataFrame([json.loads(x) for x in open(p)])
-    gp = path(cfg["sources"]["gold"])
-    if gp.exists():
-        done = set(pd.read_csv(gp, dtype=str).fillna("").get("draft_id", []))
-        df = df[~df["id"].isin(done)]
+    done = set()
+    for f in (path(cfg["sources"]["gold"]), path("data/gold/rejected.csv")):
+        if f.exists() and f.stat().st_size > 1:
+            done |= set(pd.read_csv(f, dtype=str).fillna("").get("draft_id", []))
+    df = df[~df["id"].isin(done)]
+    if df.empty:
+        return pd.DataFrame(columns=["text", "code", "lang", "source", "split"])
     return pd.DataFrame({"text": df["text"], "code": df["code"], "lang": df["lang"],
                          "source": "draft_" + df["difficulty"], "split": "draft"})
 

@@ -52,3 +52,25 @@ A dated, public record of what was tried, what was measured, and what changed. I
 
 - The smallest multilingual classifier trained on v2 data already improves draft top-1 by **+0.55** over the v1 checkpoint, and English goes from near-chance to 0.88. *Caveat:* the drafts share their generator (Claude) with the synthetic training data, so these numbers are likely optimistic. They will be re-scored on physician-verified gold and on physician-written entries.
 - `ret-e5-base` (batch 128, 62k pairs) ran **out of memory on MPS** (18 GB unified memory). Moved to the GPU sweep.
+
+## 2026-11-22 · gold set verified
+
+A family physician reviewed all 611 Claude drafts on the review page (`scripts/build_gold_review.py`). Verdicts are in `data/gold/verdicts/`.
+
+| verdict | n | % |
+|---|---|---|
+| correct as drafted | 600 | 98.2 |
+| recoded | 2 | 0.3 |
+| discarded (ambiguous / multi-problem / unrealistic) | 9 | 1.5 |
+
+→ **602 gold entries**: `gold_test` 460 (374 PT, 86 EN) and `gold_dev` 142, split by hash of the draft id.
+
+- The recodes reflect **Portuguese coding conventions**: "DM2 insulinotratada" → T89 (not T90), and "Fibromialgia" → A01 (not L18).
+- Review pace: about 2 h for 611 items, median 2.7 s per item. *To do for the paper:* a second blind pass by the same physician or a second rater on a sample (e.g. 100 items), to report agreement (Cohen's κ).
+
+**benchmark-01 on verified gold** (`icpc2 rescore`, predictions saved during the sweep):
+
+| run | gold_test top-1 | top-3 | top-5 | PT | EN |
+|---|---|---|---|---|---|
+| v1-checkpoint | 0.346 | 0.465 | 0.511 | 0.417 | 0.035 |
+| clf-mmbert-small | **0.887** | 0.954 | 0.961 | 0.896 | 0.849 |
