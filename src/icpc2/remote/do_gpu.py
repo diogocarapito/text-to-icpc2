@@ -117,25 +117,34 @@ def _wait_ssh(ip: str, timeout: int = 900):
     raise TimeoutError("SSH did not come up")
 
 
-def create(size: str, region: str | None, image: str, max_hours: float) -> tuple[int, str]:
+def create(candidates: list[str], region: str | None, image: str, max_hours: float) -> tuple[int, str]:
+    """Create the first (size, region) DigitalOcean actually accepts. /v2/sizes lists where a size
+    is offered, not live capacity, so a 422 'not available' just moves on to the next option."""
     with _client() as c:
         _ensure_key(c)
         keys = [k["id"] for k in c.get("/account/keys").json()["ssh_keys"]]
         if not keys:
             raise SystemExit("No SSH keys in your DigitalOcean account (Settings -> Security)")
-        if not region:
-            avail = {s["slug"]: s for s in sizes()}
-            if size not in avail or not avail[size]["regions"]:
-                raise SystemExit(f"{size} not available now; see `icpc2 gpu sizes`")
-            region = avail[size]["regions"][0]
-        body = {"name": f"icpc2-train-{int(time.time())}", "region": region, "size": size,
-                "image": image, "ssh_keys": keys, "tags": [TAG], "monitoring": True,
-                "user_data": _self_destruct(max_hours)}
-        r = c.post("/droplets", json=body)
-        if r.status_code >= 400:
-            raise SystemExit(f"create failed: {r.status_code} {r.text}")
-        did = r.json()["droplet"]["id"]
-        log.info("droplet %s (%s, %s) created; waiting for IP", did, size, region)
+        offered = {s["slug"]: s["regions"] for s in sizes()}
+        did = None
+        for size in candidates:
+            for reg in ([region] if region else offered.get(size, [])):
+                body = {"name": f"icpc2-train-{int(time.time())}", "region": reg, "size": size,
+                        "image": image, "ssh_keys": keys, "tags": [TAG], "monitoring": True,
+                        "user_data": _self_destruct(max_hours)}
+                r = c.post("/droplets", json=body)
+                if r.status_code == 422:
+                    log.info("%s in %s: %s", size, reg, r.json().get("message"))
+                    continue
+                if r.status_code >= 400:
+                    raise SystemExit(f"create failed: {r.status_code} {r.text}")
+                did = r.json()["droplet"]["id"]
+                log.info("droplet %s (%s, %s) created; waiting for IP", did, size, reg)
+                break
+            if did:
+                break
+        if not did:
+            raise SystemExit(f"No capacity for any of {candidates} right now; try again later")
         for _ in range(120):
             d = c.get(f"/droplets/{did}").json()["droplet"]
             ips = [n["ip_address"] for n in d["networks"]["v4"] if n["type"] == "public"]
@@ -164,9 +173,9 @@ def run(command: list[str], size: str | None = None, region: str | None = None,
         fetch: tuple[str, ...] = ("experiments", "reports"), fetch_best_model: bool = True,
         keep: bool = False) -> int:
     cfg = load_config("loop")["gpu"]
-    size = size or cfg["size"]
+    candidates = [size] if size else cfg["sizes"]
     sha = _git_ref()
-    did, ip = create(size, region, cfg["image"], cfg["max_hours"])
+    did, ip = create(candidates, region, cfg["image"], cfg["max_hours"])
     log_path = path("reports") / f"gpu-{did}.log"
     log_path.parent.mkdir(exist_ok=True)
     rc = 1

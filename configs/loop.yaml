@@ -15,7 +15,12 @@ training:
   backend: local
 
 gpu:                          # icpc2 gpu ... / backend: do
-  size: gpu-h100x1-80gb       # H100 ~$4.41/h (cheaper when in stock: gpu-l40sx1-48gb ~$1.57/h, gpu-4000adax1-20gb ~$0.76/h)
+  sizes:                      # tried in order until DigitalOcean has capacity (NVIDIA only: CUDA wheels)
+    - gpu-h100x1-80gb         # ~$4.41/h
+    - gpu-h200x1-141gb        # ~$4.47/h
+    - gpu-l40sx1-48gb         # ~$1.57/h
+    - gpu-6000adax1-48gb      # ~$1.57/h
+    - gpu-4000adax1-20gb      # ~$0.76/h
   image: gpu-h100x1-base      # DO AI/ML image (drivers + CUDA) — used for every single-GPU size
   max_hours: 3                # self-destruct safety net (worst case ~$13 on an H100)
   repo: https://github.com/diogocarapito/text-to-icpc2-v2
