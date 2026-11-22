@@ -148,12 +148,15 @@ def create(size: str, region: str | None, image: str, max_hours: float) -> tuple
 
 BOOTSTRAP = """set -euo pipefail
 export DEBIAN_FRONTEND=noninteractive
-command -v git >/dev/null || apt-get update -qq
-apt-get install -y -qq git python3-venv rsync >/dev/null
+command -v git >/dev/null || (apt-get update -qq && apt-get install -y -qq git)
+command -v rsync >/dev/null || apt-get install -y -qq rsync
+# the AI/ML image ships Python 3.10; uv fetches a standalone Python 3.12 (and installs fast)
+curl -LsSf https://astral.sh/uv/install.sh | sh >/dev/null 2>&1
+export PATH="$HOME/.local/bin:$PATH"
 rm -rf /root/app && git clone -q {repo} /root/app && cd /root/app && git checkout -q {sha}
-python3 -m venv .venv && .venv/bin/pip install -q -U pip
-.venv/bin/pip install -q -e ".[train]"
-.venv/bin/python -c "import torch; print('GPU:', torch.cuda.get_device_name(0))"
+uv venv -q --python 3.12 .venv
+uv pip install -q --python .venv/bin/python -e ".[train]"
+.venv/bin/python -c "import torch; print('GPU:', torch.cuda.get_device_name(0), 'torch', torch.__version__)"
 """
 
 
