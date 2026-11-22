@@ -86,6 +86,7 @@ def train(model_name: str | None = None, epochs: int | None = None, limit: int |
         logging_steps=50,
         seed=cfg["seed"],
         report_to="none",
+        bf16=device == "cuda",
     )
     SentenceTransformerTrainer(model=model, args=args, train_dataset=pairs,
                                loss=MultipleNegativesRankingLoss(model)).train()

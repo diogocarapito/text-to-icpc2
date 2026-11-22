@@ -15,9 +15,9 @@ training:
   backend: local
 
 gpu:                          # icpc2 gpu ... / backend: do
-  size: gpu-4000adax1-20gb    # RTX 4000 Ada 20 GB ~$0.76/h; gpu-l40sx1-48gb ~$1.57/h; gpu-h100x1-80gb ~$4.41/h
+  size: gpu-h100x1-80gb       # H100 ~$4.41/h (cheaper when in stock: gpu-l40sx1-48gb ~$1.57/h, gpu-4000adax1-20gb ~$0.76/h)
   image: gpu-h100x1-base      # DO AI/ML image (drivers + CUDA) — used for every single-GPU size
-  max_hours: 6                # self-destruct safety net
+  max_hours: 3                # self-destruct safety net (worst case ~$13 on an H100)
   repo: https://github.com/diogocarapito/text-to-icpc2-v2
 
 hf:
