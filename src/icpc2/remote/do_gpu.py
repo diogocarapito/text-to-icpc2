@@ -157,6 +157,16 @@ def create(candidates: list[str], region: str | None, image: str, max_hours: flo
 
 BOOTSTRAP = """set -euo pipefail
 export DEBIAN_FRONTEND=noninteractive
+# SSH answers before first boot finishes; the NVIDIA driver is ready only after cloud-init
+cloud-init status --wait >/dev/null 2>&1 || true
+for i in $(seq 1 60); do nvidia-smi >/dev/null 2>&1 && break; sleep 10; done
+if ! nvidia-smi --query-gpu=name,driver_version,memory.total --format=csv,noheader; then
+  echo "NVIDIA driver not ready after 10 min. Diagnostics:"
+  lsb_release -ds || true; uname -r; ls /dev/nvidia* 2>&1 | head -3; lsmod | grep -i nvidia || true
+  dpkg -l | grep -iE "nvidia-(driver|dkms|kernel)" | head -5 || true
+  systemctl --failed --no-pager | head -10 || true
+  exit 1
+fi
 command -v git >/dev/null || (apt-get update -qq && apt-get install -y -qq git)
 command -v rsync >/dev/null || apt-get install -y -qq rsync
 # the AI/ML image ships Python 3.10; uv fetches a standalone Python 3.12 (and installs fast)
