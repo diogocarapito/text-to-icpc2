@@ -36,6 +36,7 @@ serve = [
   "fastapi>=0.115",
   "uvicorn[standard]>=0.30",
   "jinja2>=3.1",
+  "markdown-it-py>=3.0",         # page text in web/content/*.md
   "sqlalchemy>=2.0",
   "psycopg[binary]>=3.2",
   "httpx>=0.27",

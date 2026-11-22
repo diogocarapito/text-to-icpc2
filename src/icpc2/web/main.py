@@ -25,6 +25,7 @@ from pydantic import BaseModel, Field
 from sqlalchemy import func, insert, select
 
 from icpc2.text import as_icpc2_code, scrub
+from icpc2.web import content
 from icpc2.web.db import feedback_t, make_engine, model_events_t, requests_t
 
 log = logging.getLogger("icpc2.web")
@@ -89,7 +90,9 @@ def _codes() -> dict:
 # ---------------------------------------------------------------- pages
 @app.get("/", response_class=HTMLResponse)
 def index(request: Request, response: Response):
-    resp = templates.TemplateResponse(request, "index.html", {})
+    ctx = {"t": content.ui("pt"), "i18n": {l: content.ui(l) for l in content.LANGS},
+           "about": {l: content.load(l)["about_html"] for l in content.LANGS}}
+    resp = templates.TemplateResponse(request, "index.html", ctx)
     if not request.cookies.get("sid"):
         resp.set_cookie("sid", str(uuid.uuid4()), max_age=3600 * 24 * 365, samesite="lax")
     return resp
@@ -114,11 +117,11 @@ def predict(body: PredictIn, request: Request):
     direct = as_icpc2_code(text)
     if direct:
         if direct not in codes:
-            raise HTTPException(404, f"Código {direct} não existe")
+            raise HTTPException(404, content.text(body.lang, "error_unknown_code", code=direct))
         preds, kind, version = [(direct, 1.0)], "code_lookup", None
     else:
         if not S.predictor:
-            raise HTTPException(503, "Modelo a carregar, tente dentro de momentos")
+            raise HTTPException(503, content.text(body.lang, "error_model_loading"))
         preds = S.predictor.predict([text], k=5)[0]
         kind, version = "model", S.predictor.version
     latency = (time.perf_counter() - t0) * 1000

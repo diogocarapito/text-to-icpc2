@@ -1,23 +1,25 @@
 <!doctype html>
+{#- All visible text comes from src/icpc2/web/content/{pt,en}.md — edit it there, not here. -#}
 <html lang="pt">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>text-to-ICPC2</title>
+  <title>{{ t.title }}</title>
+  <meta name="description" content="{{ t.description }}">
   <link rel="stylesheet" href="/static/style.css">
   <script>try { const t = localStorage.getItem("theme"); if (t) document.documentElement.dataset.theme = t; } catch {}</script>
 </head>
 <body>
 <main>
   <header>
-    <h1>text&#8209;to&#8209;ICPC2</h1>
-    <p class="sub" data-i18n="sub">Escreva um diagnóstico ou problema e obtenha o código ICPC-2.</p>
+    <h1>{{ t.title }}</h1>
+    <p class="sub" data-i18n="subtitle">{{ t.subtitle }}</p>
     <div class="controls">
-      <button type="button" id="theme" class="theme" aria-label="Alternar modo claro/escuro" title="Alternar modo claro/escuro">
+      <button type="button" id="theme" class="theme" aria-label="{{ t.theme }}" title="{{ t.theme }}">
         <svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
         <svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
       </button>
-      <div class="lang" role="group" aria-label="Idioma do texto">
+      <div class="lang" role="group" aria-label="PT / EN">
         <button type="button" data-lang="pt" class="on">PT</button>
         <button type="button" data-lang="en">EN</button>
       </div>
@@ -25,52 +27,38 @@
   </header>
 
   <form id="f" autocomplete="off">
-    <input id="q" name="q" maxlength="300" autofocus
-           placeholder="ex.: HTA não controlada, lombalgia mecânica, DM2" data-i18n-ph="ph">
-    <button type="submit" data-i18n="go">Classificar</button>
+    <input id="q" name="q" maxlength="300" autofocus placeholder="{{ t.placeholder }}" data-i18n-ph="placeholder">
+    <button type="submit" data-i18n="button">{{ t.button }}</button>
   </form>
-  <p class="notice" data-i18n="notice">Não introduza dados identificativos de doentes. Os textos submetidos e o seu feedback são registados para melhorar o modelo.</p>
+  <p class="notice" data-i18n="notice">{{ t.notice }}</p>
 
   <section id="out" hidden>
     <div class="meta" id="meta"></div>
     <ol id="results"></ol>
     <div id="fix" hidden>
-      <label for="fixq" data-i18n="fixlabel">Qual seria o código correto?</label>
+      <label for="fixq" data-i18n="fix_label">{{ t.fix_label }}</label>
       <div class="fixrow">
-        <input id="fixq" list="codes" placeholder="K86 ou hipertensão…">
-        <button type="button" id="fixgo" data-i18n="save">Guardar</button>
+        <input id="fixq" list="codes" placeholder="{{ t.fix_placeholder }}" data-i18n-ph="fix_placeholder">
+        <button type="button" id="fixgo" data-i18n="save">{{ t.save }}</button>
       </div>
       <datalist id="codes"></datalist>
     </div>
-    <p id="thanks" class="thanks" hidden data-i18n="thanks">Obrigado — o feedback foi registado.</p>
+    <p id="thanks" class="thanks" hidden data-i18n="thanks">{{ t.thanks }}</p>
   </section>
 
   <details class="about">
-    <summary><span class="pt-only">Sobre o projeto</span><span class="en-only">About the project</span></summary>
-    <div class="pt-only">
-      <p>O <b>text-to-ICPC2</b> sugere códigos ICPC-2 a partir de diagnósticos ou problemas escritos em texto livre, em português ou inglês, para apoiar a codificação nos cuidados de saúde primários. Cobre os 686 códigos de sintomas/queixas e diagnósticos da ICPC-2 (ACSS).</p>
-      <p>O modelo atual é um <i>retriever</i> baseado no <b>multilingual-e5-base</b>, treinado com as descrições oficiais da ICPC-2 e as correspondências com a ICD-10, dados sintéticos e o feedback de quem usa esta página. Num conjunto de 460 entradas verificadas por um médico, acerta no código em 1.º lugar em 92,2% dos casos e coloca-o entre os 5 primeiros em 98,5%.</p>
-      <p>Modelo: <a href="https://huggingface.co/diogocarapito/text-to-icpc2-v2">huggingface.co/diogocarapito/text-to-icpc2-v2</a><br>
-         Dataset: <a href="https://huggingface.co/datasets/diogocarapito/text-to-icpc2-v2-dataset">huggingface.co/datasets/diogocarapito/text-to-icpc2-v2-dataset</a><br>
-         Código: <a href="https://github.com/DiogoCarapito/text-to-icpc2-v2">github.com/DiogoCarapito/text-to-icpc2-v2</a></p>
-      <p>Este projeto foi desenvolvido por Diogo Carapito com o apoio de uma bolsa de investigação da <a href="https://aicib.pt/">AICIB</a> e da <a href="https://apmgf.pt/">APMGF</a>, no âmbito do internato médico de Medicina Geral e Familiar. É a segunda versão do <a href="https://github.com/DiogoCarapito/text-to-icpc2">text-to-icpc2</a>.</p>
-    </div>
-    <div class="en-only">
-      <p><b>text-to-ICPC2</b> suggests ICPC-2 codes from diagnoses or problems written as free text, in Portuguese or English, to support coding in primary care. It covers the 686 symptom/complaint and diagnosis codes of ICPC-2 (ACSS, Portugal).</p>
-      <p>The current model is a retriever based on <b>multilingual-e5-base</b>, trained on the official ICPC-2 descriptions and their ICD-10 mappings, synthetic data and feedback from people using this page. On 460 physician-verified entries, its first suggestion is correct 92.2% of the time, and the right code is in the top 5 for 98.5%.</p>
-      <p>Model: <a href="https://huggingface.co/diogocarapito/text-to-icpc2-v2">huggingface.co/diogocarapito/text-to-icpc2-v2</a><br>
-         Dataset: <a href="https://huggingface.co/datasets/diogocarapito/text-to-icpc2-v2-dataset">huggingface.co/datasets/diogocarapito/text-to-icpc2-v2-dataset</a><br>
-         Code: <a href="https://github.com/DiogoCarapito/text-to-icpc2-v2">github.com/DiogoCarapito/text-to-icpc2-v2</a></p>
-      <p>Developed by Diogo Carapito with the support of a research grant from <a href="https://aicib.pt/">AICIB</a> and <a href="https://apmgf.pt/">APMGF</a> (the Portuguese Association of General and Family Medicine), as part of the General and Family Medicine residency programme. It is the second version of <a href="https://github.com/DiogoCarapito/text-to-icpc2">text-to-icpc2</a>.</p>
-    </div>
+    <summary data-i18n="about_title">{{ t.about_title }}</summary>
+    <div class="pt-only">{{ about.pt | safe }}</div>
+    <div class="en-only">{{ about.en | safe }}</div>
   </details>
 
   <footer>
     <span id="model"></span> ·
     <a href="https://github.com/DiogoCarapito/text-to-icpc2-v2">GitHub</a> ·
-    <span data-i18n="disclaimer">Demo de investigação, não é um dispositivo médico.</span>
+    <span data-i18n="disclaimer">{{ t.disclaimer }}</span>
   </footer>
 </main>
+<script type="application/json" id="i18n">{{ i18n | tojson }}</script>
 <script src="/static/app.js"></script>
 </body>
 </html>

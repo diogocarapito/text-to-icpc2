@@ -1,34 +1,18 @@
-const I18N = {
-  en: {
-    sub: "Type a diagnosis or problem and get its ICPC-2 code.",
-    ph: "e.g. uncontrolled hypertension, low back pain, T2DM",
-    go: "Classify",
-    notice: "Do not enter patient-identifying data. Submitted texts and feedback are logged to improve the model.",
-    fixlabel: "What would be the correct code?",
-    save: "Save",
-    thanks: "Thanks — feedback recorded.",
-    disclaimer: "Research demo, not a medical device.",
-    copy: "Copy", copied: "Copied", right: "Correct", wrong: "Wrong",
-    theme: "Toggle light/dark mode",
-  },
-  pt: {
-    copy: "Copiar", copied: "Copiado", right: "Correto", wrong: "Errado",
-    theme: "Alternar modo claro/escuro",
-  },
-};
+// All text comes from src/icpc2/web/content/{pt,en}.md (rendered into #i18n by the server).
+const I18N = JSON.parse(document.getElementById("i18n").textContent);
 const $ = (s) => document.querySelector(s);
-let lang = "pt", current = null, codes = [];
-const ptDefaults = {};
-document.querySelectorAll("[data-i18n]").forEach((e) => (ptDefaults[e.dataset.i18n] = e.textContent));
-ptDefaults.ph = $("#q").placeholder;
-const t = (k) => (lang === "en" ? I18N.en[k] : I18N.pt[k] ?? ptDefaults[k]);
+let lang = "pt", current = null, codes = [], health = null;
+const t = (k, fmt = {}) =>
+  (I18N[lang]?.[k] ?? I18N.pt[k] ?? k).replace(/\{(\w+)\}/g, (_, n) => fmt[n] ?? "");
 
 function setLang(l) {
   lang = l;
   document.documentElement.lang = l;
   document.querySelectorAll(".lang button").forEach((b) => b.classList.toggle("on", b.dataset.lang === l));
   document.querySelectorAll("[data-i18n]").forEach((e) => (e.textContent = t(e.dataset.i18n)));
-  $("#q").placeholder = t("ph");
+  document.querySelectorAll("[data-i18n-ph]").forEach((e) => (e.placeholder = t(e.dataset.i18nPh)));
+  document.title = t("title");
+  renderModel();
   $("#theme").title = t("theme"); $("#theme").setAttribute("aria-label", t("theme"));
   try { localStorage.setItem("lang", l); } catch {}
   if (current) render(current);
@@ -71,7 +55,7 @@ function render(data) {
       ${p.inclusion.length ? `<div class="incl"></div>` : ""}
       <div class="actions">
         <button class="copy">${t("copy")}</button>
-        <button class="ok">✓ ${t("right")}</button>
+        <button class="ok">✓ ${t("correct")}</button>
         <button class="no">✗ ${t("wrong")}</button>
       </div>`;
     li.querySelector(".title").textContent = title;
@@ -86,7 +70,7 @@ function render(data) {
     ol.appendChild(li);
   });
   const ms = data.latency_ms != null ? ` · ${data.latency_ms} ms` : "";
-  $("#meta").textContent = (data.model_version ? `modelo ${data.model_version}` : "pesquisa por código") + ms;
+  $("#meta").textContent = (data.model_version ? t("model", { version: data.model_version }) : t("code_lookup")) + ms;
 }
 
 function markChosen(li) {
@@ -132,4 +116,7 @@ $("#f").addEventListener("submit", async (ev) => {
   } finally { btn.disabled = false; }
 });
 
-fetch("/health").then((r) => r.json()).then((h) => { $("#model").textContent = h.model ? `modelo ${h.model}` : "modelo a carregar…"; });
+function renderModel() {
+  if (health) $("#model").textContent = health.model ? t("model", { version: health.model }) : t("model_loading");
+}
+fetch("/health").then((r) => r.json()).then((h) => { health = h; renderModel(); });
