@@ -24,3 +24,6 @@ data/gold/to_label.csv
 # PRIVATE: user-submitted text lives only in the private HF feedback repo
 data/feedback/*
 !data/feedback/.gitkeep
+
+# private ops notes (server access, runbook)
+*.private.md

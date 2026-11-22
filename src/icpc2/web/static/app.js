@@ -9,9 +9,11 @@ const I18N = {
     thanks: "Thanks — feedback recorded.",
     disclaimer: "Research demo, not a medical device.",
     copy: "Copy", copied: "Copied", right: "Correct", wrong: "Wrong",
+    theme: "Toggle light/dark mode",
   },
   pt: {
     copy: "Copiar", copied: "Copiado", right: "Correto", wrong: "Errado",
+    theme: "Alternar modo claro/escuro",
   },
 };
 const $ = (s) => document.querySelector(s);
@@ -27,11 +29,22 @@ function setLang(l) {
   document.querySelectorAll(".lang button").forEach((b) => b.classList.toggle("on", b.dataset.lang === l));
   document.querySelectorAll("[data-i18n]").forEach((e) => (e.textContent = t(e.dataset.i18n)));
   $("#q").placeholder = t("ph");
+  $("#theme").title = t("theme"); $("#theme").setAttribute("aria-label", t("theme"));
   try { localStorage.setItem("lang", l); } catch {}
   if (current) render(current);
 }
 document.querySelectorAll(".lang button").forEach((b) => b.addEventListener("click", () => setLang(b.dataset.lang)));
 try { const l = localStorage.getItem("lang"); if (l) setLang(l); } catch {}
+
+// Light/dark toggle: starts from the system setting, then remembers the choice.
+$("#theme").addEventListener("click", () => {
+  const root = document.documentElement;
+  const isDark = root.dataset.theme
+    ? root.dataset.theme === "dark"
+    : matchMedia("(prefers-color-scheme: dark)").matches;
+  root.dataset.theme = isDark ? "light" : "dark";
+  try { localStorage.setItem("theme", root.dataset.theme); } catch {}
+});
 
 async function sendFeedback(kind, code) {
   if (!current) return;

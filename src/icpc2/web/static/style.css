@@ -2,10 +2,19 @@
   --bg: #fbfaf7; --fg: #1d1c1a; --muted: #6b6860; --line: #e4e1da; --card: #fff;
   --accent: #1f6f5c; --accent-fg: #fff; --ok: #1f7a3a; --bad: #b3261e; --bar: #cfe5dd;
 }
+/* dark: follows the system unless the toggle chose a theme (html[data-theme]) */
 @media (prefers-color-scheme: dark) {
-  :root { --bg: #151514; --fg: #ecebe7; --muted: #a09d95; --line: #2c2b29; --card: #1d1d1b;
-          --accent: #4fb39a; --accent-fg: #0d1512; --ok: #5cc27a; --bad: #ef7b72; --bar: #24433a; }
+  :root:not([data-theme="light"]) {
+    --bg: #151514; --fg: #ecebe7; --muted: #a09d95; --line: #2c2b29; --card: #1d1d1b;
+    --accent: #4fb39a; --accent-fg: #0d1512; --ok: #5cc27a; --bad: #ef7b72; --bar: #24433a; }
 }
+:root[data-theme="dark"] {
+  --bg: #151514; --fg: #ecebe7; --muted: #a09d95; --line: #2c2b29; --card: #1d1d1b;
+  --accent: #4fb39a; --accent-fg: #0d1512; --ok: #5cc27a; --bad: #ef7b72; --bar: #24433a;
+}
+:root { color-scheme: light; }
+:root[data-theme="dark"] { color-scheme: dark; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { color-scheme: dark; } }
 * { box-sizing: border-box; }
 body { margin: 0; background: var(--bg); color: var(--fg);
        font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
@@ -13,7 +22,21 @@ main { max-width: 720px; margin: 0 auto; padding: 32px 16px 48px; }
 header { position: relative; margin-bottom: 20px; }
 h1 { margin: 0; font-size: 1.6rem; letter-spacing: -0.01em; }
 .sub { margin: 4px 0 0; color: var(--muted); }
-.lang { position: absolute; top: 4px; right: 0; display: flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+h1 { padding-right: 130px; }
+.controls { position: absolute; top: 4px; right: 0; display: flex; gap: 8px; align-items: stretch; }
+.theme { display: grid; place-items: center; width: 32px; padding: 0; border: 1px solid var(--line); border-radius: 8px;
+         background: transparent; color: var(--muted); }
+.theme:hover { color: var(--fg); }
+.theme svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.theme .moon { display: none; }
+/* show the icon of the theme you would switch TO */
+:root[data-theme="light"] .theme .sun { display: none; }
+:root[data-theme="light"] .theme .moon { display: block; }
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme]) .theme .sun { display: none; }
+  :root:not([data-theme]) .theme .moon { display: block; }
+}
+.lang { display: flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
 .lang button { border: 0; background: transparent; color: var(--muted); padding: 4px 10px; cursor: pointer; font: inherit; font-size: .85rem; }
 .lang button.on { background: var(--accent); color: var(--accent-fg); }
 form { display: flex; gap: 8px; }
@@ -43,7 +66,13 @@ li.bad { opacity: .6; }
 #fix label { display: block; font-size: .9rem; margin-bottom: 6px; }
 .fixrow { display: flex; gap: 8px; }
 .thanks { color: var(--ok); font-size: .9rem; }
-footer { margin-top: 40px; color: var(--muted); font-size: .8rem; }
+html[lang="en"] .pt-only, html:not([lang="en"]) .en-only { display: none; }
+.about { margin-top: 40px; border-top: 1px solid var(--line); padding-top: 14px; font-size: .9rem; }
+.about summary { cursor: pointer; color: var(--muted); font-weight: 600; }
+.about summary:hover { color: var(--fg); }
+.about p { margin: 10px 0 0; color: var(--fg); }
+.about a { color: var(--accent); overflow-wrap: anywhere; }
+footer { margin-top: 24px; color: var(--muted); font-size: .8rem; }
 footer a { color: inherit; }
 /* stats */
 .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin: 16px 0 24px; }
