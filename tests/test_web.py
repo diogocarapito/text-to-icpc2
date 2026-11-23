@@ -21,6 +21,23 @@ class FakePredictor:
                 for _ in texts]
 
 
+class FakeRetriever(FakePredictor):
+    type = "retriever"
+
+    def __init__(self):
+        super().__init__()
+        self.added = []
+
+    def add_examples(self, texts, codes):
+        self.added += list(zip(texts, codes))
+        return len(texts)
+
+
+def fb(client, pred: dict, kind: str, code: str):
+    return client.post("/api/feedback", json={"request_id": pred["request_id"], "feedback_key": pred["feedback_key"],
+                                              "kind": kind, "code": code})
+
+
 @pytest.fixture
 def client(tmp_path, monkeypatch):
     monkeypatch.setenv("DATABASE_URL", f"sqlite:///{tmp_path}/t.sqlite3")
@@ -28,6 +45,7 @@ def client(tmp_path, monkeypatch):
     import icpc2.web.main as m
 
     m = importlib.reload(m)
+    m.real_load_model = m.load_model
     monkeypatch.setattr(m, "load_model", lambda: None)
     m.S.predictor = FakePredictor()
     with TestClient(m.app) as c:
@@ -39,11 +57,9 @@ def test_predict_feedback_export(client, monkeypatch):
     assert r.status_code == 200
     body = r.json()
     assert body["predictions"][0]["code"] == "K86"
-    rid = body["request_id"]
-
-    assert client.post("/api/feedback", json={"request_id": rid, "kind": "correct", "code": "K86"}).json()["rank"] == 1
-    assert client.post("/api/feedback", json={"request_id": rid, "kind": "corrected", "code": "T90"}).json()["rank"] == 4
-    assert client.post("/api/feedback", json={"request_id": rid, "kind": "copy", "code": "Z99"}).status_code == 400
+    assert fb(client, body, "correct", "K86").json()["rank"] == 1
+    assert fb(client, body, "corrected", "T90").json()["rank"] == 4
+    assert fb(client, body, "copy", "Z99").status_code == 400
 
     assert client.get("/api/export").status_code == 401
     from datetime import timedelta
@@ -58,7 +74,9 @@ def test_predict_feedback_export(client, monkeypatch):
             return real_dt.now(tz) + timedelta(hours=1)
 
     monkeypatch.setattr(m, "datetime", Later)
-    ev = client.get("/api/export", headers={"Authorization": "Bearer secret"}).json()["events"]
+    out = client.get("/api/export", headers={"Authorization": "Bearer secret"}).json()
+    ev = out["events"]
+    assert out["reviews"] == []  # the T90 correction is a deviation: pending, not exported as allowed
     assert len(ev) == 1
     assert "<NUM>" in ev[0]["text"]  # SNS number scrubbed before storage
     assert {f["kind"] for f in ev[0]["feedback"]} == {"correct", "corrected"}
@@ -74,8 +92,7 @@ def test_code_lookup_and_stats(client):
 
 
 def test_painel_login_and_dashboard(client):
-    rid = client.post("/api/predict", json={"text": "tensão alta", "lang": "pt"}).json()["request_id"]
-    client.post("/api/feedback", json={"request_id": rid, "kind": "corrected", "code": "K87"})
+    fb(client, client.post("/api/predict", json={"text": "tensão alta", "lang": "pt"}).json(), "corrected", "K87")
     client.cookies.set("sid", "abc")
     client.post("/api/predict", json={"text": "hipertensão", "lang": "en"})
 
@@ -95,7 +112,9 @@ def test_painel_login_and_dashboard(client):
 
     client.post("/painel/sair")
     assert 'name="codigo"' in client.get("/painel").text
-    assert "Desempenho" in client.get("/stats?token=secret").text  # old links still work
+    # the token is never accepted in the URL (browser history / logs)
+    assert 'name="codigo"' in client.get("/stats?token=secret").text
+    assert client.get("/api/export?token=secret").status_code == 401
 
 
 def test_dashboard_numbers(client):
@@ -103,8 +122,7 @@ def test_dashboard_numbers(client):
     from icpc2.web import dashboard
 
     for kind, code in [("correct", "K86"), ("corrected", "K87"), ("copy", "T90")]:
-        rid = client.post("/api/predict", json={"text": f"x {kind}"}).json()["request_id"]
-        client.post("/api/feedback", json={"request_id": rid, "kind": kind, "code": code})
+        fb(client, client.post("/api/predict", json={"text": f"x {kind}"}).json(), kind, code)
     client.post("/api/predict", json={"text": "sem feedback"})
     d = dashboard.compute(m.engine, "30", m._codes())
     k = d["kpi"]
@@ -123,3 +141,92 @@ def test_rate_limit_and_hidden_admin_routes(client, monkeypatch):
     assert "Too many requests" in client.post("/api/predict", json={"text": "tosse", "lang": "en"}).json()["detail"]
     paths = client.get("/openapi.json").json()["paths"]
     assert "/api/predict" in paths and not any(p.startswith(("/painel", "/stats", "/api/export", "/api/admin")) for p in paths)
+
+
+def test_feedback_needs_key_and_is_deduplicated(client):
+    pred = client.post("/api/predict", json={"text": "hta"}).json()
+    other = client.post("/api/predict", json={"text": "hta"}).json()
+    # someone else's request id with a key that is not its own
+    forged = {"request_id": pred["request_id"], "feedback_key": other["feedback_key"], "kind": "corrected", "code": "T90"}
+    assert client.post("/api/feedback", json=forged).status_code == 404
+    assert client.post("/api/feedback", json={**forged, "feedback_key": "x"}).status_code == 422
+    assert fb(client, pred, "corrected", "T90").status_code == 200
+    assert fb(client, pred, "corrected", "T89").status_code == 409  # one per kind per request
+
+
+def test_feedback_rate_limited(client, monkeypatch):
+    import icpc2.web.main as m
+
+    pred = client.post("/api/predict", json={"text": "hta"}).json()
+    monkeypatch.setattr(m, "RATE_PER_MIN", 2)
+    m._hits.clear()
+    assert [fb(client, pred, k, "K86").status_code for k in ("copy", "correct", "wrong")] == [200, 200, 429]
+
+
+@pytest.fixture
+def retr(client):
+    import icpc2.web.main as m
+
+    m.S.predictor = FakeRetriever()
+    return m.S.predictor
+
+
+def test_deviation_waits_for_admin_approval(client, retr):
+    """The attack from the review: one correction must not change answers for everyone."""
+    for sid in ("a", "b", "c", "d"):  # even several sessions agreeing on a deviation
+        client.cookies.set("sid", sid)
+        assert fb(client, client.post("/api/predict", json={"text": "diabetes"}).json(), "corrected", "A01").status_code == 200
+    assert retr.added == []
+
+    client.post("/painel/entrar", data={"codigo": "secret"})
+    page = client.get("/painel").text
+    assert "Correções por rever" in page and "diabetes" in page and "forte" in page  # A01: other chapter
+    assert client.post("/painel/rever", data={"text_key": "diabetes", "code": "A01", "text": "diabetes",
+                                              "action": "approve"}).status_code == 200
+    assert retr.added == [("diabetes", "A01")]
+    assert "Nada por rever" in client.get("/painel").text
+    reviews = client.get("/api/export").json()["reviews"]
+    assert [(r["code"], r["status"]) for r in reviews] == [("A01", "approved")]
+
+
+def test_rejected_and_unauthenticated_review(client, retr):
+    fb(client, client.post("/api/predict", json={"text": "tosse"}).json(), "corrected", "R05")
+    assert client.post("/painel/rever", data={"text_key": "tosse", "code": "R05", "action": "approve"}).status_code == 401
+    client.post("/painel/entrar", data={"codigo": "secret"})
+    client.post("/painel/rever", data={"text_key": "tosse", "code": "R05", "text": "tosse", "action": "reject"})
+    client.post("/painel/sair")
+    client.cookies.set("sid", "z")
+    fb(client, client.post("/api/predict", json={"text": "tosse"}).json(), "corrected", "R05")
+    assert retr.added == []
+
+
+def test_agreement_needs_consensus_of_sessions(client, retr, monkeypatch):
+    monkeypatch.setenv("ICPC2_CONSENSUS", "3")
+    for i, sid in enumerate(("s1", "s1", "s2", "s3")):  # s1 twice counts once
+        client.cookies.set("sid", sid)
+        fb(client, client.post("/api/predict", json={"text": "HTA"}).json(), "correct", "K86")
+        assert retr.added == ([] if i < 3 else [("HTA", "K86")])
+    # a 5th agreement does not add it again
+    client.cookies.set("sid", "s4")
+    fb(client, client.post("/api/predict", json={"text": "hta"}).json(), "correct", "K86")
+    assert len(retr.added) == 1
+
+
+def test_admin_feedback_counts_as_approval(client, retr):
+    client.post("/painel/entrar", data={"codigo": "secret"})
+    fb(client, client.post("/api/predict", json={"text": "dm2 insulinotratada"}).json(), "corrected", "T89")
+    assert retr.added == [("dm2 insulinotratada", "T89")]
+
+
+def test_reviewed_labels_reapplied_on_model_load(client, monkeypatch):
+    import icpc2.web.main as m
+    from icpc2.web import learning
+
+    with m.engine.begin() as c:
+        learning.record(c, "dor lombar", "dor lombar", "L03", "approved", "painel")
+        learning.record(c, "tosse", "tosse", "R05", "rejected", "painel")
+    fake = FakeRetriever()
+    monkeypatch.setattr("icpc2.predict.load_predictor", lambda *a, **k: fake)
+    m.real_load_model()
+    assert m.S.predictor is fake and m.S.load_error is None
+    assert fake.added == [("dor lombar", "L03")]  # approved re-applied, rejected not

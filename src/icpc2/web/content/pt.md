@@ -9,7 +9,7 @@ description: "Sugere códigos ICPC-2 a partir de diagnósticos ou problemas escr
 subtitle: "Escreva um diagnóstico ou problema e obtenha o código ICPC-2."
 placeholder: "ex.: HTA não controlada, lombalgia mecânica, DM2"
 button: "Classificar"
-notice: "Não introduza dados identificativos de doentes. Os textos submetidos e o seu feedback são registados para melhorar o modelo."
+notice: "Não escreva dados que identifiquem o doente (nomes, datas, moradas, números de utente). Os textos e o feedback são registados, sem endereço IP, para melhorar o modelo; as correções só são usadas depois de revistas."
 
 # resultados
 copy: "Copiar"
@@ -66,6 +66,7 @@ Resposta (abreviada):
 ```json
 {
   "request_id": 1234,
+  "feedback_key": "9f2c…",
   "model_version": "v1",
   "latency_ms": 31.2,
   "predictions": [
@@ -79,7 +80,7 @@ Resposta (abreviada):
 
 `predictions` traz os 5 códigos mais prováveis, do melhor para o pior. O `score` (0 a 1) é uma pontuação de semelhança, não uma probabilidade. Se o texto for um código (ex.: `K86`), a resposta é esse código e `model_version` é `null`.
 
-**Enviar feedback**: `POST /api/feedback` com `{"request_id": 1234, "kind": "correct", "code": "K86"}`. `kind` pode ser `correct`, `wrong`, `corrected` (com o código certo) ou `copy`.
+**Enviar feedback**: `POST /api/feedback` com `{"request_id": 1234, "feedback_key": "…", "kind": "correct", "code": "K86"}`, usando o `request_id` e a `feedback_key` devolvidos pelo `/api/predict`. `kind` pode ser `correct`, `wrong`, `corrected` (com o código certo) ou `copy`; um de cada por pedido. As correções para um código diferente do 1.º sugerido só alteram o modelo depois de revistas por um médico.
 
 **Outros:** `GET /api/codes` (lista dos 686 códigos com títulos) · `GET /health` (versão do modelo).
 

@@ -9,7 +9,7 @@ description: "Suggests ICPC-2 codes from diagnoses or problems written as free t
 subtitle: "Type a diagnosis or problem and get its ICPC-2 code."
 placeholder: "e.g. uncontrolled hypertension, low back pain, T2DM"
 button: "Classify"
-notice: "Do not enter patient-identifying data. Submitted texts and feedback are logged to improve the model."
+notice: "Do not type anything that identifies the patient (names, dates, addresses, record numbers). Texts and feedback are logged, without IP addresses, to improve the model; corrections are used only after review."
 
 # results
 copy: "Copy"
@@ -66,6 +66,7 @@ Response (shortened):
 ```json
 {
   "request_id": 1234,
+  "feedback_key": "9f2c…",
   "model_version": "v1",
   "latency_ms": 31.2,
   "predictions": [
@@ -79,7 +80,7 @@ Response (shortened):
 
 `predictions` holds the 5 most likely codes, best first. `score` (0 to 1) is a similarity score, not a probability. If the text is a code (e.g. `K86`), the response is that code and `model_version` is `null`.
 
-**Send feedback**: `POST /api/feedback` with `{"request_id": 1234, "kind": "correct", "code": "K86"}`. `kind` is one of `correct`, `wrong`, `corrected` (with the right code) or `copy`.
+**Send feedback**: `POST /api/feedback` with `{"request_id": 1234, "feedback_key": "…", "kind": "correct", "code": "K86"}`, using the `request_id` and `feedback_key` returned by `/api/predict`. `kind` is one of `correct`, `wrong`, `corrected` (with the right code) or `copy`; one of each per request. Corrections to a code other than the 1st suggestion change the model only after a physician reviews them.
 
 **Other:** `GET /api/codes` (the 686 codes with titles) · `GET /health` (model version).
 

@@ -7,7 +7,7 @@ trigger:
   min_new_labels: 50          # retrain only if >= this many new user labels since last run
   max_days_between: 30        # ...or if the last training is older than this (picks up new synth data)
 
-model_type: classifier        # classifier | retriever  (set to the benchmark winner)
+model_type: retriever         # classifier | retriever  (benchmark-01 winner: e5-base retriever = production v1)
 
 training:
   # local = this machine (Mac MPS)

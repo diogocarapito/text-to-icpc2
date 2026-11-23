@@ -121,7 +121,11 @@ def run_sweep(spec_path: str, only: list[str] | None = None, keep_models: int = 
     for r in trained[keep_models:]:
         shutil.rmtree(Path(model_dirs[r]).parent, ignore_errors=True)
     if trained:
-        (out_root / "best_model.txt").write_text("\n".join(model_dirs[r] for r in trained[:keep_models]))
+        # repo-relative paths (no machine-specific prefix in a committed file)
+        root = path(".").resolve()
+        rel = [str(Path(model_dirs[r]).resolve().relative_to(root)) if Path(model_dirs[r]).resolve().is_relative_to(root)
+               else model_dirs[r] for r in trained[:keep_models]]
+        (out_root / "best_model.txt").write_text("\n".join(rel))
     return df
 
 

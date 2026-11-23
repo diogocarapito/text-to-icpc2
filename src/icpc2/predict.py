@@ -3,6 +3,7 @@ so the numbers you evaluate are produced by exactly the code you serve."""
 
 import json
 import logging
+import threading
 from pathlib import Path
 
 import numpy as np
@@ -52,6 +53,7 @@ class ClassifierPredictor(Predictor):
 class RetrieverPredictor(Predictor):
     type = "retriever"
     temperature = 0.05
+    max_added = 20_000  # live additions between retrains; beyond this they wait for the next retrain
 
     def __init__(self, d: Path, device: str = "cpu", **_):
         from sentence_transformers import SentenceTransformer
@@ -59,16 +61,39 @@ class RetrieverPredictor(Predictor):
         self.cfg = json.loads((d / "retriever_cfg.json").read_text())
         self.model = SentenceTransformer(str(d), device=device)
         idx = np.load(d / "index.npz")
-        self.emb = idx["emb"].astype(np.float32)
-        self.idx_codes = idx["codes"]
-        self.weights = idx["weights"].astype(np.float32)
+        # (emb, codes, weights) is replaced as ONE object, so a concurrent predict() always sees
+        # three arrays of the same length
+        self._index = (idx["emb"].astype(np.float32), idx["codes"], idx["weights"].astype(np.float32))
+        self._base_n = len(self._index[1])
+        self._lock = threading.Lock()
 
-    def add_examples(self, texts: list[str], codes: list[str]):
-        """Make confirmed user labels effective immediately, without retraining."""
-        e = self._encode(texts)
-        self.emb = np.vstack([self.emb, e])
-        self.idx_codes = np.concatenate([self.idx_codes, np.array(codes)])
-        self.weights = np.concatenate([self.weights, np.ones(len(codes), np.float32)])
+    @property
+    def emb(self):
+        return self._index[0]
+
+    @property
+    def idx_codes(self):
+        return self._index[1]
+
+    @property
+    def weights(self):
+        return self._index[2]
+
+    def add_examples(self, texts: list[str], codes: list[str]) -> int:
+        """Make reviewed user labels effective immediately, without retraining. Returns how many
+        were added (0 once the cap is reached)."""
+        e = self._encode(texts)  # outside the lock: the slow part
+        with self._lock:
+            emb, idx_codes, weights = self._index
+            room = self.max_added - (len(idx_codes) - self._base_n)
+            if room < len(codes):
+                log.warning("Live index cap reached (%d added); %d label(s) wait for the next retrain",
+                            self.max_added, len(codes) - max(room, 0))
+            n = max(0, min(room, len(codes)))
+            if n:
+                self._index = (np.vstack([emb, e[:n]]), np.concatenate([idx_codes, np.array(codes[:n])]),
+                               np.concatenate([weights, np.ones(n, np.float32)]))
+            return n
 
     def _encode(self, texts):
         return self.model.encode([self.cfg["query_prefix"] + t for t in texts],
@@ -76,14 +101,15 @@ class RetrieverPredictor(Predictor):
 
     def predict(self, texts, k=5):
         q = self._encode(texts)
-        sims = (q @ self.emb.T) * self.weights
+        emb, idx_codes, weights = self._index  # one consistent snapshot
+        sims = (q @ emb.T) * weights
         kk = min(self.cfg["knn_k"], sims.shape[1])
         out = []
         for row in sims:
             nn = np.argpartition(-row, kk - 1)[:kk]
             best: dict[str, float] = {}
             for j in nn:  # per-code max similarity
-                c = str(self.idx_codes[j])
+                c = str(idx_codes[j])
                 best[c] = max(best.get(c, -1.0), float(row[j]))
             items = sorted(best.items(), key=lambda x: -x[1])
             s = np.array([v for _, v in items]) / self.temperature

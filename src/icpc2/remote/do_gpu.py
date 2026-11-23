@@ -214,6 +214,8 @@ def run(command: list[str], size: str | None = None, region: str | None = None,
         if fetch_best_model:
             for best in path("experiments").glob("*/best_model.txt"):
                 for remote_dir in best.read_text().split():
+                    if not remote_dir.startswith("/"):  # repo-relative (current sweeps)
+                        remote_dir = "/root/app/" + remote_dir
                     local = Path(remote_dir.replace("/root/app/", str(path(".")) + "/"))
                     local.mkdir(parents=True, exist_ok=True)
                     subprocess.run(["rsync", "-az", "-e", " ".join(ssh[:-1]),

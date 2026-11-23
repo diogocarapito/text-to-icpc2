@@ -6,7 +6,9 @@ Env:
   DATABASE_URL        sqlite:///... or postgresql+psycopg://...
   ICPC2_ADMIN_TOKEN   admin code: Bearer token for /api/export and /api/admin/reload;
                       typed once on /painel (the hidden dashboard), which then sets a cookie
-  ICPC2_RATE_PER_MIN  /api/predict requests per minute per client address (default 120)
+  ICPC2_RATE_PER_MIN  /api/predict and /api/feedback requests per minute per client address (default 120)
+  ICPC2_CONSENSUS     distinct sessions that must confirm the model's 1st code before it is added
+                      to the live index (default 3); other codes need admin approval (see learning.py)
 """
 
 import asyncio
@@ -14,6 +16,7 @@ import hashlib
 import hmac
 import logging
 import os
+import secrets
 import threading
 import time
 import uuid
@@ -30,8 +33,8 @@ from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel, Field
 from sqlalchemy import insert, select
 
-from icpc2.text import as_icpc2_code, scrub
-from icpc2.web import content, dashboard
+from icpc2.text import as_icpc2_code, norm_key, scrub
+from icpc2.web import content, dashboard, learning
 from icpc2.web.db import feedback_t, make_engine, model_events_t, requests_t
 
 log = logging.getLogger("icpc2.web")
@@ -56,6 +59,10 @@ def load_model():
     rev = None if os.environ.get("MODEL_PATH") else os.environ.get("MODEL_REVISION", "main")
     try:
         p = load_predictor(src, revision=rev)
+        if hasattr(p, "add_examples"):  # re-apply reviewed user labels (lost when the process restarts)
+            pairs = learning.live_pairs(engine)
+            if pairs:
+                p.add_examples([t for t, _ in pairs], [c for _, c in pairs])
         p.predict(["aquecimento"], k=1)  # warm-up
         with S.lock:
             S.predictor, S.load_error = p, None
@@ -93,8 +100,8 @@ def is_admin(request: Request) -> bool:
     token = _admin_token()
     if not token:
         return False
-    given = request.headers.get("authorization", "").removeprefix("Bearer ").strip() or \
-        request.query_params.get("token", "")
+    # header only: a token in the URL ends up in browser history and proxy logs
+    given = request.headers.get("authorization", "").removeprefix("Bearer ").strip()
     if given and hmac.compare_digest(given, token):
         return True
     cookie = request.cookies.get(ADMIN_COOKIE, "")
@@ -142,7 +149,8 @@ def index(request: Request, response: Response):
            "sections": {l: content.load(l)["sections"] for l in content.LANGS}}
     resp = templates.TemplateResponse(request, "index.html", ctx)
     if not request.cookies.get("sid"):
-        resp.set_cookie("sid", str(uuid.uuid4()), max_age=3600 * 24 * 365, samesite="lax")
+        resp.set_cookie("sid", str(uuid.uuid4()), max_age=3600 * 24 * 30, samesite="lax", httponly=True,
+                        secure=request.url.scheme == "https")
     return resp
 
 
@@ -178,37 +186,46 @@ def predict(body: PredictIn, request: Request):
     out = [{"code": c, "score": round(s, 4), "title_pt": codes[c]["title_pt"],
             "title_en": codes[c].get("title_en", ""), "inclusion": codes[c].get("inclusion", [])[:6]}
            for c, s in preds]
+    clean, fkey = scrub(text), secrets.token_hex(16)
     with engine.begin() as conn:
         rid = conn.execute(insert(requests_t).values(
-            session_id=request.cookies.get("sid"), text=scrub(text), lang=body.lang, kind=kind,
-            model_version=version, latency_ms=latency,
+            session_id=request.cookies.get("sid"), text=clean, text_key=norm_key(clean)[:300],
+            feedback_key=fkey, lang=body.lang, kind=kind, model_version=version, latency_ms=latency,
             predictions=[{"code": p["code"], "score": p["score"]} for p in out],
         )).inserted_primary_key[0]
-    return {"request_id": rid, "model_version": version, "latency_ms": round(latency, 1),
-            "predictions": out}
+    return {"request_id": rid, "feedback_key": fkey, "model_version": version,
+            "latency_ms": round(latency, 1), "predictions": out}
 
 
 class FeedbackIn(BaseModel):
     request_id: int
+    feedback_key: str = Field(min_length=32, max_length=32)
     kind: str = Field(pattern="^(correct|wrong|corrected|copy)$")
     code: str = Field(pattern="^[A-Z][0-9]{2}$")
 
 
 @app.post("/api/feedback")
-def feedback(body: FeedbackIn):
+def feedback(body: FeedbackIn, request: Request):
+    if not _rate_ok("fb|" + (request.client.host if request.client else "?")):
+        raise HTTPException(429, "too many requests")
     if body.code not in _codes():
         raise HTTPException(400, "unknown code")
+    learn = None
     with engine.begin() as conn:
         req = conn.execute(select(requests_t).where(requests_t.c.id == body.request_id)).first()
-        if not req:
+        # same answer for "no such request" and "wrong key": request ids are sequential
+        if not req or not req.feedback_key or not hmac.compare_digest(req.feedback_key, body.feedback_key):
             raise HTTPException(404, "unknown request")
+        if conn.execute(select(feedback_t.c.id).where(feedback_t.c.request_id == req.id,
+                                                      feedback_t.c.kind == body.kind)).first():
+            raise HTTPException(409, "feedback already recorded")
         shown = [p["code"] for p in (req.predictions or [])]
         rank = shown.index(body.code) + 1 if body.code in shown else None
-        conn.execute(insert(feedback_t).values(request_id=body.request_id, kind=body.kind,
-                                               code=body.code, rank=rank))
-    # retriever models learn confirmed labels immediately (until the next retrain)
-    if body.kind in ("correct", "corrected") and S.predictor and hasattr(S.predictor, "add_examples"):
-        S.predictor.add_examples([req.text], [body.code])
+        conn.execute(insert(feedback_t).values(request_id=req.id, kind=body.kind, code=body.code, rank=rank))
+        if body.kind in learning.LABEL_KINDS and req.kind == "model":
+            learn = learning.on_label(conn, req, body.code, admin=is_admin(request))
+    if learn and S.predictor and hasattr(S.predictor, "add_examples"):
+        S.predictor.add_examples([learn[0]], [learn[1]])
     return {"ok": True, "rank": rank}
 
 
@@ -236,9 +253,13 @@ def export(since_id: int = 0, limit: int = 1000):
         if created > cutoff:
             break
         events.append({"id": r.id, "created_at": created.isoformat(), "text": r.text, "lang": r.lang,
+                       "session": hashlib.sha256(r.session_id.encode()).hexdigest()[:16] if r.session_id else None,
                        "model_version": r.model_version, "predictions": r.predictions,
                        "feedback": by_req.get(r.id, [])})
-    return {"events": events}
+    # every review decision (small table), so the loop only trains on approved/consensus labels
+    with engine.connect() as conn:
+        reviews = learning.all_reviews(conn)
+    return {"events": events, "reviews": reviews}
 
 
 @app.post("/api/admin/reload", dependencies=[Depends(require_admin)], include_in_schema=False)
@@ -268,9 +289,9 @@ def _noindex(resp: Response) -> Response:
 def painel(request: Request, range: str = "30"):
     if not is_admin(request):
         return _noindex(templates.TemplateResponse(request, "painel_login.html", {"error": False}))
-    if request.query_params.get("token"):  # old ?token= links: swap for the cookie, clean the URL
-        return _noindex(_set_admin_cookie(RedirectResponse("/painel", 303), request))
     ctx = dashboard.compute(engine, range, _codes())
+    ctx["review"] = learning.queue(engine)
+    ctx["consensus"] = learning.consensus_min()
     ctx["current"] = S.predictor.version if S.predictor else None
     ctx["load_error"] = S.load_error
     return _noindex(templates.TemplateResponse(request, "painel.html", ctx))
@@ -284,6 +305,26 @@ async def painel_login(request: Request):
         return _noindex(_set_admin_cookie(RedirectResponse("/painel", 303), request))
     await asyncio.sleep(1)  # slow down guessing (without blocking other requests)
     return _noindex(templates.TemplateResponse(request, "painel_login.html", {"error": True}, status_code=401))
+
+
+@app.post("/painel/rever", include_in_schema=False)
+async def painel_review(request: Request):
+    """Approve / reject / undo a user correction. The admin cookie is SameSite=strict, so a
+    cross-site form cannot post here with it."""
+    require_admin(request)
+    form = {k: v[0] for k, v in parse_qs((await request.body()).decode(errors="replace")).items()}
+    key, code, action, text = form.get("text_key", ""), form.get("code", ""), form.get("action"), form.get("text", "")
+    if not key or code not in _codes() or action not in ("approve", "reject", "undo"):
+        raise HTTPException(400, "bad review")
+    with engine.begin() as conn:
+        if action == "undo":
+            learning.undo(conn, key, code)
+        else:
+            learning.record(conn, key, text, code, "approved" if action == "approve" else "rejected", "painel")
+    # approvals go live now; a rejection/undo of something already live leaves the index on reload
+    if action == "approve" and text and S.predictor and hasattr(S.predictor, "add_examples"):
+        S.predictor.add_examples([text], [code])
+    return _noindex(RedirectResponse("/painel#rever", 303))
 
 
 @app.post("/painel/sair", include_in_schema=False)

@@ -52,7 +52,7 @@ Successor to [text-to-icpc2](https://github.com/DiogoCarapito/text-to-icpc2) and
 
 A leakage guard removes any training text that also appears, after normalisation, in an evaluation split. v1 had no such guard: it validated on its own training data.
 
-**Public by default; private only where users typed:** code, configs, synthetic data, the gold set, experiment results and models are public (GitHub, the [HF dataset](https://huggingface.co/datasets/diogocarapito/text-to-icpc2-v2-dataset) and the [HF model](https://huggingface.co/diogocarapito/text-to-icpc2-v2)). The demo's interaction logs contain text that users typed, so they live only in the **private** HF repo `diogocarapito/text-to-icpc2-v2-feedback`. Inputs are scrubbed of long digit runs (SNS/NIF/phone numbers) before they are stored.
+**Public by default; private only where users typed:** code, configs, synthetic data, the gold set, experiment results and models are public (GitHub, the [HF dataset](https://huggingface.co/datasets/diogocarapito/text-to-icpc2-v2-dataset) and the [HF model](https://huggingface.co/diogocarapito/text-to-icpc2-v2)). The demo's interaction logs contain text that users typed, so they live only in the **private** HF repo `diogocarapito/text-to-icpc2-v2-feedback`. Inputs are scrubbed of e-mails, full dates and long digit runs (SNS/NIF/phone numbers) before they are stored. User corrections change the model only after review: confirmations of the 1st suggestion need several independent sessions, any other code needs the physician's approval in the dashboard.
 
 ## Quick start (Mac)
 

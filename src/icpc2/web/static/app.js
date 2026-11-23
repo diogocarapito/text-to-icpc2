@@ -34,7 +34,7 @@ async function sendFeedback(kind, code) {
   if (!current) return;
   await fetch("/api/feedback", {
     method: "POST", headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ request_id: current.request_id, kind, code }),
+    body: JSON.stringify({ request_id: current.request_id, feedback_key: current.feedback_key, kind, code }),
   });
   $("#thanks").hidden = false;
 }

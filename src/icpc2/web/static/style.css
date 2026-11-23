@@ -145,3 +145,6 @@ td.nowrap { white-space: nowrap; }
 .m-fill { display: block; height: 100%; background: var(--s0); border-radius: 4px; }
 .m-fig { font-variant-numeric: tabular-nums; min-width: 3.5em; text-align: right; }
 @media (max-width: 560px) { .meter-row { grid-template-columns: 1fr auto; } .m-track { grid-column: 1 / -1; grid-row: 2; } }
+/* review queue (/painel#rever) */
+form.inline { display: inline-flex; gap: 6px; }
+form.inline button { padding: 3px 10px; border-radius: 8px; font-size: .85rem; }

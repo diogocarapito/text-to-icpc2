@@ -11,7 +11,7 @@ doc_prefix: "passage: "
 max_length: 64
 epochs: 3
 batch_size: 128             # in-batch negatives per step
-mini_batch_size: null       # set (e.g. 32) to use the cached loss: same batch_size, far less memory
+mini_batch_size: 32         # cached loss: same batch_size and gradients, far less memory (as v1 was trained; null = plain loss)
 lr: 3.0e-5
 warmup_ratio: 0.1
 device: auto

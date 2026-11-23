@@ -12,6 +12,12 @@ _WS = re.compile(r"\s+")
 _CODE = re.compile(r"^\s*([A-Za-z])\s?(\d{2})\s*$")
 # digit runs long enough to be an SNS/NIF/phone/process number
 _LONG_DIGITS = re.compile(r"\d{6,}")
+# the same numbers written in groups: "912 345 678", "+351 912-345-678", "123.456.789"
+_GROUPED_DIGITS = re.compile(r"(?<![\w.,/])\+?\d{2,4}(?:[ .-]\d{2,4}){2,}(?![\w/])")
+_EMAIL = re.compile(r"[\w.+-]+@[\w-]+(?:\.[\w-]+)+")
+# full dates only (day, month AND year): "14/03/1952", "14-3-52", "1952-03-14". Two-part values
+# such as a blood pressure "140/90" are left alone.
+_DATE = re.compile(r"\b(?:\d{1,2}[/.-]\d{1,2}[/.-](?:\d{4}|\d{2})|\d{4}[/.-]\d{1,2}[/.-]\d{1,2})\b")
 
 
 def strip_accents(s: str) -> str:
@@ -37,5 +43,10 @@ def as_icpc2_code(s: str) -> str | None:
 
 
 def scrub(s: str) -> str:
-    """Light de-identification before logging: mask long digit runs (SNS, NIF, phone numbers)."""
-    return _LONG_DIGITS.sub("<NUM>", s)
+    """Light de-identification before logging: e-mails, full dates and long numbers (SNS, NIF,
+    phone, process numbers, also when written in groups). Names and addresses are NOT detected —
+    the page asks users not to type them."""
+    s = _EMAIL.sub("<EMAIL>", s)
+    s = _DATE.sub("<DATA>", s)
+    s = _LONG_DIGITS.sub("<NUM>", s)
+    return _GROUPED_DIGITS.sub(lambda m: "<NUM>" if sum(c.isdigit() for c in m[0]) >= 9 else m[0], s)

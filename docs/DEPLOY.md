@@ -47,7 +47,8 @@ docker compose logs -f app                           # first start downloads the
 curl https://text-to-icpc2.com/health                # {"model":"v1",...}
 ```
 
-- Dashboard (hidden, not linked): `https://text-to-icpc2.com/painel`. Enter `ICPC2_ADMIN_TOKEN` once; a cookie keeps that browser signed in for 30 days. Changing the token signs every browser out.
+- Dashboard (hidden, not linked): `https://text-to-icpc2.com/painel`. Enter `ICPC2_ADMIN_TOKEN` once; a cookie keeps that browser signed in for 30 days. Changing the token signs every browser out. The token is accepted only in the form or an `Authorization: Bearer` header, never in the URL.
+- **Correções por rever** (top of the dashboard): user corrections to a code other than the 1st suggestion. Nothing enters the live index or training until you approve it. Feedback you give on the main page while signed in counts as approval.
 - Export for retraining (from the Mac): `ICPC2_VPS_URL=https://text-to-icpc2.com icpc2 pull-feedback`
 
 ## 5. Scheduler (automatic retrains): hold for now
@@ -68,7 +69,7 @@ When the GPU path works: add `DIGITALOCEAN_TOKEN`, set `MODEL_REVISION=main`, th
 | restore | `gunzip -c backups/<file>.sql.gz \| docker compose exec -T db psql -U icpc2user icpc2` |
 | logs | `docker compose logs --tail 100 app` |
 
-**Privacy:** Caddy keeps no access log. The app stores the typed text (runs of 6+ digits masked as `<NUM>`), predictions, feedback and a random per-browser session id. It stores no IP addresses and no accounts. User text leaves the server only to the **private** HF feedback repo.
+**Privacy:** Caddy keeps no access log. The app stores the typed text (e-mails, full dates and long/grouped digit runs masked as `<EMAIL>`/`<DATA>`/`<NUM>`; names are not detected), predictions, feedback and a random per-browser session id (30-day cookie). It stores no IP addresses and no accounts. User text leaves the server only to the **private** HF feedback repo.
 
 ## Not yet verified
 

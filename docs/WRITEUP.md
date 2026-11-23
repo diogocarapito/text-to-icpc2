@@ -77,11 +77,12 @@ ICPC-2 components 1 (symptoms) and 7 (diagnoses): **686 codes**. Process codes (
 Top-1/3/5 accuracy and macro-F1, overall and per language, on `val`, `gold_dev` and `gold_test`. 95% CIs from 10,000 bootstrap resamples, and paired bootstrap differences against the best model (`scripts/gold_stats.py`). Model selection uses `gold_dev` and `val`. `gold_test` is reported.
 
 ### 4.6 Serving, feedback and the loop
-- **Serving:** FastAPI app with Postgres. Every request is logged with the masked text (runs of 6+ digits replaced), the top-5, latency and model version. Users can give feedback: correct / wrong / corrected (with the right code) / copy.
-- **Labels from feedback:** weighted votes (corrected 3, correct 2, copy 1); ties are dropped. 20% of feedback texts (by hash) go to a `feedback_test` split that is never trained on.
+- **Serving:** FastAPI app with Postgres. Every request is logged with the masked text (e-mails, full dates and long or grouped digit runs replaced), the top-5, latency and model version. Users can give feedback: correct / wrong / corrected (with the right code) / copy. Feedback needs a per-request key returned only to the requester, is rate-limited, and is accepted once per kind per request.
+- **Review before learning:** feedback never changes the model directly. A (text, code) pair reaches the live retriever index, and the training labels, only if (a) it confirms the model's own 1st suggestion and ≥3 distinct browser sessions agree, or (b) the physician approves it in the admin dashboard (any code other than the 1st suggestion). Session ids are client-chosen, so (a) is safe only because agreeing with the 1st suggestion cannot change it. Corrections outside the top-5 or in another chapter are flagged as strong.
+- **Labels from feedback:** reviewed pairs only; one vote per browser session per text, weighted (corrected 3, correct 2, copy 1); ties are dropped. 20% of feedback texts (by hash) go to a `feedback_test` split that is never trained on. Because unreviewed corrections are excluded, `feedback_test` depends on the physician reviewing corrections: otherwise it holds mostly agreements and flatters the champion.
 - **Retraining:** triggered by ≥50 new labels or 30 days. The candidate is trained on the current data and evaluated together with the champion on the same splits.
 - **Promotion gates:** the candidate must match or beat the champion's top-1, with no regression beyond PT 0.01, EN 0.02 or `feedback_test` 0.01. Promoted models are tagged `vN` on the HF Hub, so rollback is a single change of revision.
-- **Privacy:** user text goes only to a private HF repo. No IPs and no accounts are stored, and the proxy keeps no access log.
+- **Privacy:** user text goes only to a private HF repo. No IPs and no accounts are stored, and the proxy keeps no access log. The session cookie lasts 30 days. Names and addresses are not detected automatically; the page asks users not to type them.
 
 ## 5. Results
 
@@ -125,6 +126,7 @@ Models that did not finish on 18 GB MPS (out of memory, a dtype bug, or too slow
 4. **Hyper-parameters:** benchmark-01 used defaults for every model. The ranking might change after tuning (benchmark-02), and the e5 vs BERTimbau gap is not significant.
 5. **Single-code outputs:** inputs that mention several problems are out of scope.
 6. **English titles** are Claude-generated, not the official WONCA rubrics.
+7. **ICPC-2 rule vs Portuguese practice:** some codes follow local convention rather than the ICPC-2 rubric (insulin-treated T2DM → T89 rather than T90; fibromyalgia → A01 rather than L18). Gold follows Portuguese practice, so a model faithful to the rubric scores lower on these items, and vice versa. **[todo: keep these divergences as a separate tagged test slice and report them apart]**
 
 ## 7. Engineering notes worth a paragraph (or an appendix)
 - **Training on a laptop:** an M3 Pro (18 GB unified memory) trains base-size models in 40–85 min. Models of 560M parameters or more run out of memory, even with GradCache. Fixes that worked: gradient accumulation (same effective batch), eager attention (MPS SDPA has no dropout), and fp32 loading (transformers v5 keeps the checkpoint dtype).
@@ -132,7 +134,8 @@ Models that did not finish on 18 GB MPS (out of memory, a dtype bug, or too slow
 - **Costs to date:** Claude synthetic data $14.79, gold drafting and previews about $5–8 (estimate), DigitalOcean about $1. Training cost $0 (laptop).
 
 ## 8. To do before submission
-- [ ] Second rater / blind second pass on about 100 gold items, with κ
+- [ ] Second rater / blind second pass on about 100 gold items, with κ (hide the drafting rationale during that pass)
+- [ ] Separate test slice for ICPC-2-rule vs PT-practice divergences (T89/T90, A01/L18, …), reported apart from gold
 - [ ] 100+ physician-written entries as an independent test set
 - [ ] Real-usage evaluation (`feedback_test`) after a few weeks live
 - [ ] benchmark-02 on a GPU: the large models, plus tuning of the top 2–3

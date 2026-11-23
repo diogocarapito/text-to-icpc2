@@ -58,6 +58,39 @@
     <div class="tile"><span>Latência p50</span><b>{{ ms(kpi.p50) }}</b><small>p95 {{ ms(kpi.p95) }}</small></div>
   </div>
 
+  <h2 id="rever">Correções por rever <small>({{ review.n_pending }})</small></h2>
+  <p class="note">Códigos escolhidos pelos utilizadores que <b>diferem do 1.º sugerido</b>. Só entram no índice do modelo e no treino depois de aprovados aqui.
+    Confirmações do 1.º sugerido entram sozinhas quando {{ consensus }} sessões diferentes concordam. <b>Forte</b> = fora do top-5 mostrado ou noutro capítulo.
+    O feedback que der com sessão iniciada conta como aprovação.</p>
+  <section class="card">
+    <div class="scroll"><table>
+      <tr><th>texto</th><th>1.º sugerido</th><th>código proposto</th><th class="num">sessões</th><th class="num">vezes</th><th></th></tr>
+      {%- for r in review.pending %}
+      <tr><td>{{ r.text }}</td><td>{{ r.shown or "" }}</td>
+          <td><b>{{ r.code }}</b>{% if r.strong %} <span class="err">forte</span>{% endif %}</td>
+          <td class="num">{{ r.sessions }}</td><td class="num">{{ r.events }}</td>
+          <td class="nowrap"><form method="post" action="/painel/rever" class="inline">
+            <input type="hidden" name="text_key" value="{{ r.text_key }}"><input type="hidden" name="code" value="{{ r.code }}">
+            <input type="hidden" name="text" value="{{ r.text }}">
+            <button name="action" value="approve">Aprovar</button> <button name="action" value="reject" class="ghost">Rejeitar</button>
+          </form></td></tr>
+      {%- else %}<tr><td colspan="6" class="empty">Nada por rever.</td></tr>{% endfor %}
+    </table></div>
+    {%- if review.recent %}
+    <details class="tableview"><summary>Últimas decisões</summary>
+      <div class="scroll"><table><tr><th>texto</th><th>código</th><th>estado</th><th>origem</th><th></th></tr>
+      {%- for r in review.recent %}
+      <tr><td>{{ r.text }}</td><td>{{ r.code }}</td><td>{{ {"approved": "aprovado", "rejected": "rejeitado", "consensus": "consenso"}[r.status] }}</td><td>{{ r.source }}</td>
+          <td><form method="post" action="/painel/rever" class="inline">
+            <input type="hidden" name="text_key" value="{{ r.text_key }}"><input type="hidden" name="code" value="{{ r.code }}">
+            <button name="action" value="undo" class="ghost">Anular</button></form></td></tr>
+      {%- endfor %}
+      </table></div>
+      <p class="note">Anular ou rejeitar algo que já estava no índice só tem efeito quando o modelo for recarregado.</p>
+    </details>
+    {%- endif %}
+  </section>
+
   <h2>Utilização</h2>
   <div class="grid2">
     <section class="card wide-card">
