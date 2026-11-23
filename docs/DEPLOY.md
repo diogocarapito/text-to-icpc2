@@ -63,7 +63,7 @@ When the GPU path works: add `DIGITALOCEAN_TOKEN`, set `MODEL_REVISION=main`, th
 
 | task | command |
 |---|---|
-| update code | `git pull && docker compose up -d --build app` |
+| update code | `./deploy.sh` from the repo root (backs up the DB, `git pull`, rebuilds the app, waits for `/health`) |
 | roll back the model | set `MODEL_REVISION=vN` in `.env`, then `docker compose up -d app` |
 | backups | `deploy/backups/icpc2-YYYY-MM-DD.sql.gz`, 14 days. Copy them off the server (e.g. a weekly `rsync` to the Mac). |
 | restore | `gunzip -c backups/<file>.sql.gz \| docker compose exec -T db psql -U icpc2user icpc2` |
