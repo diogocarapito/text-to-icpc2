@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Update the running server to the latest main. Run ON THE VPS, from anywhere:
 #   ./deploy.sh
-# Steps: back up the database -> git pull -> rebuild + restart the app -> wait for the model.
+# Steps: back up the database -> git pull -> rebuild + restart app and scheduler -> wait for the model.
 # Postgres, Caddy and the backup container keep running.
 set -euo pipefail
 
@@ -20,8 +20,8 @@ git pull --ff-only
 after=$(git rev-parse --short HEAD)
 [ "$before" = "$after" ] && echo "    already at $after (rebuilding anyway)" || git log --oneline "$before..$after"
 
-echo "==> Build and restart app"
-compose up -d --build app
+echo "==> Build and restart app + scheduler (both images bake in src/ and configs/)"
+compose up -d --build app scheduler
 
 echo "==> Waiting for the model (first start after a model change downloads it)"
 for _ in $(seq 1 60); do
@@ -42,6 +42,6 @@ done
 
 echo "!!  App not healthy. Logs:" >&2
 compose logs --tail 50 app >&2
-echo "    To roll back the code: git checkout $before && docker compose -f deploy/docker-compose.yml up -d --build app" >&2
+echo "    To roll back the code: git checkout $before && docker compose -f deploy/docker-compose.yml up -d --build app scheduler" >&2
 echo "    (then 'git checkout main' once fixed; database backup: $backup)" >&2
 exit 1
