@@ -80,7 +80,7 @@ def wandb_inference(
     text_input=None,
     # text_input="Diabetes sem insulina",
     k=5,
-    model_version="diogo-carapito/wandb-registry-model/text-to-icpc2:v4",
+    model_version="mgf_nlp/text-to-icpc2/text-to-icpc2-bert-base-portuguese-cased:v1",
 ):
     logging.info("Starting Running inference")
 
@@ -122,7 +122,7 @@ def wandb_inference(
     logging.info("Preparing the model")
     # Define the model architecture with the correct number of classes
     num_labels = 686  # Change this to the correct number of classes
-    model_name = "bert-base-uncased"
+    model_name = "neuralmind/bert-base-portuguese-cased"
     model = AutoModelForSequenceClassification.from_pretrained(
         model_name, num_labels=num_labels
     )
@@ -141,7 +141,7 @@ def wandb_inference(
 
     logging.info("Loading the tokenizer")
     # Load the tokenizer
-    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    tokenizer = AutoTokenizer.from_pretrained(model_name, use_fast=False)
 
     # Prepare input data
     inputs = tokenizer(list_inputs, return_tensors="pt", padding=True, truncation=True)

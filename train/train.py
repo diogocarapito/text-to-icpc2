@@ -1,4 +1,4 @@
-# python train/train.py --size full --model bert-base-uncased --dev cuda --hf True
+# python train/train.py --size full --model neuralmind/bert-base-portuguese-cased --dev cuda --hf True
 
 import numpy as np
 from datasets import load_dataset
@@ -9,15 +9,34 @@ from transformers import (
     Trainer,
     # pipeline,
 )
-import evaluate
 import logging
 import torch
+from sklearn.metrics import f1_score
+from sklearn.utils.class_weight import compute_class_weight
 
 # from typing import List, Tuple
+import os
 import click
 import wandb
+from dotenv import load_dotenv
+from huggingface_hub import login
 
 # from validation import validation
+
+
+class WeightedTrainer(Trainer):
+    def __init__(self, class_weights, **kwargs):
+        super().__init__(**kwargs)
+        self.class_weights = class_weights
+
+    def compute_loss(self, model, inputs, return_outputs=False, **kwargs):
+        labels = inputs.pop("labels")
+        outputs = model(**inputs)
+        loss_fct = torch.nn.CrossEntropyLoss(
+            weight=self.class_weights.to(outputs.logits.device)
+        )
+        loss = loss_fct(outputs.logits, labels)
+        return (loss, outputs) if return_outputs else loss
 
 
 def experiment_size(size, model_name):
@@ -38,7 +57,7 @@ def experiment_size(size, model_name):
 )
 @click.option(
     "--model",
-    default="bert-base-uncased",
+    default="neuralmind/bert-base-portuguese-cased",
     help="pretraines model name",
     required=False,
 )
@@ -49,19 +68,22 @@ def experiment_size(size, model_name):
     help="device to be used",
 )
 @click.option(
-    "--hf", default=False, help="publish to huggingface model", required=False
+    "--hf", default=True, help="publish to huggingface model", required=False
 )
 # @click.option("--val", default=False, help="perform validation", required=False)
-def main(size="small", model="bert-base-uncased", dev="cuda", hf=False):
+def main(
+    size="small", model="neuralmind/bert-base-portuguese-cased", dev="cuda", hf=True
+):
     # distilbert/distilbert-base-uncased
     # distilbert/distilbert-base-multilingual-cased
-
     # google-bert/bert-base-uncased
     # google-bert/bert-base-cased
     # google-bert/bert-base-multilingual-uncased
     # google-bert/bert-base-multilingual-cased
     # google-bert/bert-large-uncased
     # google-bert/bert-large-cased
+
+    load_dotenv()
 
     experiment_name = experiment_size(size, model_name=model)
     model_name = model
@@ -116,7 +138,7 @@ def main(size="small", model="bert-base-uncased", dev="cuda", hf=False):
             examples["text"],
             padding="max_length",
             truncation=True,
-            max_length=512,
+            max_length=128,
             return_tensors="pt",
         )
 
@@ -161,6 +183,26 @@ def main(size="small", model="bert-base-uncased", dev="cuda", hf=False):
         "The size of the evaluation dataset is %s", len(tokenized_dataset_split_test)
     )
 
+    # Compute class weights from training labels to up-weight underrepresented codes
+    logging.info("Computing class weights from training label distribution")
+    train_labels = np.array(tokenized_dataset_split_train["label"])
+    present_classes = np.unique(train_labels)
+    weights_for_present = compute_class_weight(
+        class_weight="balanced",
+        classes=present_classes,
+        y=train_labels,
+    )
+    # Default weight 1.0 for any class absent from the training split
+    class_weights = np.ones(number_of_labels)
+    class_weights[present_classes] = weights_for_present
+    class_weights_tensor = torch.tensor(class_weights, dtype=torch.float)
+    logging.info(
+        "Class weights — min: %.4f, max: %.4f, mean: %.4f",
+        class_weights.min(),
+        class_weights.max(),
+        class_weights.mean(),
+    )
+
     # Load the model
     logging.info("Loading the model")
     model = AutoModelForSequenceClassification.from_pretrained(
@@ -171,24 +213,30 @@ def main(size="small", model="bert-base-uncased", dev="cuda", hf=False):
         ignore_mismatched_sizes=True,  # warning supression: Some weights of BertForSequenceClassification were not initialized from the model checkpoint at bert-base-uncased and are newly initialized: ['classifier.bias', 'classifier.weight'])
     )
 
-    # Define the target optimization metric
-    # metric = evaluate.load("f1")
-    # logging.info("Using the metric F1 score")
-    metric = evaluate.load("accuracy")
-    logging.info("Using the metric accuracy")
-
     # Define a function for calculating our defined target optimization metric during training
     logging.info("Defining the compute_metrics function")
 
     def compute_metrics(eval_pred):
         logits, labels = eval_pred
-        predictions = np.argmax(logits, axis=-1)
-        # return metric.compute(predictions=predictions, references=labels) #accuracy
-        return metric.compute(
-            # predictions=predictions, references=labels, average="macro" # f1 score
-            predictions=predictions,
-            references=labels,  # accuracy
-        )
+
+        # top-1 predictions (argmax)
+        top1_preds = np.argmax(logits, axis=-1)
+
+        # top-k indices sorted by descending score
+        topk_indices = np.argsort(logits, axis=-1)[:, ::-1]
+
+        top1_acc = (top1_preds == labels).mean()
+        top3_acc = np.any(topk_indices[:, :3] == labels[:, None], axis=1).mean()
+        top5_acc = np.any(topk_indices[:, :5] == labels[:, None], axis=1).mean()
+
+        macro_f1 = f1_score(labels, top1_preds, average="macro", zero_division=0)
+
+        return {
+            "accuracy": top1_acc,
+            "top3_accuracy": top3_acc,
+            "top5_accuracy": top5_acc,
+            "macro_f1": macro_f1,
+        }
 
     logging.info("Setting up the training output directory")
     # if t == "full" and hf:
@@ -206,20 +254,27 @@ def main(size="small", model="bert-base-uncased", dev="cuda", hf=False):
     training_args = TrainingArguments(
         output_dir=training_output_dir,
         eval_strategy="epoch",
+        save_strategy="epoch",
         run_name=experiment_name,
-        per_device_train_batch_size=8,
-        per_device_eval_batch_size=8,
+        per_device_train_batch_size=32,
+        per_device_eval_batch_size=64,
         logging_steps=200,
         seed=42,
         num_train_epochs=n_epochs,
         # torch_compile=True,
         logging_dir="./logs",
         report_to="wandb",  # Report to W&B
+        load_best_model_at_end=True,
+        metric_for_best_model="macro_f1",
+        greater_is_better=True,
+        warmup_ratio=0.1,
+        weight_decay=0.01,
     )
 
-    # Instantiate a `Trainer` instance that will be used to initiate a training run.
-    logging.info("Instantiating the Trainer")
-    trainer = Trainer(
+    # Instantiate a WeightedTrainer to apply class-weighted cross-entropy loss
+    logging.info("Instantiating the WeightedTrainer")
+    trainer = WeightedTrainer(
+        class_weights=class_weights_tensor,
         model=model,
         args=training_args,
         train_dataset=tokenized_dataset_split_train,
@@ -246,6 +301,8 @@ def main(size="small", model="bert-base-uncased", dev="cuda", hf=False):
 
     # push the model to huggingface
     if hf:
+        hf_token = os.getenv("huggingface_token")
+        login(token=hf_token)
         trainer.push_to_hub()
 
     # Save the model

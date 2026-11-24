@@ -148,3 +148,21 @@ pip show blinker && \
 make all && \
 python -c "import torch; print(torch.__version__)"
 ```
+
+
+Path to improve:
+
+Quick Win Summary (Ordered by ROI)
+Change base model to BERTimbau — 1 line change, biggest expected gain
+Fix validation — implement real metrics so you can measure anything
+Add top-k accuracy to compute_metrics in training
+Reduce max_length to 128 + increase batch size — faster iteration
+Add load_best_model_at_end + macro F1 as checkpoint criterion
+Build systematic augmentation pipeline for codes with < 15 samples
+Add warmup + weight decay to training args
+Implement class-weighted loss for the most underrepresented codes
+Would you like me to start implementing any of these? The highest-ROI starting point would be:
+
+Fixing the base model + training hyperparameters in train/train.py
+Fixing real validation metrics in validation/validation.py
+Building the systematic augmentation pipeline in augmentation/openai_augmentation.py

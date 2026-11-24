@@ -7,16 +7,16 @@ import streamlit as st
 # from transformers import AutoModelForSequenceClassification, AutoTokenizer
 # from datasets import load_dataset
 
-from inference.wandb_inference import wandb_inference
+#from inference.wandb_inference import wandb_inference
 
-# from wandb_inference import wandb_inference
+from wandb_inference import wandb_inference
 
 text = st.text_input("texto")
 
 prediction = wandb_inference(
     text_input="Hipertensão arterial",
     k=5,
-    model_version="diogo-carapito/wandb-registry-model/text-to-icpc2:v4",
+    model_version="mgf_nlp/text-to-icpc2/text-to-icpc2-bert-base-portuguese-cased:v1",
 )
 
 st.write(prediction)
