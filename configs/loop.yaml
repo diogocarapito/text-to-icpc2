@@ -23,13 +23,13 @@ gpu:                          # icpc2 gpu ... / backend: do
     - gpu-4000adax1-20gb      # ~$0.76/h
   image: gpu-h100x1-base      # DO AI/ML image (drivers + CUDA) — used for every single-GPU size
   max_hours: 3                # self-destruct safety net (worst case ~$13 on an H100)
-  repo: https://github.com/diogocarapito/text-to-icpc2-v2
+  repo: https://github.com/diogocarapito/text-to-icpc2
 
 hf:
-  model_repo: diogocarapito/text-to-icpc2-v2       # production model = `main` branch
+  model_repo: diogocarapito/text-to-icpc2       # production model = `main` branch
   private: false
   dataset_repo: diogocarapito/text-to-icpc2-v2-feedback  # PRIVATE: user-submitted text only
-  public_dataset_repo: diogocarapito/text-to-icpc2-v2-dataset  # PUBLIC: training/eval data (no user text)
+  public_dataset_repo: diogocarapito/text-to-icpc2  # PUBLIC: training/eval data (no user text)
   push_dataset: true
 
 promotion:                    # fully automatic, but gated on held-out data

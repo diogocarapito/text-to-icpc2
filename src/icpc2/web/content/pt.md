@@ -40,9 +40,9 @@ O **text-to-ICPC2** sugere códigos ICPC-2 a partir de diagnósticos ou problema
 
 O modelo atual é um *retriever* baseado no **multilingual-e5-base**, treinado com as descrições oficiais da ICPC-2 e as correspondências com a ICD-10, dados sintéticos e o feedback de quem usa esta página. Num conjunto de 460 entradas verificadas por um médico, acerta no código em 1.º lugar em 92,2% dos casos e coloca-o entre os 5 primeiros em 98,5%.
 
-- Modelo: [huggingface.co/diogocarapito/text-to-icpc2-v2](https://huggingface.co/diogocarapito/text-to-icpc2-v2)
-- Dataset: [huggingface.co/datasets/diogocarapito/text-to-icpc2-v2-dataset](https://huggingface.co/datasets/diogocarapito/text-to-icpc2-v2-dataset)
-- Código: [github.com/DiogoCarapito/text-to-icpc2-v2](https://github.com/DiogoCarapito/text-to-icpc2-v2)
+- Modelo: [huggingface.co/diogocarapito/text-to-icpc2](https://huggingface.co/diogocarapito/text-to-icpc2)
+- Dataset: [huggingface.co/datasets/diogocarapito/text-to-icpc2](https://huggingface.co/datasets/diogocarapito/text-to-icpc2)
+- Código: [github.com/DiogoCarapito/text-to-icpc2](https://github.com/DiogoCarapito/text-to-icpc2)
 
 Este projeto foi desenvolvido por Diogo Carapito com o apoio de uma bolsa de investigação da [AICIB](https://aicib.pt/) e da [APMGF](https://apmgf.pt/), no âmbito do internato médico de Medicina Geral e Familiar. É a segunda versão do [text-to-icpc2](https://github.com/DiogoCarapito/text-to-icpc2).
 

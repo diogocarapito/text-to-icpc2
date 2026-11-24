@@ -1,6 +1,6 @@
 """How much of the v1 dataset (2024-25, repo text-to-icpc2) is in the v2 train/val data.
 
-    python scripts/dataset_lineage.py [V1_REPO]      # default V1_REPO = ../text-to-icpc2
+    python scripts/dataset_lineage.py [V1_REPO]      # default V1_REPO = ../text-to-icpc2-v1-old (v1 = tag v1-legacy)
 
 Texts are compared after `norm_key` (lowercase, accents and punctuation stripped), the same
 normalisation the v2 leakage guard uses. Reads data/processed/examples.parquet (run `make data`
@@ -15,7 +15,7 @@ import pandas as pd
 
 from icpc2.text import norm_key
 
-v1_repo = Path(sys.argv[1] if len(sys.argv) > 1 else "../text-to-icpc2")
+v1_repo = Path(sys.argv[1] if len(sys.argv) > 1 else "../text-to-icpc2-v1-old")
 out = Path("docs/memoire/data/dataset_lineage.json")
 
 v2 = pd.read_parquet("data/processed/examples.parquet")

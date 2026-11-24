@@ -2,7 +2,7 @@
 #   cd deploy && nano .env && docker compose up -d --build
 x-app-env: &app-env
   DATABASE_URL: postgresql+psycopg://icpc2user:${POSTGRES_PASSWORD}@db:5432/icpc2
-  MODEL_REPO: ${MODEL_REPO:-diogocarapito/text-to-icpc2-v2}
+  MODEL_REPO: ${MODEL_REPO:-diogocarapito/text-to-icpc2}
   ICPC2_ADMIN_TOKEN: ${ICPC2_ADMIN_TOKEN:?set in deploy/.env}
   HF_TOKEN: ${HF_TOKEN:-}
 

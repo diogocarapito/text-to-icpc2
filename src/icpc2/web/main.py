@@ -2,7 +2,7 @@
 
 Env:
   MODEL_PATH          local model dir (dev)       — or —
-  MODEL_REPO          HF repo id (default diogocarapito/text-to-icpc2-v2), MODEL_REVISION (main)
+  MODEL_REPO          HF repo id (default diogocarapito/text-to-icpc2), MODEL_REVISION (main)
   DATABASE_URL        sqlite:///... or postgresql+psycopg://...
   ICPC2_ADMIN_TOKEN   admin code: Bearer token for /api/export and /api/admin/reload;
                       typed once on /painel (the hidden dashboard), which then sets a cookie
@@ -55,7 +55,7 @@ engine = make_engine()
 def load_model():
     from icpc2.predict import load_predictor
 
-    src = os.environ.get("MODEL_PATH") or os.environ.get("MODEL_REPO", "diogocarapito/text-to-icpc2-v2")
+    src = os.environ.get("MODEL_PATH") or os.environ.get("MODEL_REPO", "diogocarapito/text-to-icpc2")
     rev = None if os.environ.get("MODEL_PATH") else os.environ.get("MODEL_REVISION", "main")
     try:
         p = load_predictor(src, revision=rev)

@@ -106,7 +106,7 @@ def _write_readme(d: Path, card: dict):
         f"- **Base model:** [`{card['base_model']}`](https://huggingface.co/{card['base_model']})",
         f"- **Training rows:** {card.get('n_train', 0):,} from "
         f"[{cfg['public_dataset_repo']}](https://huggingface.co/datasets/{cfg['public_dataset_repo']})",
-        "- **Code, data pipeline, experiments, lab notebook:** https://github.com/diogocarapito/text-to-icpc2-v2 "
+        "- **Code, data pipeline, experiments, lab notebook:** https://github.com/diogocarapito/text-to-icpc2 "
         f"(commit `{card.get('git_sha', '?')}`)",
         "", "## Evaluation", "",
         "`gold_test` and `gold_dev` are Claude-drafted entries, each verified (or recoded or discarded) by a family "
@@ -130,7 +130,7 @@ def _write_readme(d: Path, card: dict):
         "mention several problems at once (\"HTA e DM2\") get one code. Process codes (-30 to -69) are out "
         "of scope.", "",
         "## Usage", "", "```bash",
-        "pip install 'icpc2[infer] @ git+https://github.com/diogocarapito/text-to-icpc2-v2'", "```", "```python",
+        "pip install 'icpc2[infer] @ git+https://github.com/diogocarapito/text-to-icpc2'", "```", "```python",
         "from icpc2.predict import load_predictor",
         f"p = load_predictor(\"{cfg['model_repo']}\", revision=\"{card['version']}\")",
         "p.predict([\"HTA não controlada\", \"type 2 diabetes\"], k=3)  # [[(code, score), ...], ...]",
@@ -170,7 +170,7 @@ tags: [icpc-2, medical, primary-care, portuguese, synthetic]
 # text-to-icpc2 v2 dataset
 
 Free-text clinical problems/diagnoses (European Portuguese and English) labelled with ICPC-2 codes
-(686 symptom + diagnosis codes). Built by https://github.com/diogocarapito/text-to-icpc2-v2.
+(686 symptom + diagnosis codes). Built by https://github.com/diogocarapito/text-to-icpc2.
 
 Sources: ACSS ICPC-2 (PT-PT) titles and inclusion terms; ACSS ICD-10-CM PT/EN descriptions mapped
 through the official ICPC-2 -> ICD-10 table (ambiguous mappings removed); LLM-generated variants

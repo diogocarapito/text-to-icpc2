@@ -1,6 +1,6 @@
 # Production deploy checklist (text-to-icpc2.com)
 
-The model is on the HF Hub (`diogocarapito/text-to-icpc2-v2`, tag `v1`). The server downloads it on first start, so nothing large has to be copied to the server.
+The model is on the HF Hub (`diogocarapito/text-to-icpc2`, tag `v1`). The server downloads it on first start, so nothing large has to be copied to the server.
 
 ## 1. Server
 
@@ -23,7 +23,7 @@ Check with `dig +short text-to-icpc2.com`.
 ## 3. Code and secrets
 
 ```bash
-git clone https://github.com/diogocarapito/text-to-icpc2-v2 && cd text-to-icpc2-v2/deploy
+git clone https://github.com/diogocarapito/text-to-icpc2 && cd text-to-icpc2/deploy
 nano .env && chmod 600 .env
 ```
 

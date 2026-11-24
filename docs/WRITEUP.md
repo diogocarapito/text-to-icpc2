@@ -153,8 +153,8 @@ Models that did not finish on 18 GB MPS (out of memory, a dtype bug, or too slow
 5. Usage over time and the feedback mix (after launch).
 
 ## 10. Artefacts
-- Code, experiments, journal: https://github.com/diogocarapito/text-to-icpc2-v2
-- Model: https://huggingface.co/diogocarapito/text-to-icpc2-v2 (tag `v1` = e5-base retriever, trained at commit `ab6069d`)
-- Dataset: https://huggingface.co/datasets/diogocarapito/text-to-icpc2-v2-dataset
+- Code, experiments, journal: https://github.com/diogocarapito/text-to-icpc2
+- Model: https://huggingface.co/diogocarapito/text-to-icpc2 (tag `v1` = e5-base retriever, trained at commit `ab6069d`)
+- Dataset: https://huggingface.co/datasets/diogocarapito/text-to-icpc2
 - v1 model: https://huggingface.co/diogocarapito/text-to-icpc2-bert-base-portuguese-cased
 - Per-run metrics and predictions: `experiments/benchmark-01/*/`; gold re-scoring: `rescore_gold.csv`; CIs: `gold_stats.json`

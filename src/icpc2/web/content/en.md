@@ -40,9 +40,9 @@ theme: "Toggle light/dark mode"
 
 The current model is a retriever based on **multilingual-e5-base**, trained on the official ICPC-2 descriptions and their ICD-10 mappings, synthetic data and feedback from people using this page. On 460 physician-verified entries, its first suggestion is correct 92.2% of the time, and the right code is in the top 5 for 98.5%.
 
-- Model: [huggingface.co/diogocarapito/text-to-icpc2-v2](https://huggingface.co/diogocarapito/text-to-icpc2-v2)
-- Dataset: [huggingface.co/datasets/diogocarapito/text-to-icpc2-v2-dataset](https://huggingface.co/datasets/diogocarapito/text-to-icpc2-v2-dataset)
-- Code: [github.com/DiogoCarapito/text-to-icpc2-v2](https://github.com/DiogoCarapito/text-to-icpc2-v2)
+- Model: [huggingface.co/diogocarapito/text-to-icpc2](https://huggingface.co/diogocarapito/text-to-icpc2)
+- Dataset: [huggingface.co/datasets/diogocarapito/text-to-icpc2](https://huggingface.co/datasets/diogocarapito/text-to-icpc2)
+- Code: [github.com/DiogoCarapito/text-to-icpc2](https://github.com/DiogoCarapito/text-to-icpc2)
 
 Developed by Diogo Carapito with the support of a research grant from [AICIB](https://aicib.pt/) and [APMGF](https://apmgf.pt/) (the Portuguese Association of General and Family Medicine), as part of the General and Family Medicine residency programme. It is the second version of [text-to-icpc2](https://github.com/DiogoCarapito/text-to-icpc2).
 

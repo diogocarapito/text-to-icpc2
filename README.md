@@ -4,9 +4,9 @@ Turns free-text clinical problems or diagnoses, in **PT-PT or English**, into **
 
 This is a research demo, not a medical device.
 
-Successor to [text-to-icpc2](https://github.com/DiogoCarapito/text-to-icpc2) and [text-to-icpc2_demo](https://github.com/DiogoCarapito/text-to-icpc2_demo). See [docs/PLAN.md](docs/PLAN.md) for the roadmap and the design decisions.
+This is v2 of the project, developed in [text-to-icpc2-v2](https://github.com/diogocarapito/text-to-icpc2-v2) (now archived) and merged back here with its full history. The v1 code (2024–25 BERT classifier) is kept at tag [`v1-legacy`](https://github.com/diogocarapito/text-to-icpc2/tree/v1-legacy); the old Streamlit demo is [text-to-icpc2_demo](https://github.com/DiogoCarapito/text-to-icpc2_demo). See [docs/PLAN.md](docs/PLAN.md) for the roadmap and the design decisions.
 
-**Current model:** [`diogocarapito/text-to-icpc2-v2`](https://huggingface.co/diogocarapito/text-to-icpc2-v2) `v1`, a multilingual-e5-base retriever: **0.922 top-1 / 0.985 top-5** on 460 physician-verified entries (PT 0.925, EN 0.907). The 2024 model scores 0.346 on the same set.
+**Current model:** [`diogocarapito/text-to-icpc2`](https://huggingface.co/diogocarapito/text-to-icpc2) `v1`, a multilingual-e5-base retriever: **0.922 top-1 / 0.985 top-5** on 460 physician-verified entries (PT 0.925, EN 0.907). The 2024 model scores 0.346 on the same set.
 
 ```
             ┌──────── Mac (MPS) / ephemeral DigitalOcean GPU Droplet (created per job) ────────┐
@@ -52,7 +52,7 @@ Successor to [text-to-icpc2](https://github.com/DiogoCarapito/text-to-icpc2) and
 
 A leakage guard removes any training text that also appears, after normalisation, in an evaluation split. v1 had no such guard: it validated on its own training data.
 
-**Public by default; private only where users typed:** code, configs, synthetic data, the gold set, experiment results and models are public (GitHub, the [HF dataset](https://huggingface.co/datasets/diogocarapito/text-to-icpc2-v2-dataset) and the [HF model](https://huggingface.co/diogocarapito/text-to-icpc2-v2)). The demo's interaction logs contain text that users typed, so they live only in the **private** HF repo `diogocarapito/text-to-icpc2-v2-feedback`. Inputs are scrubbed of e-mails, full dates and long digit runs (SNS/NIF/phone numbers) before they are stored. User corrections change the model only after review: confirmations of the 1st suggestion need several independent sessions, any other code needs the physician's approval in the dashboard.
+**Public by default; private only where users typed:** code, configs, synthetic data, the gold set, experiment results and models are public (GitHub, the [HF dataset](https://huggingface.co/datasets/diogocarapito/text-to-icpc2) and the [HF model](https://huggingface.co/diogocarapito/text-to-icpc2)). The demo's interaction logs contain text that users typed, so they live only in the **private** HF repo `diogocarapito/text-to-icpc2-v2-feedback`. Inputs are scrubbed of e-mails, full dates and long digit runs (SNS/NIF/phone numbers) before they are stored. User corrections change the model only after review: confirmations of the 1st suggestion need several independent sessions, any other code needs the physician's approval in the dashboard.
 
 ## Quick start (Mac)
 
@@ -93,7 +93,7 @@ open http://127.0.0.1:8000  ·  http://127.0.0.1:8000/painel   # code: dev
 A small Ubuntu server with Docker. Caddy gets HTTPS certificates automatically once the domain's DNS points at the server.
 
 ```bash
-git clone https://github.com/diogocarapito/text-to-icpc2-v2 && cd text-to-icpc2-v2/deploy
+git clone https://github.com/diogocarapito/text-to-icpc2 && cd text-to-icpc2/deploy
 nano .env        # DOMAIN, ACME_EMAIL, POSTGRES_PASSWORD, ICPC2_ADMIN_TOKEN, HF_TOKEN, DIGITALOCEAN_TOKEN
 docker compose up -d --build
 ```
@@ -125,4 +125,4 @@ Promotion is fully automatic, with gates (`configs/loop.yaml`). The candidate mu
 | `ICPC2_VPS_URL` | Mac, server | e.g. `https://text-to-icpc2.com` |
 | `DOMAIN`, `ACME_EMAIL` | server | Caddy site and Let's Encrypt contact |
 | `POSTGRES_PASSWORD` | server | database |
-| `MODEL_REPO` / `MODEL_REVISION` | server | which model to serve (default `diogocarapito/text-to-icpc2-v2@main`) |
+| `MODEL_REPO` / `MODEL_REVISION` | server | which model to serve (default `diogocarapito/text-to-icpc2@main`) |
