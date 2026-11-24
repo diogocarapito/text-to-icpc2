@@ -76,7 +76,7 @@ def push_model(model_dir: Path, version: int, metrics: dict) -> str:
 
 
 LICENSE_NOTE = (
-    "**Licensing.** Code and model weights: Apache-2.0. ICPC-2 is (c) WONCA International Classification "
+    "**Licensing.** Code, model weights and synthetic data: MIT. ICPC-2 is (c) WONCA International Classification "
     "Committee; the Portuguese rubrics come from the ACSS translation (ICPC-2e v4.4). They are reproduced here "
     "for research and non-commercial use. Check WONCA's terms before any commercial use.")
 
@@ -86,7 +86,7 @@ def _write_readme(d: Path, card: dict):
     splits = card["eval"].get("splits", {})
     retriever = card["type"] == "retriever"
     lines = [
-        "---", "language: [pt, en]", "license: apache-2.0",
+        "---", "language: [pt, en]", "license: mit",
         f"library_name: {'sentence-transformers' if retriever else 'transformers'}",
         f"pipeline_tag: {'sentence-similarity' if retriever else 'text-classification'}",
         "tags: [icpc-2, medical, primary-care, portuguese, clinical-coding]",
@@ -163,7 +163,7 @@ def push_public_dataset():
 
 DATASET_CARD = """---
 language: [pt, en]
-license: apache-2.0
+license: mit
 task_categories: [text-classification]
 tags: [icpc-2, medical, primary-care, portuguese, synthetic]
 ---
