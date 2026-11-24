@@ -1,5 +1,6 @@
 import json
 import logging
+import os
 import subprocess
 from datetime import UTC, datetime
 from pathlib import Path
@@ -44,7 +45,7 @@ def git_sha() -> str:
     try:
         return subprocess.check_output(["git", "rev-parse", "--short", "HEAD"], text=True).strip()
     except Exception:
-        return "unknown"
+        return os.environ.get("ICPC2_GIT_SHA", "")[:7] or "unknown"
 
 
 def write_model_card(out: Path, model_type: str, base_model: str, cfg: dict, extra: dict | None = None):

@@ -22,7 +22,7 @@ services:
       retries: 5
 
   app:
-    build: ..
+    build: {context: .., args: {GIT_SHA: "${GIT_SHA:-}"}}
     restart: always
     environment:
       <<: *app-env
@@ -47,7 +47,7 @@ services:
 
   # Daily retrain check; training runs on an ephemeral DigitalOcean GPU Droplet.
   scheduler:
-    build: ..
+    build: {context: .., args: {GIT_SHA: "${GIT_SHA:-}"}}
     restart: always
     user: root
     environment:

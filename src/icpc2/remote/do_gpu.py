@@ -76,6 +76,14 @@ systemd-run --on-active={secs} --unit=icpc2-self-destruct \\
 
 
 def _git_ref() -> str:
+    """Commit the droplet clones: the checkout's pushed HEAD, or, inside the Docker image (no .git),
+    the ICPC2_GIT_SHA baked in at build time (deploy.sh builds from a pulled origin/main)."""
+    if sha := os.environ.get("ICPC2_GIT_SHA", "").strip():
+        return sha
+    if not (path(".") / ".git").exists():
+        raise SystemExit("No git checkout and no ICPC2_GIT_SHA: build the image with "
+                         "GIT_SHA=$(git rev-parse HEAD) (deploy.sh does this)")
+
     def git(*a):
         return subprocess.check_output(["git", *a], cwd=path("."), text=True).strip()
 

@@ -14,6 +14,10 @@ COPY configs ./configs
 COPY data/raw/icpc2_ptpt.csv data/raw/icpc2_en_titles.csv data/raw/
 RUN pip install -e ".[serve]"
 
+# Commit this image was built from (no .git in the image); the GPU loop clones it. Set by deploy.sh.
+ARG GIT_SHA=""
+ENV ICPC2_GIT_SHA=$GIT_SHA
+
 RUN useradd -m app && mkdir -p /hf /app/data && chown app /hf /app/data
 USER app
 EXPOSE 8000
